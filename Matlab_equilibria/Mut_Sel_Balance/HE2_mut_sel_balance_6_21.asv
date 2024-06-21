@@ -1,8 +1,8 @@
 % for the HE1 case under selection-mutation balance
 
-syms g00 g01 g10 g11 q pa pb qa qb s h1 h2 h3 mu H D G F
+syms g00 g01 g10 g11 q p s h1 h2 h3 mu H D G F
 
-assume(q>0 & q<1);
+assume(p>0 & p<1);
 assume(s>0 & s<1);
 assume(h1>0 & h1<1);
 assume(h2>0 & h2<1);
@@ -13,11 +13,11 @@ assume(D>=0 & D<1/4);
 
 % equations to add selection
 wbar = (1-2*s*(h1*(g00*g10+g00*g01)+h2*(g00*g11+g01*g10)+h3*(g01*g11+g10*g11))-s*(h2*(g01^2+g10^2)+g11^2));
-w0 = 1/wbar;
-w1 = (1-s*h1)/wbar;
-w2 = (1-s*h2)/wbar;
-w3 = (1-s*h3)/wbar;
-w4 = (1-s)/wbar;
+w0 = 1;
+w1 = (1-s*h1);
+w2 = (1-s*h2);
+w3 = (1-s*h3);
+w4 = (1-s);
 
 % equations for selection
 sel_g00 = g00^2*w0+(9/8)*g00*g01*w1+(9/8)*g00*g10*w1+(1/4)*g01^2*w2+(1/4)*g10^2*w2+(1/2)*g01*g10*w2+(1/2)*g00*g11*w2+(1/8)*g01*g11*w3+(1/8)*g10*g11*w3;
@@ -65,7 +65,7 @@ for i = 1:length(mut_eqn_set)
 
 end
 
-Y = solve(mut_eqn_set(1), mut_eqn_set(2), mut_eqn_set(4), s, 'ReturnConditions', true)
+Y = solve(mut_eqn_set(1), mut_eqn_set(2), mut_eqn_set(4), q, 'ReturnConditions', true)
 
 %Y_2 = vpasolve([mut_eqn_set(1), mut_eqn_set(2), mut_eqn_set(4)], q, .01)
 %eqn5 = g00+g01+g10+g11 == 1; - used in simplifications above using subs()

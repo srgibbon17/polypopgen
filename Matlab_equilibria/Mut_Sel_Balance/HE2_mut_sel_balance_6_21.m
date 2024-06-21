@@ -1,9 +1,9 @@
 % for the HE1 case under selection-mutation balance
 
-syms g00 g01 g10 g11 q pa pb qa qb s h1 h2 h3 mu H D G F
+syms g00 g01 g10 g11 q p s h1 h2 h3 mu H D G F
 
-assume(q>0 & q<1);
-assume(s>0 & s<1);
+assume(p>0 & p<1);
+assume(s>=0 & s<1);
 assume(h1>0 & h1<1);
 assume(h2>0 & h2<1);
 assume(h3>0 & h3<1);
@@ -42,30 +42,43 @@ ld_5 = isolate(ld_4, g01);
 %mut_g11 = sel_g00*mu^2 + sel_g01*mu + sel_g10*mu + sel_g11 - g11 == 0;
 
 % equations for mutation where mu^2 = 0
-mut_g00 = sel_g00*(1-2*mu) - g00 == 0;
-mut_g01 = sel_g00*mu + sel_g01*(1-mu) - g01 == 0;
-mut_g10 = sel_g00*mu + sel_g10*(1-mu) - g10 == 0;
-mut_g11 = sel_g01*mu + sel_g10*mu + sel_g11 - g11 == 0;
+mut_g00 = wbar*(sel_g00*(1-2*mu)) == wbar*g00;
+mut_g01 = wbar*(sel_g00*mu + sel_g01*(1-mu)) == wbar*g01;
+mut_g10 = wbar*(sel_g00*mu + sel_g10*(1-mu)) == wbar*g10;
+mut_g11 = wbar*(sel_g01*mu + sel_g10*mu + sel_g11) == wbar*g11;
 
 
 mut_eqn_set = [mut_g00, mut_g01, mut_g10, mut_g11];
 
 for i = 1:length(mut_eqn_set)
     % removes g11 from the equation by replacing it with 1-(g00+g01+g10)
-    mut_eqn_set(i) = subs(mut_eqn_set(i), g11, 1-(g00+g01+g10));
+    mut_eqn_set(i) = subs(mut_eqn_set(i), g00, p^2 + D);
 
     % removes g00 from the equation using the relationship that q = g10 + g00 (implicitly that g10 = g01)
-    mut_eqn_set(i) = subs(mut_eqn_set(i), g00, q-g10);
+    mut_eqn_set(i) = subs(mut_eqn_set(i), g11, q^2 + D);
 
     % removes g10 from the equation using g01 = g10
     mut_eqn_set(i) = subs(mut_eqn_set(i), g10, g01);
     
     % removes g01 from the equation using above expression (ld_5) for D
-    mut_eqn_set(i) = subs(mut_eqn_set(i), g01, -q^2 + q - D);
+    mut_eqn_set(i) = subs(mut_eqn_set(i), g01, p*q - D);
 
+    mut_eqn_set(i) = expand(mut_eqn_set(i));
+
+    mut_eqn_set(i) = subs(mut_eqn_set(i), q^2, 0);
+    mut_eqn_set(i) = subs(mut_eqn_set(i), q^3, 0);
+    mut_eqn_set(i) = subs(mut_eqn_set(i), q^4, 0);
+    mut_eqn_set(i) = subs(mut_eqn_set(i), q^5, 0);
+    mut_eqn_set(i) = subs(mut_eqn_set(i), q^6, 0);
+    mut_eqn_set(i) = subs(mut_eqn_set(i), q^7, 0);
+    mut_eqn_set(i) = subs(mut_eqn_set(i), q^8, 0);
+    mut_eqn_set(i) = subs(mut_eqn_set(i), q^9, 0);
+    mut_eqn_set(i) = subs(mut_eqn_set(i), q^10, 0);
+    mut_eqn_set(i) = subs(mut_eqn_set(i), q^11, 0);
+    mut_eqn_set(i) = subs(mut_eqn_set(i), q^12, 0);
 end
 
-Y = solve(mut_eqn_set(1), mut_eqn_set(2), mut_eqn_set(4), s, 'ReturnConditions', true)
+Y = solve(mut_eqn_set(1), mut_eqn_set(2), mut_eqn_set(4), p, q, 'ReturnConditions', true)
 
 %Y_2 = vpasolve([mut_eqn_set(1), mut_eqn_set(2), mut_eqn_set(4)], q, .01)
 %eqn5 = g00+g01+g10+g11 == 1; - used in simplifications above using subs()

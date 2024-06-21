@@ -36,16 +36,10 @@ ld_5 = isolate(ld_4, g01);
 %heterozygosity = H == g01 + g10 + D;
 
 % equations for mutation
-%mut_g00 = sel_g00*(1-mu)^2 - g00 == 0;
-%mut_g01 = sel_g00*mu*(1-mu) + sel_g01*(1-mu) - g01 == 0;
-%mut_g10 = sel_g00*mu*(1-mu) + sel_g10*(1-mu) - g10 == 0;
-%mut_g11 = sel_g00*mu^2 + sel_g01*mu + sel_g10*mu + sel_g11 - g11 == 0;
-
-% equations for mutation where mu^2 = 0
-mut_g00 = sel_g00*(1-2*mu) - g00 == 0;
-mut_g01 = sel_g00*mu + sel_g01*(1-mu) - g01 == 0;
-mut_g10 = sel_g00*mu + sel_g10*(1-mu) - g10 == 0;
-mut_g11 = sel_g01*mu + sel_g10*mu + sel_g11 - g11 == 0;
+mut_g00 = sel_g00*(1-mu)^2 - g00 == 0;
+mut_g01 = sel_g00*mu*(1-mu) + sel_g01*(1-mu) - g01 == 0;
+mut_g10 = sel_g00*mu*(1-mu) + sel_g10*(1-mu) - g10 == 0;
+mut_g11 = sel_g00*mu^2 + sel_g01*mu + sel_g10*mu + sel_g11 - g11 == 0;
 
 
 mut_eqn_set = [mut_g00, mut_g01, mut_g10, mut_g11];
@@ -63,9 +57,11 @@ for i = 1:length(mut_eqn_set)
     % removes g01 from the equation using above expression (ld_5) for D
     mut_eqn_set(i) = subs(mut_eqn_set(i), g01, -q^2 + q - D);
 
+
+    mu
 end
 
-Y = solve(mut_eqn_set(1), mut_eqn_set(2), mut_eqn_set(4), s, 'ReturnConditions', true)
+Y = solve(mut_eqn_set(1), mut_eqn_set(2), mut_eqn_set(4), h1, 'ReturnConditions', true)
 
 %Y_2 = vpasolve([mut_eqn_set(1), mut_eqn_set(2), mut_eqn_set(4)], q, .01)
 %eqn5 = g00+g01+g10+g11 == 1; - used in simplifications above using subs()

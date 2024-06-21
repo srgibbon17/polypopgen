@@ -1,6 +1,6 @@
 % for the HE1 case under selection-mutation balance
 
-syms g00 g01 g10 g11 q pa pb qa qb s h1 h2 h3 mu H D G F
+syms g00 g01 g10 g11 q p pa pb qa qb s h1 h2 h3 mu H D G F
 
 assume(q>0 & q<1);
 assume(s>0 & s<1);
@@ -47,19 +47,23 @@ mut_eqn_set = [mut_g00, mut_g01, mut_g10, mut_g11];
 for i = 1:length(mut_eqn_set)
     % removes g11 from the equation by replacing it with 1-(g00+g01+g10)
     mut_eqn_set(i) = subs(mut_eqn_set(i), g11, 1-(g00+g01+g10));
-
+    %mut_eqn_set(i) = subs(mut_eqn_set(i), g11, (p^2 + D));
+    
     % removes g00 from the equation using the relationship that q = g10 + g00 (implicitly that g10 = g01)
     mut_eqn_set(i) = subs(mut_eqn_set(i), g00, q-g10);
-
+    %mut_eqn_set(i) = subs(mut_eqn_set(i), g00, (q^2 + D));
+    
     % removes g10 from the equation using g01 = g10
     mut_eqn_set(i) = subs(mut_eqn_set(i), g10, g01);
+    %mut_eqn_set(i) = subs(mut_eqn_set(i), g10, g01);
     
     % removes g01 from the equation using above expression (ld_5) for D
     mut_eqn_set(i) = subs(mut_eqn_set(i), g01, -q^2 + q - D);
-
+    %mut_eqn_set(i) = subs(mut_eqn_set(i), g01, (p*q + D));
 end
 
-Y = solve(mut_eqn_set(1), mut_eqn_set(2), mut_eqn_set(4), 'ReturnConditions', true);
+
+Y = solve(mut_eqn_set(1), mut_eqn_set(2), mut_eqn_set(4), s, 'ReturnConditions', true)
 
 %Y_2 = vpasolve([mut_eqn_set(1), mut_eqn_set(2), mut_eqn_set(4)], q, .01)
 %eqn5 = g00+g01+g10+g11 == 1; - used in simplifications above using subs()

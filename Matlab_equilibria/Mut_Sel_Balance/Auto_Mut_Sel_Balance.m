@@ -28,10 +28,13 @@ for i = 1:length(eqn_set)
     eqn_set(i) = subs(eqn_set(i), G4, g2^2);
     eqn_set(i) = subs(eqn_set(i), g2, (1-2*g1-g0));
     eqn_set(i) = subs(eqn_set(i), g1, (q-g0));
-    eqn_set(i) = subs(eqn_set(i), g0, (D+q^2));
+    % using a measure for D
+    %eqn_set(i) = subs(eqn_set(i), g0, (q + ((16*q^2)/3 - (16*q)/3 + 4*D + 16/9)^(1/2)/2 - 2/3));
+    % using a measure for H
+    eqn_set(i) = subs(eqn_set(i), g0, (q + ((16*q^2)/3 - (16*q)/3 + 4*H + 1/9)^(1/2)/2 - 1/6));
 end
 
-Y = solve(eqn_set(1), eqn_set(2), eqn_set(3), q, 'ReturnConditions', true)
+Y = solve(eqn_set(1), eqn_set(2), eqn_set(3), mu, 'ReturnConditions', true)
 
 % g0 + 2g1 + g2 = 0
 % q = g0 + g1
