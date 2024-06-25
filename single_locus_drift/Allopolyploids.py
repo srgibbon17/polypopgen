@@ -29,8 +29,8 @@ pa = .75  # allele frequency for a (derived, deleterious allele) in subgenome a 
 qa = 1-pa  # allele frequency for A in subgenome a
 pb = .4  # allele frequency for a in subgenome b (0<x<1) 
 qb = 1-pb  # allele frequency for A in subgenome b
-N = 1000  # population size
-g = 1000  # number of generations
+N = 100  # population size
+g = 100  # number of generations
 g_bottleneck_start = 450  # generation at which bottleneck starts
 g_bottleneck_length = 100  # number of generations for which the bottleneck lasts
 N_bottleneck = 200  # population size during the bottleneck
@@ -81,12 +81,12 @@ def mutation_bidirectional(gamete_pre_mut):
     return gamete_mut
 
 # counts relative gamete frequencies
-def gamete_frequencies(gametes_j_pre_mut, mutation_boolean):
+def gamete_frequencies(gametes_j, mutation_status):
     """
     Counts relative gamete frequencies (g00, g01, g10, g11 scaled to N_j) for one generation
 
     Args:
-        gamete_j: a list of all gametes used to form the jth generation
+        gametes_j: a list of all gametes used to form the jth generation
         mutation_boolean: True if mutation has occurred in present generation, False otherwise
 
     Returns:
@@ -96,17 +96,17 @@ def gamete_frequencies(gametes_j_pre_mut, mutation_boolean):
         g11_freq: gamete freq. (pre or post mutation) of g11
     """
 
-    g00 = gametes_j_pre_mut.count(['A', 'A'])/(2*N_j)
-    g10 = gametes_j_pre_mut.count(['a', 'A'])/(2*N_j)
-    g01 = gametes_j_pre_mut.count(['A', 'a'])/(2*N_j)
-    g11 = gametes_j_pre_mut.count(['a', 'a'])/(2*N_j)
+    g00 = gametes_j.count(['A', 'A'])/(2*N_j)
+    g10 = gametes_j.count(['a', 'A'])/(2*N_j)
+    g01 = gametes_j.count(['A', 'a'])/(2*N_j)
+    g11 = gametes_j.count(['a', 'a'])/(2*N_j)
 
-    if mutation_boolean == True:
+    if mutation_status == 'post-mutation':
         g00_freq_post_mut.append(g00)
         g10_freq_post_mut.append(g10)
         g01_freq_post_mut.append(g01)
         g11_freq_post_mut.append(g11)
-    elif mutation_boolean == False:
+    elif mutation_status == 'pre-mutation':
         g00_freq_pre_mut.append(g00)
         g10_freq_pre_mut.append(g10)
         g01_freq_pre_mut.append(g01)
@@ -146,24 +146,27 @@ def genotype_frequencies(gen_j_pre_sel):
     for i in range(len(gen_j_pre_sel)):
         allele_count_sga = gen_j_pre_sel[i][:2].count('a')
         allele_count_sgb = gen_j_pre_sel[i][2:].count('a')
-        if (allele_count_sga == 0) and (allele_count_sgb == 0):
-            G00 += 1
-        elif (allele_count_sga == 0) and (allele_count_sgb == 1):
-            G01 += 1
-        elif (allele_count_sga == 0) and (allele_count_sgb == 2):
-            G02 += 1
-        elif (allele_count_sga == 1) and (allele_count_sgb == 0):
-            G10 += 1
-        elif (allele_count_sga == 1) and (allele_count_sgb == 1):
-            G11 += 1
-        elif (allele_count_sga == 1) and (allele_count_sgb == 2):
-            G12 += 1
-        elif (allele_count_sga == 2) and (allele_count_sgb == 0):
-            G20 += 1
-        elif (allele_count_sga == 2) and (allele_count_sgb == 1):
-            G21 += 1
-        elif (allele_count_sga == 2) and (allele_count_sgb == 2):
-            G22 += 1
+        if allele_count_sga == 0: 
+            if allele_count_sgb == 0:
+                G00 += 1
+            elif allele_count_sgb == 1:
+                G01 += 1
+            elif allele_count_sgb == 2:
+                G02 += 1
+        elif allele_count_sga == 1:
+            if allele_count_sgb == 0:
+                G10 += 1
+            elif allele_count_sgb == 1:
+                G11 += 1
+            elif allele_count_sgb == 2:
+                G12 += 1
+        elif allele_count_sga == 2:
+            if allele_count_sgb == 0:
+                G20 += 1
+            elif allele_count_sgb == 1:
+                G21 += 1
+            elif allele_count_sgb == 2:
+                G22 += 1
         
     G00_freq.append(G00/N_j)
     G01_freq.append(G01/N_j)
@@ -193,8 +196,7 @@ def gamete_sampling(genotype):
             [G00, G01, G02, G10, G11, G12, G20, G21, G22]
 
     Returns:
-        gamete: this will be either the maternal or paternal gamete, dependent upon input
-            this is done using 3 sub-functions for 0 HEs, 1 HE, or 2 HEs
+        gamete: this can be either the maternal or paternal gamete
     """
 
     # gamete formation with probability distribution under no HEs
@@ -369,24 +371,27 @@ def selection_fecundity(gen_j_pre_sel):
     for i in range(len(gen_j_pre_sel)):
         allele_count_sga = gen_j_pre_sel[i][:2].count('a')
         allele_count_sgb = gen_j_pre_sel[i][2:].count('a')
-        if (allele_count_sga == 0) and (allele_count_sgb == 0):
-            G00 += 1
-        elif (allele_count_sga == 0) and (allele_count_sgb == 1):
-            G01 += 1
-        elif (allele_count_sga == 0) and (allele_count_sgb == 2):
-            G02 += 1
-        elif (allele_count_sga == 1) and (allele_count_sgb == 0):
-            G10 += 1
-        elif (allele_count_sga == 1) and (allele_count_sgb == 1):
-            G11 += 1
-        elif (allele_count_sga == 1) and (allele_count_sgb == 2):
-            G12 += 1
-        elif (allele_count_sga == 2) and (allele_count_sgb == 0):
-            G20 += 1
-        elif (allele_count_sga == 2) and (allele_count_sgb == 1):
-            G21 += 1
-        elif (allele_count_sga == 2) and (allele_count_sgb == 2):
-            G22 += 1
+        if allele_count_sga == 0: 
+            if allele_count_sgb == 0:
+                G00 += 1
+            elif allele_count_sgb == 1:
+                G01 += 1
+            elif allele_count_sgb == 2:
+                G02 += 1
+        elif allele_count_sga == 1:
+            if allele_count_sgb == 0:
+                G10 += 1
+            elif allele_count_sgb == 1:
+                G11 += 1
+            elif allele_count_sgb == 2:
+                G12 += 1
+        elif allele_count_sga == 2:
+            if allele_count_sgb == 0:
+                G20 += 1
+            elif allele_count_sgb == 1:
+                G21 += 1
+            elif allele_count_sgb == 2:
+                G22 += 1
 
     genotype_freq_gen_j = np.array([G00, G01, G02, G10, G11, G12, G20, G21, G22])
     genotype_proportions_gen_j = genotype_freq_gen_j/len(gen_j_pre_sel)
@@ -476,7 +481,7 @@ def j_plus_1th_generation():
         
         Although this is not precisely the case here, as A and a are used for both the 'a' and 'b' subgenomes,
         this distinction still holds significance for how the gamete sampling functions operate. 
-        i.e. the gamete sampling operates differently on ['A','A','a','a'] than on ['A','a','A','a'] despite
+        i.e. gamete sampling operates differently on ['A','A','a','a'] than on ['A','a','A','a'] despite
         these genotypes having equivalent fitnesses and overall number of alleles. In other words, the distribution of
         alleles across subgenomes matters. 
         
@@ -596,10 +601,10 @@ for j in range(g):
     j_plus_1th_generation()          
 
     # counts and stores gamete frequencies pre-mutation
-    gamete_frequencies(gametes_j_pre_mut, False)
+    gamete_frequencies(gametes_j_pre_mut, 'pre-mutation')
 
     # counts and stores gamete frequencies post-mutation
-    gamete_frequencies(gametes_j_post_mut, True) 
+    gamete_frequencies(gametes_j_post_mut, 'post-mutation') 
     
     # counts and stores genotype frequencies 
     genotype_frequencies(gen_j_pre_sel)
@@ -643,7 +648,7 @@ def gamete_freq_as_arrays():
 
 
 # plots both the gamete and genotype frequencies (each on its own axis)
-# Sam's preferred plotting function/style
+# preferred plotting function/style
 def plot_gamete_and_genotype_freq():
     
     x_index = range(g)  # creates a discrete time variable to plot against
