@@ -2,13 +2,13 @@
 
 syms g00 g01 g10 g11 q p pa pb qa qb s h1 h2 h3 mu H D G F
 
-assume(q>0 & q<1);
-assume(s>0 & s<1);
-assume(h1>0 & h1<1);
-assume(h2>0 & h2<1);
-assume(h3>0 & h3<1);
-assume(mu>0 & mu<1);
-assume(D>=0 & D<1/4);
+assume(q>=0 & q<=1);
+assume(s>=0 & s<=1);
+assume(h1>=0 & h1<=1);
+assume(h2>=0 & h2<=1);
+assume(h3>=0 & h3<=1);
+assume(mu>=0 & mu<=1);
+assume(D>=0 & D<=1/4);
 
 
 % equations to add selection
@@ -63,7 +63,7 @@ for i = 1:length(mut_eqn_set)
 end
 
 
-Y = solve(mut_eqn_set(1), mut_eqn_set(2), mut_eqn_set(4), s, 'ReturnConditions', true)
+%Y = solve(mut_eqn_set(1), mut_eqn_set(2), mut_eqn_set(4), s, 'ReturnConditions', true)
 
 %Y_2 = vpasolve([mut_eqn_set(1), mut_eqn_set(2), mut_eqn_set(4)], q, .01)
 %eqn5 = g00+g01+g10+g11 == 1; - used in simplifications above using subs()

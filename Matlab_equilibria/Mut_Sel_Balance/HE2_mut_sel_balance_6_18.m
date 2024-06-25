@@ -2,13 +2,13 @@
 
 syms g00 g01 g10 g11 q pa pb qa qb s h1 h2 h3 mu H D G F
 
-assume(q>0 & q<1);
-assume(s>0 & s<1);
-assume(h1>0 & h1<1);
-assume(h2>0 & h2<1);
-assume(h3>0 & h3<1);
-assume(mu>0 & mu<1);
-assume(D>=0 & D<1/4);
+assume(q>=0 & q<=1);
+assume(s>=0 & s<=1);
+assume(h1>=0 & h1<=1);
+assume(h2>=0 & h2<=1);
+assume(h3>=0 & h3<=1);
+assume(mu>=0 & mu<=1);
+assume(D>=0 & D<=1/4);
 
 
 % equations to add selection
@@ -36,16 +36,16 @@ ld_5 = isolate(ld_4, g01);
 %heterozygosity = H == g01 + g10 + D;
 
 % equations for mutation
-%mut_g00 = sel_g00*(1-mu)^2 - g00 == 0;
-%mut_g01 = sel_g00*mu*(1-mu) + sel_g01*(1-mu) - g01 == 0;
-%mut_g10 = sel_g00*mu*(1-mu) + sel_g10*(1-mu) - g10 == 0;
-%mut_g11 = sel_g00*mu^2 + sel_g01*mu + sel_g10*mu + sel_g11 - g11 == 0;
+mut_g00 = sel_g00*(1-mu)^2 - g00 == 0;
+mut_g01 = sel_g00*mu*(1-mu) + sel_g01*(1-mu) - g01 == 0;
+mut_g10 = sel_g00*mu*(1-mu) + sel_g10*(1-mu) - g10 == 0;
+mut_g11 = sel_g00*mu^2 + sel_g01*mu + sel_g10*mu + sel_g11 - g11 == 0;
 
-% equations for mutation where mu^2 = 0
-mut_g00 = sel_g00*(1-2*mu) - g00 == 0;
-mut_g01 = sel_g00*mu + sel_g01*(1-mu) - g01 == 0;
-mut_g10 = sel_g00*mu + sel_g10*(1-mu) - g10 == 0;
-mut_g11 = sel_g01*mu + sel_g10*mu + sel_g11 - g11 == 0;
+%%% equations for mutation where mu^2 = 0
+%mut_g00 = sel_g00*(1-2*mu) - g00 == 0;
+%mut_g01 = sel_g00*mu + sel_g01*(1-mu) - g01 == 0;
+%mut_g10 = sel_g00*mu + sel_g10*(1-mu) - g10 == 0;
+%mut_g11 = sel_g01*mu + sel_g10*mu + sel_g11 - g11 == 0;
 
 
 mut_eqn_set = [mut_g00, mut_g01, mut_g10, mut_g11];
@@ -65,10 +65,10 @@ for i = 1:length(mut_eqn_set)
 
 end
 
-Y = solve(mut_eqn_set(1), mut_eqn_set(2), mut_eqn_set(4), s, 'ReturnConditions', true)
+%Y = solve(mut_eqn_set(1), mut_eqn_set(2), mut_eqn_set(4), 'ReturnConditions', true)
 
 %Y_2 = vpasolve([mut_eqn_set(1), mut_eqn_set(2), mut_eqn_set(4)], q, .01)
-%eqn5 = g00+g01+g10+g11 == 1; - used in simplifications above using subs()
+%eqn5 = g00+2g01+g11 == 1; - used in simplifications above using subs()
 %eqn6 = g00+g01 == qa; - used in simplifications above using subs()
 %eqn7 = g00+g10 == qb; - used in simplifications above using subs()
 %eqn8 = g10 == g01; - used in simplifications above using subs()

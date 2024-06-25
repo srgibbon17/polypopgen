@@ -2,13 +2,13 @@
 
 syms g00 g01 g10 g11 q p s h1 h2 h3 mu H D G F
 
-assume(p>0 & p<1);
-assume(s>=0 & s<1);
-assume(h1>0 & h1<1);
-assume(h2>0 & h2<1);
-assume(h3>0 & h3<1);
-assume(mu>0 & mu<1);
-assume(D>=0 & D<1/4);
+assume(p>=0 & p<=1);
+assume(s>=0 & s<=1);
+assume(h1>=0 & h1<=1);
+assume(h2>=0 & h2<=1);
+assume(h3>=0 & h3<=1);
+assume(mu>=0 & mu<=1);
+assume(D>=0 & D<=1/4);
 
 
 % equations to add selection
