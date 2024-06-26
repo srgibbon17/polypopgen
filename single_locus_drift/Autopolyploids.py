@@ -24,18 +24,18 @@ Additionally, if the self_rate is set to zero, selfing will still occur with pro
 # Let's define some parameters
 p = .5  # allele frequency for A
 q = 1-p  # allele frequency for a
-N = 1000  # population size
-g = 100  # number of generations
+N = 10000  # population size
+g = 1000  # number of generations
 g_bottleneck_start = 400  # generation at which bottleneck starts
 g_bottleneck_length = 200  # number of generations for which the bottleneck lasts
-N_bottleneck = 500  # population size during the bottleneck
-s = 0.1  # selection coefficient
+N_bottleneck = 2000  # population size during the bottleneck
+s = 0.001  # selection coefficient
 h1 = .25  # dominance coefficient for G3
 h2 = .5  # dominance coefficient for G2
 h3 = .75  # dominance coefficient for G1
-mu = 0.001  # mutation rate (from 'A' to 'a')
-nu = 0.001  # mutation rate (from 'a' to 'A')
-self_rate = 0.2  # selfing rate 
+mu = 0.00001  # mutation rate (from 'A' to 'a')
+nu = 0.00001  # mutation rate (from 'a' to 'A')
+self_rate = 0.33  # selfing rate 
 alpha = 1/12  # probability of double reduction; shown to have a maximum of 1/6=.16667
 
 # Let's create some functions
@@ -596,5 +596,3 @@ def plot_gamete_diff_single_axis():
     plt.show()
         
 plot_gamete_and_genotype_freq()
-
-print(len(G0_freq))

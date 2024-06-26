@@ -1,5 +1,4 @@
-from sympy import symbols, Eq, Rational, solve, factor, latex
-from sympy import Rational
+from sympy import symbols, Eq, Rational, solve, factor
 
 """
 Genotype and gamete equilibria for segmental allotetraploids with 1 HE. 
@@ -44,7 +43,7 @@ else:
 eqn_system = [eqn1, eqn2, eqn3, eqn4, eqn5, eqn6, eqn7]
 variable_list = [g00, g01, g10, g11]
 
-# solving function itself
+# solving the system of equations
 gamete_soln_set = solve(eqn_system, variable_list, dict=True)
 
 # sets the equilibrium gamete solutions equal to their respective variables
