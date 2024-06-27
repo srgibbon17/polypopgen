@@ -44,48 +44,53 @@ for i = 1:length(mut_eqn_set)
 
 end
 
-iterations = 10000;
+iterations = 10;
 
-s_value = 1e-7;
-mu_value = 1e-8;
+g00_values_array = zeros(1, iterations^2);
+g01_values_array = zeros(1, iterations^2);
+s_values_array = zeros(1, iterations^2);
+mu_values_array = zeros(1, iterations^2);
 
-g00_values_array = zeros(1, iterations);
-g01_values_array = zeros(1, iterations);
-s_values_array = zeros(1, iterations);
-
-
+mu_value = 1e-6;
 for i = 1:iterations
+    s_value = 5e-6;
+    for j = 1:iterations
     
-    s_values_array(i) = s_value;
+        s_values_array((i-1)*iterations+j) = s_value;
 
-    [g00_value, g01_value] = numeric_solver(mut_eqn_set(1), mut_eqn_set(2), mu, 1e-6, s, s_value, h1, .25, h2, .5, h3, .75, g00, g01);
+        [g00_value, g01_value] = numeric_solver(mut_eqn_set(1), mut_eqn_set(2), mu, mu_value, s, s_value, h1, .25, h2, .5, h3, .75, g00, g01);
 
 
-    for j = 1:length(g00_value)
-        if g00_value(j) ~= 0
-            g00_values_array(i) = g00_value(j);
+        for k = 1:length(g00_value)
+            if g00_value(k) ~= 0
+                g00_values_array((i-1)*iterations+j) = g00_value(k);
+            end
         end
-    end
 
-    for j = 1:length(g01_value)
-        if g01_value(j) ~= 0
-            g01_values_array(i) = g01_value(j);
+        for k = 1:length(g01_value)
+            if g01_value(k) ~= 0
+                g01_values_array((i-1)*iterations+j) = g01_value(k);
+            end
         end
+
+        s_value = s_value + 1e-7;
+        
+
     end
-
-    s_value = s_value + 1e-8;
-    mu_value = mu_value + 1e-9;
-
+    mu_value = mu_value + 1e-7;
 end
 
 q_values_array = g00_values_array + g01_values_array;
 
 figure
 
-scatter(s_values_array, q_values_array)
+scatter3(s_values_array, mu_values_array, q_values_array, 'filled')
 
-title('Allele Frequency vs. Selection Coefficient')
-ylabel('q (ancestral allele frequency)')
+xscale log
+
+title('Allele Frequency vs. Selection and Mutation')
+zlabel('q (ancestral allele frequency)')
+ylabel('mu')
 xlabel('s (selection coefficient)')
 
 %Y = solve(mut_eqn_set(1), mut_eqn_set(2), mut_eqn_set(4), s, 'ReturnConditions', true)
