@@ -51,14 +51,21 @@ g01_values_array = zeros(1, iterations^2);
 s_values_array = zeros(1, iterations^2);
 mu_values_array = zeros(1, iterations^2);
 
-mu_value = 1e-6;
+h1_val = .25;
+h2_val = .5;
+h3_val = .75;
+
+mu_init_val = 1e-6;
+mu_step_size = 1e-7;
+s_step_size = 1e-7;
+
 for i = 1:iterations
-    s_value = 1e-6;
+    s_init_value = 1e-6;
     for j = 1:iterations
     
-        s_values_array((i-1)*iterations+j) = s_value;
+        s_values_array((i-1)*iterations+j) = s_init_value;
 
-        [g00_value, g01_value] = numeric_solver(mut_eqn_set(1), mut_eqn_set(2), mu, mu_value, s, s_value, h1, .25, h2, .5, h3, .75, g00, g01);
+        [g00_value, g01_value] = numeric_solver(mut_eqn_set(1), mut_eqn_set(2), mu, mu_init_val, s, s_init_value, h1, h1_val, h2, h2_val, h3, h3_val, g00, g01);
 
 
         for k = 1:length(g00_value)
@@ -73,11 +80,11 @@ for i = 1:iterations
             end
         end
 
-        s_value = s_value + 1e-7;
+        s_init_value = s_init_value + s_step_size;
         
 
     end
-    mu_value = mu_value + 1e-7;
+    mu_init_val = mu_init_val + mu_step_size;
 end
 
 q_values_array = g00_values_array + g01_values_array;
