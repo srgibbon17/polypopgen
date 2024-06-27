@@ -53,11 +53,12 @@ g00_values_array = zeros(1, iterations);
 g01_values_array = zeros(1, iterations);
 s_values_array = zeros(1, iterations);
 
+
 for i = 1:iterations
     
     s_values_array(i) = s_value;
 
-    [g00_value, g01_value] = numeric_solver(mut_eqn_set(1), mut_eqn_set(2), mu, mu_value, s, s_value, h1, .25, h2, .5, h3, .75, g00, g01);
+    [g00_value, g01_value] = numeric_solver(mut_eqn_set(1), mut_eqn_set(2), mu, 1e-6, s, s_value, h1, .25, h2, .5, h3, .75, g00, g01);
 
 
     for j = 1:length(g00_value)
