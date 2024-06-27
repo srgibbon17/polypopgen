@@ -51,41 +51,43 @@ mut_g11 = sel_g00*mu^2 + sel_g01*mu + sel_g10*mu + sel_g11 - g11 == 0;
 mut_eqn_set = [mut_g00, mut_g01, mut_g10, mut_g11];
 
 for i = 1:length(mut_eqn_set)
-    %mut_eqn_set(i) = subs(mut_eqn_set(i), g10, g01);
+    
     %mut_eqn_set(i) = subs(mut_eqn_set(i), g01, (1/2)*(1-g00-g11));
 
     % removes g11 from the equation by replacing it with 1-(g00+g01+g10)
     mut_eqn_set(i) = subs(mut_eqn_set(i), g11, 1-(g00+g01+g10));
+    mut_eqn_set(i) = subs(mut_eqn_set(i), g10, g01);
 
     % removes g00 from the equation using the relationship that q = g10 + g00 (implicitly that g10 = g01)
-    mut_eqn_set(i) = subs(mut_eqn_set(i), g00, q-g10);
+    %mut_eqn_set(i) = subs(mut_eqn_set(i), g00, q-g10);
 
     % removes g10 from the equation using g01 = g10
-    mut_eqn_set(i) = subs(mut_eqn_set(i), g10, g01);
+    %mut_eqn_set(i) = subs(mut_eqn_set(i), g10, g01);
     
     % removes g01 from the equation using above expression (ld_5) for D
-    mut_eqn_set(i) = subs(mut_eqn_set(i), g01, -q^2 + q - D);
+    %mut_eqn_set(i) = subs(mut_eqn_set(i), g01, -q^2 + q - D);
 
 end
 
-for i = 1:length(mut_eqn_set)
+%for i = 1:length(mut_eqn_set)
    
-    mut_eqn_set(i) = subs(mut_eqn_set(i), h1, 1/4);
+    %mut_eqn_set(i) = subs(mut_eqn_set(i), h1, 1/4);
 
-    mut_eqn_set(i) = subs(mut_eqn_set(i), h2, 1/2);
+    %mut_eqn_set(i) = subs(mut_eqn_set(i), h2, 1/2);
 
-    mut_eqn_set(i) = subs(mut_eqn_set(i), h3, 3/4);
+    %mut_eqn_set(i) = subs(mut_eqn_set(i), h3, 3/4);
     
-    mut_eqn_set(i) = subs(mut_eqn_set(i), mu, .0000001);
+    %mut_eqn_set(i) = subs(mut_eqn_set(i), mu, .0000001);
 
-    mut_eqn_set(i) = subs(mut_eqn_set(i), s, .000001);
+    %mut_eqn_set(i) = subs(mut_eqn_set(i), s, .000001);
 
-end
+%end
+eqn5 = g00+2*g01+g11 == 1;
 
-%Y = solve(mut_eqn_set(1), mut_eqn_set(2), mut_eqn_set(4), 'ReturnConditions', true)
+Y = solve(mut_eqn_set(1), mut_eqn_set(2), g00, g01, 'ReturnConditions', true, MaxDegree=3)
 
-Y_2 = vpasolve([mut_eqn_set(1), mut_eqn_set(2), mut_eqn_set(4)], [q, D])
-%eqn5 = g00+2g01+g11 == 1; - used in simplifications above using subs()
+%Y_2 = vpasolve([mut_eqn_set(1), mut_eqn_set(2), mut_eqn_set(4)], [q, D])
+%eqn5 = g00+2*g01+g11 == 1; - used in simplifications above using subs()
 %eqn6 = g00+g01 == qa; - used in simplifications above using subs()
 %eqn7 = g00+g10 == qb; - used in simplifications above using subs()
 %eqn8 = g10 == g01; - used in simplifications above using subs()
