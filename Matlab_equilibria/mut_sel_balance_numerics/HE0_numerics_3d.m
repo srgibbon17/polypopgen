@@ -40,7 +40,7 @@ for i = 1:length(mut_eqn_set)
     mut_eqn_set(i) = subs(mut_eqn_set(i), g11, 1-(g00+g01+g10));
 end
 
-iterations = 5;
+iterations = 7;
 
 
 h1_val = .25;

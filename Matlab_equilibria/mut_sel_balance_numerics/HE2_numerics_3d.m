@@ -44,7 +44,7 @@ for i = 1:length(mut_eqn_set)
 
 end
 
-iterations = 500;
+iterations = 100;
 
 g00_values_array = zeros(1, iterations^2);
 g01_values_array = zeros(1, iterations^2);
@@ -64,6 +64,7 @@ for i = 1:iterations
     for j = 1:iterations
     
         s_values_array((i-1)*iterations+j) = s_init_value;
+        mu_values_array((i-1)*iterations+j) = mu_init_value;
 
         [g00_value, g01_value] = numeric_solver(mut_eqn_set(1), mut_eqn_set(2), mu, mu_init_val, s, s_init_value, h1, h1_val, h2, h2_val, h3, h3_val, g00, g01);
 
@@ -95,7 +96,7 @@ figure
 scatter3(s_values_array, mu_values_array, q_values_array)
 
 xscale log
-
+yscale log
 title('Allele Frequency vs. Selection and Mutation')
 zlabel('q (ancestral allele frequency)')
 ylabel('mu')

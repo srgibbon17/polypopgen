@@ -44,7 +44,7 @@ for i = 1:length(mut_eqn_set)
 
 end
 
-iterations = 500;
+iterations = 7;
 
 g00_values_array = zeros(1, iterations^2);
 g01_values_array = zeros(1, iterations^2);
@@ -59,12 +59,12 @@ mu_init_val = 1e-6;
 mu_step_size = 1e-7;
 s_step_size = 1e-7;
 for i = 1:iterations
-    s_init_value = 1e-6;
+    s_init_val = 1e-5;
     for j = 1:iterations
     
-        s_values_array((i-1)*iterations+j) = s_init_value;
-
-        [g00_value, g01_value] = numeric_solver(mut_eqn_set(1), mut_eqn_set(2), mu, mu_init_value, s, s_init_value, h1, h1_val, h2, h2_val, h3, h3_val, g00, g01);
+        s_values_array((i-1)*iterations+j) = s_init_val;
+        mu_values_array((i-1)*iterations+j) = mu_init_val;
+        [g00_value, g01_value] = numeric_solver(mut_eqn_set(1), mut_eqn_set(2), mu, mu_init_val, s, s_init_val, h1, h1_val, h2, h2_val, h3, h3_val, g00, g01);
 
 
         for k = 1:length(g00_value)
@@ -79,10 +79,10 @@ for i = 1:iterations
             end
         end
 
-        s_init_value = s_init_value + s_step_size;
+        s_init_val = s_init_val + s_step_size;
 
     end
-    mu_init_value = mu_init_value + mu_step_size;
+    mu_init_val = mu_init_val + mu_step_size;
 end
 
 q_values_array = g00_values_array + g01_values_array;
@@ -93,7 +93,7 @@ figure
 scatter3(s_values_array, mu_values_array, q_values_array)
 
 xscale log
-
+yscale log
 title('Allele Frequency vs. Selection and Mutation')
 zlabel('q (ancestral allele frequency)')
 ylabel('mu')
