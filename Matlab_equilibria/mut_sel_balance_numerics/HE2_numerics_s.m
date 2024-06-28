@@ -1,4 +1,4 @@
-% for 2 HEs, numeric approximation of mut-sel balance for constant mu
+% for 2 HE allos, numerical approximation of mut-sel balance for constant mu and variable s
 
 iterations = 100; % number of steps or number of data points to generate
 

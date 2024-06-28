@@ -1,4 +1,14 @@
-% for the HE2 case under selection-mutation balance
+% for 1 HE allos, numerical approximation of mut-sel balance for constant mu and variable s
+
+iterations = 100; % number of steps or number of data points to generate
+
+s_init_val = 1e-7; % starting s value
+s_step_size = 1e-7; % size of change in s for each iteration
+
+mu_val = 1e-6; % constant value of mutation rate
+h1_val = .25; % h1 dominance coefficient value, constant
+h2_val = .5; % h2 dominance coefficient value, constant
+h3_val = .75; % h3 dominance coefficient value, constant
 
 syms g00 g01 g10 g11 s h1 h2 h3 mu
 
@@ -43,16 +53,6 @@ for i = 1:length(mut_eqn_set)
     mut_eqn_set(i) = subs(mut_eqn_set(i), g10, g01);
 
 end
-
-iterations = 100;
-
-s_init_val = 1e-7;
-s_step_size = 1e-7;
-
-mu_val = 1e-6;
-h1_val = .25;
-h2_val = .5;
-h3_val = .75;
 
 g00_values_array = zeros(1, iterations);
 g01_values_array = zeros(1, iterations);
