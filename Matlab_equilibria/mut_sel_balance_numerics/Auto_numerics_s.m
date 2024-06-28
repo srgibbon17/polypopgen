@@ -29,10 +29,10 @@ for i = 1:length(mut_eqn_set)
     mut_eqn_set(i) = subs(mut_eqn_set(i), g2, (1-g1-g0));
 end
 
-iterations = 100;
+iterations = 10000;
 
-s_init_val = 1e-5;
-s_step_size = 1e-6;
+s_init_val = 1e-7;
+s_step_size = 1e-7;
 h1_val = .25;
 h2_val = .5;
 h3_val = .75;
