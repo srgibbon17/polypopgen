@@ -26,7 +26,7 @@ for i = 1:length(mut_eqn_set)
     mut_eqn_set(i) = subs(mut_eqn_set(i), G2, (2*g0*g2 + g1^2));
     mut_eqn_set(i) = subs(mut_eqn_set(i), G3, 2*g1*g2);
     mut_eqn_set(i) = subs(mut_eqn_set(i), G4, g2^2);
-    mut_eqn_set(i) = subs(mut_eqn_set(i), g2, (1-2*g1-g0));
+    mut_eqn_set(i) = subs(mut_eqn_set(i), g2, (1-g1-g0));
 end
 
 g0_values_array = zeros(1, iterations^2);
@@ -73,7 +73,7 @@ for i = 1:iterations
     mu_init_val = mu_init_val + mu_step_size;
 end
 
-q_values_array = g0_values_array + g1_values_array;
+q_values_array = g0_values_array + (1/2)*g1_values_array;
 
 figure
 

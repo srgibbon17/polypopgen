@@ -26,12 +26,12 @@ for i = 1:length(mut_eqn_set)
     mut_eqn_set(i) = subs(mut_eqn_set(i), G2, (2*g0*g2 + g1^2));
     mut_eqn_set(i) = subs(mut_eqn_set(i), G3, 2*g1*g2);
     mut_eqn_set(i) = subs(mut_eqn_set(i), G4, g2^2);
-    mut_eqn_set(i) = subs(mut_eqn_set(i), g2, (1-2*g1-g0));
+    mut_eqn_set(i) = subs(mut_eqn_set(i), g2, (1-g1-g0));
 end
 
-iterations = 10000;
+iterations = 10;
 
-s_init_val = 1e-7;
+s_init_val = 1e-5;
 s_step_size = 1e-7;
 h1_val = .25;
 h2_val = .5;
@@ -46,7 +46,7 @@ s_values_array = zeros(1, iterations);
 
 for i = 1:iterations
 
-    s_values_array(i) = s_init_value;
+    s_values_array(i) = s_init_val;
 
     [g0_value, g1_value] = numeric_solver(mut_eqn_set(1), mut_eqn_set(2), mu, mu_val, s, s_init_val, h1, h1_val, h2, h2_val, h3, h3_val, a, a_val, g00, g01);
 
@@ -63,11 +63,11 @@ for i = 1:iterations
         end
     end
 
-    s_init_value = s_init_value + s_step_size;
+    s_init_val = s_init_val + s_step_size;
 
 end
 
-q_values_array = g0_values_array + g1_values_array;
+q_values_array = g0_values_array + (1/2)*g1_values_array;
 
 figure
 

@@ -88,7 +88,6 @@ figure
 
 scatter(s_values_array, q_values_array)
 xscale log
-yscale log
 title('Allele Frequency vs. Selection Coefficient')
 ylabel('q (ancestral allele frequency)')
 xlabel('s (selection coefficient)')
