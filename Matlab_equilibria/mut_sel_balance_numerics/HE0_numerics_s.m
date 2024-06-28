@@ -86,7 +86,7 @@ for i = 1:iterations
 
 end
 
-q_values_array = (2*g00_values_array + g01_values_array + g10_values_array)/2;
+q_values_array = (2*g00_values_array + g01_values_array + g10_values_array)/2; % should this be divided by 2 or 4 ???
 
 figure
 
