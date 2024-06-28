@@ -1,4 +1,15 @@
-% for the HE2 case under selection-mutation balance
+% for 2 HEs, numeric approximation of mut-sel balance for variable mu and s
+
+iterations = 20; % number of steps for both s and mu; generates iterations^2 data points
+
+h1_val = .25; % h1 dominance coefficient value, constant
+h2_val = .5; % h2 dominance coefficient value, constant
+h3_val = .75; % h3 dominance coefficient value, constant
+
+mu_init_val = 1e-6; % starting mu value
+mu_step_size = 1e-7; % size of change in mu for each iteration
+s_init_val = 1e-6; % starting mu value
+s_step_size = 3e-6; % size of change in s for each iteration
 
 syms g00 g01 g10 g11 s h1 h2 h3 mu
 
@@ -44,29 +55,21 @@ for i = 1:length(mut_eqn_set)
 
 end
 
-iterations = 20;
 
 g00_values_array = zeros(1, iterations^2);
 g01_values_array = zeros(1, iterations^2);
 s_values_array = zeros(1, iterations^2);
 mu_values_array = zeros(1, iterations^2);
 
-h1_val = .25;
-h2_val = .5;
-h3_val = .75;
-
-mu_init_val = 1e-6;
-mu_step_size = 1e-7;
-s_step_size = 3e-6;
 
 for i = 1:iterations
-    s_init_val = 1e-6;
+    s_current_val = s_init_val;
     for j = 1:iterations
     
-        s_values_array((i-1)*iterations+j) = s_init_val;
+        s_values_array((i-1)*iterations+j) = s_current_val;
         mu_values_array((i-1)*iterations+j) = mu_init_val;
 
-        [g00_value, g01_value] = numeric_solver(mut_eqn_set(1), mut_eqn_set(2), mu, mu_init_val, s, s_init_val, h1, h1_val, h2, h2_val, h3, h3_val, g00, g01);
+        [g00_value, g01_value] = numeric_solver(mut_eqn_set(1), mut_eqn_set(2), mu, mu_init_val, s, s_current_val, h1, h1_val, h2, h2_val, h3, h3_val, g00, g01);
 
 
         for k = 1:length(g00_value)
@@ -81,7 +84,7 @@ for i = 1:iterations
             end
         end
 
-        s_init_val = s_init_val + s_step_size;
+        s_current_val = s_current_val + s_step_size;
         
 
     end
