@@ -1,6 +1,6 @@
 % for autos, numerical approximation of mut-sel balance for constant mu and variable s
 
-iterations = 100; % number of steps or number of data points to generate
+iterations = 10; % number of steps or number of data points to generate
 
 s_init_val = 1e-6; % starting s value
 s_step_size = 5e-8; % size of change in s for each iteration
@@ -109,7 +109,7 @@ figure
 
 scatter(s_values_array, q_values_array)
 xscale log
-title('Allele Frequency vs. Selection Coefficient')
+title('Autos: Allele Frequency vs. Selection Coefficient')
 ylabel('q (ancestral allele frequency)')
 xlabel('s (selection coefficient)')
 

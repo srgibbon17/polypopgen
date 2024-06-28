@@ -1,6 +1,6 @@
 % for 2 HE allos, numerical approximation of mut-sel balance for constant mu and variable s
 
-iterations = 100; % number of steps or number of data points to generate
+iterations = 10; % number of steps or number of data points to generate
 
 s_init_val = 1e-7; % starting s value
 s_step_size = 1e-7; % size of change in s for each iteration
@@ -59,12 +59,13 @@ g00_values_array = zeros(1, iterations);
 g01_values_array = zeros(1, iterations);
 s_values_array = zeros(1, iterations);
 
+s_current_val = s_init_val;
 
 for i = 1:iterations
 
-    s_values_array(i) = s_init_val;
+    s_values_array(i) = s_current_val;
 
-    [g00_value, g01_value] = numeric_solver(mut_eqn_set(1), mut_eqn_set(2), mu, mu_val, s, s_init_val, h1, h1_val, h2, h2_val, h3, h3_val, g00, g01);
+    [g00_value, g01_value] = numeric_solver(mut_eqn_set(1), mut_eqn_set(2), mu, mu_val, s, s_current_val, h1, h1_val, h2, h2_val, h3, h3_val, g00, g01);
 
 
     for j = 1:length(g00_value)
@@ -79,28 +80,31 @@ for i = 1:iterations
         end
     end
 
-    s_init_val = s_init_val + s_step_size;
+    s_current_val = s_current_val + s_step_size;
 
 end
 
 q_values_array = g00_values_array + g01_values_array;
 
+iterations_str = strcat('# steps: ', string(iterations));
+s_init_str = strcat('initial s: ', string(s_init_val));
+s_step_size_str = strcat('s step-size: ',string(s_step_size));
+h1_str = strcat('h1: ',string(h1_val));
+h2_str = strcat('h2: ',string(h2_val));
+h3_str = strcat('h3: ',string(h3_val));
+mu_str = strcat('mu: ',string(mu_val));
+
+parameters_str = {'Parameters:', s_init_str, s_step_size_str, iterations_str, mu_str, h1_str, h2_str, h3_str};
+dim = [0.5 0.5 0.3 0.3];
+
 figure
 
 scatter(s_values_array, q_values_array)
 xscale log
-yscale log
-title('Allele Frequency vs. Selection Coefficient')
+title('HE2: Allele Frequency vs. Selection Coefficient')
 ylabel('q (ancestral allele frequency)')
 xlabel('s (selection coefficient)')
-
-%Y = solve(mut_eqn_set(1), mut_eqn_set(2), mut_eqn_set(4), s, 'ReturnConditions', true)
-
-%Y_2 = vpasolve([mut_eqn_set(1), mut_eqn_set(2), mut_eqn_set(4)], q, .01)
-%eqn5 = g00+g01+g10+g11 == 1; - used in simplifications above using subs()
-%eqn6 = g00+g01 == qa; - used in simplifications above using subs()
-%eqn7 = g00+g10 == qb; - used in simplifications above using subs()
-%eqn8 = g10 == g01; - used in simplifications above using subs()
+annotation('textbox', dim, 'String', parameters_str, 'FitBoxToText','on')
 
 function [g00_value, g01_value] = numeric_solver(mut_g00_eqn, mut_g01_eqn, mu, mut_value, s, sel_value, h1, h1_value, h2, h2_value, h3, h3_value, g00, g01)
 

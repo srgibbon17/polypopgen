@@ -1,6 +1,6 @@
 % for 0 HE allos, numerical approximation of mut-sel balance for variable mu and s
 
-iterations = 20; % number of steps for both s and mu; generates iterations^2 data points
+iterations = 5; % number of steps for both s and mu; generates iterations^2 data points
 
 h1_val = .25; % h1 dominance coefficient value, constant
 h2_val = .5; % h2 dominance coefficient value, constant
@@ -59,15 +59,16 @@ g10_values_array = zeros(1, iterations^2);
 s_values_array = zeros(1, iterations^2);
 mu_values_array = zeros(1, iterations^2);
 
+mu_current_val = mu_init_val;
 
 for i = 1:iterations
     s_current_val = s_init_val;
     for j = 1:iterations
     
         s_values_array((i-1)*iterations+j) = s_current_val;
-        mu_values_array((i-1)*iterations+j) = mu_init_val;
+        mu_values_array((i-1)*iterations+j) = mu_current_val;
 
-        [g00_value, g01_value, g10_value] = numeric_solver(mut_eqn_set(1), mut_eqn_set(2), mut_eqn_set(3), mu, mu_init_val, s, s_current_val, h1, h1_val, h2, h2_val, h3, h3_val, g00, g01, g10);
+        [g00_value, g01_value, g10_value] = numeric_solver(mut_eqn_set(1), mut_eqn_set(2), mut_eqn_set(3), mu, mu_current_val, s, s_current_val, h1, h1_val, h2, h2_val, h3, h3_val, g00, g01, g10);
 
         for k = 1:length(g00_value)
             if g00_value(k) > 0 && g00_value(k) <= 1
@@ -90,22 +91,35 @@ for i = 1:iterations
         s_current_val = s_current_val + s_step_size;
         
     end
-    mu_init_val = mu_init_val + mu_step_size;
+    mu_current_val = mu_current_val + mu_step_size;
 end
 
 
 q_values_array = (2*g00_values_array + g01_values_array + g10_values_array)/2;
+
+iterations_str = strcat('# steps: ', string(iterations));
+s_init_str = strcat('initial s: ', string(s_init_val));
+s_step_size_str = strcat('s step-size: ',string(s_step_size));
+h1_str = strcat('h1: ',string(h1_val));
+h2_str = strcat('h2: ',string(h2_val));
+h3_str = strcat('h3: ',string(h3_val));
+mu_init_str = strcat('initial mu: ',string(mu_val));
+mu_step_size_str = strcat('mu step-size: ',string(mu_step_size));
+
+parameters_str = {'Parameters:', s_init_str, s_step_size_str, mu_init_str, mu_step_size_str, iterations_str, h1_str, h2_str, h3_str};
+dim = [0.5 0.5 0.3 0.3];
 
 figure
 
 scatter3(s_values_array, mu_values_array, q_values_array)
 
 xscale log
-
-title('Allele Frequency vs. Selection and Mutation')
+yscale log
+title('HE0: Allele Frequency vs. Selection and Mutation')
 zlabel('q (ancestral allele frequency)')
 ylabel('mu')
 xlabel('s (selection coefficient)')
+annotation('textbox', dim, 'String', parameters_str, 'FitBoxToText','on')
 
 
 function [g00_value, g01_value, g10_value] = numeric_solver(mut_g00_eqn, mut_g01_eqn, mut_g10_eqn, mu, mut_value, s, sel_value, h1, h1_value, h2, h2_value, h3, h3_value, g00, g01, g10)
