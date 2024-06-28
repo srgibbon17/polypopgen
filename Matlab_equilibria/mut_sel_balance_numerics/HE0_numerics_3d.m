@@ -66,19 +66,19 @@ for i = 1:iterations
         [g00_value, g01_value, g10_value] = numeric_solver(mut_eqn_set(1), mut_eqn_set(2), mut_eqn_set(3), mu, mu_init_val, s, s_init_val, h1, h1_val, h2, h2_val, h3, h3_val, g00, g01, g10);
 
         for k = 1:length(g00_value)
-            if g00_value(k) ~= 0
+            if g00_value(k) > 0 && g00_value(k) <= 1
                 g00_values_array((i-1)*iterations+j) = g00_value(k);
             end
         end
 
         for k = 1:length(g01_value)
-            if g01_value(k) ~= 0
+            if g01_value(k) > 0 && g01_value(k) <= 1
                 g01_values_array((i-1)*iterations+j) = g01_value(k);
             end
         end
 
         for k = 1:length(g10_value)
-            if g10_value(k) ~= 0
+            if g10_value(k) > 0 && g10_value(k) <= 1
                 g10_values_array((i-1)*iterations+j) = g10_value(k);
             end
         end

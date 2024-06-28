@@ -56,13 +56,13 @@ for i = 1:iterations
 
 
         for k = 1:length(g0_value)
-            if g0_value(k) ~= 0
+            if g0_value(k) > 0 && g0_value(k) <= 1
                 g0_values_array((i-1)*iterations+j) = g0_value(k);
             end
         end
 
         for k = 1:length(g1_value)
-            if g1_value(k) ~= 0
+            if g1_value(k) > 0 && g1_value(k) <= 1
                 g1_values_array((i-1)*iterations+j) = g1_value(k);
             end
         end

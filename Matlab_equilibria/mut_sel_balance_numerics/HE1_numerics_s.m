@@ -67,13 +67,13 @@ for i = 1:iterations
 
 
     for j = 1:length(g00_value)
-        if g00_value(j) ~= 0
+        if g00_value(j) > 0 && g00_value(j) <= 1
             g00_values_array(i) = g00_value(j);
         end
     end
 
     for j = 1:length(g01_value)
-        if g01_value(j) ~= 0
+        if g01_value(j) > 0 && g01_value(j) <= 1
             g01_values_array(i) = g01_value(j);
         end
     end

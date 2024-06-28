@@ -42,7 +42,7 @@ end
 
 iterations = 10;
 
-s_init_val = 1e-5;
+s_init_val = 1e-7;
 s_step_size = 1e-7;
 
 mu_val = 1e-6;
@@ -64,19 +64,19 @@ for i = 1:iterations
 
 
     for j = 1:length(g00_value)
-        if g00_value(j) ~= 0
+        if g00_value(j) > 0 && g00_value(j) <= 1
             g00_values_array(i) = g00_value(j);
         end
     end
 
     for j = 1:length(g01_value)
-        if g01_value(j) ~= 0
+        if g01_value(j) > 0 && g01_value(j) <= 1
             g01_values_array(i) = g01_value(j);
         end
     end
 
     for j = 1:length(g10_value)
-        if g10_value(j) ~= 0
+        if g10_value(j) > 0 && g10_value(j) <= 1
             g10_values_array(i) = g10_value(j);
         end
     end

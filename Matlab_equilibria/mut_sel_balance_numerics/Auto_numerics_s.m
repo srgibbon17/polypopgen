@@ -29,10 +29,10 @@ for i = 1:length(mut_eqn_set)
     mut_eqn_set(i) = subs(mut_eqn_set(i), g2, (1-g1-g0));
 end
 
-iterations = 10;
+iterations = 100;
 
 s_init_val = 1e-5;
-s_step_size = 1e-7;
+s_step_size = 1e-6;
 h1_val = .25;
 h2_val = .5;
 h3_val = .75;
@@ -48,17 +48,17 @@ for i = 1:iterations
 
     s_values_array(i) = s_init_val;
 
-    [g0_value, g1_value] = numeric_solver(mut_eqn_set(1), mut_eqn_set(2), mu, mu_val, s, s_init_val, h1, h1_val, h2, h2_val, h3, h3_val, a, a_val, g00, g01);
+    [g0_value, g1_value] = numeric_solver(mut_eqn_set(1), mut_eqn_set(2), mu, mu_val, s, s_init_val, h1, h1_val, h2, h2_val, h3, h3_val, a, a_val, g0, g1);
 
 
-    for j = 1:length(g00_value)
-        if g0_value(j) ~= 0
+    for j = 1:length(g0_value)
+        if g0_value(j) > 0 && g0_value(j)<=1
             g0_values_array(i) = g0_value(j);
         end
     end
 
     for j = 1:length(g1_value)
-        if g1_value(j) ~= 0
+        if g1_value(j) > 0 && g1_value(j)<=1
             g1_values_array(i) = g1_value(j);
         end
     end
