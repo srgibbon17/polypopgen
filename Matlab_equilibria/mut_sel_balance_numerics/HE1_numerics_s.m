@@ -44,7 +44,7 @@ for i = 1:length(mut_eqn_set)
 
 end
 
-iterations = 10000;
+iterations = 100;
 
 s_init_val = 1e-7;
 s_step_size = 1e-7;
