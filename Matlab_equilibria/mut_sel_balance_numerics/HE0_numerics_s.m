@@ -42,7 +42,7 @@ end
 
 iterations = 10;
 
-s_init_val = 1e-7;
+s_init_val = 1e-5;
 s_step_size = 1e-7;
 
 mu_val = 1e-6;
