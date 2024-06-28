@@ -75,12 +75,12 @@ g2_values_array = g2_values_array - g0_values_array - g1_values_array;
 
 iterations_str = tostring(iterations);
 s_init_str = tostring(s_init_val);
-s_step_size_str = tostring(s_step_size);
-h1_str = tostring(h1_val);
-h2_str = tostring(h2_val);
-h3_str = tostring(h3_val);
-mu_str = tostring(mu_val);
-a_str = tostring(a_val);
+stostring(s_step_size);
+tostring(h1_val);
+tostring(h2_val);
+tostring(h3_val);
+tostring(mu_val);
+tostring(a_val);
 
 
 figure
