@@ -31,24 +31,25 @@ end
 
 iterations = 100;
 
-s_init_val = 1e-5;
-s_step_size = 1e-6;
+s_init_val = 1e-6;
+s_step_size = 5e-8;
 h1_val = .25;
 h2_val = .5;
 h3_val = .75;
-mu_val = 1e-3;
+mu_val = 1e-6;
 a_val = 0;
 
+g2_values_array = ones(1, iterations);
 g0_values_array = zeros(1, iterations);
 g1_values_array = zeros(1, iterations);
 s_values_array = zeros(1, iterations);
-
+s_current_val = s_init_val;
 
 for i = 1:iterations
 
-    s_values_array(i) = s_init_val;
+    s_values_array(i) = s_current_val;
 
-    [g0_value, g1_value] = numeric_solver(mut_eqn_set(1), mut_eqn_set(2), mu, mu_val, s, s_init_val, h1, h1_val, h2, h2_val, h3, h3_val, a, a_val, g0, g1);
+    [g0_value, g1_value] = numeric_solver(mut_eqn_set(1), mut_eqn_set(2), mu, mu_val, s, s_current_val, h1, h1_val, h2, h2_val, h3, h3_val, a, a_val, g0, g1);
 
 
     for j = 1:length(g0_value)
@@ -63,42 +64,41 @@ for i = 1:iterations
         end
     end
 
-    s_init_val = s_init_val + s_step_size;
+    s_current_val = s_current_val + s_step_size;
 
 end
 
 q_values_array = g0_values_array + (1/2)*g1_values_array;
 
-g2_values_array = ones(1, iterations);
-
 g2_values_array = g2_values_array - g0_values_array - g1_values_array;
 
-iterations_str = tostring(iterations);
-s_init_str = tostring(s_init_val);
-s_step_size_str = tostring(s_step_size);
-h1_str = tostring(h1_val);
-h2_str = tostring(h2_val);
-h3_str = tostring(h3_val);
-mu_str = tostring(mu_val);
-a_str = tostring(a_val);
+iterations_str = strcat('# steps: ', string(iterations));
+s_init_str = strcat('initial s: ', string(s_init_val));
+s_step_size_str = strcat('s step-size: ',string(s_step_size));
+h1_str = strcat('h1: ',string(h1_val));
+h2_str = strcat('h2: ',string(h2_val));
+h3_str = strcat('h3: ',string(h3_val));
+mu_str = strcat('mu: ',string(mu_val));
+a_str = strcat('alpha: ',string(a_val));
 
+parameters_str = {'Parameters:', s_init_str, s_step_size_str, iterations_str, mu_str, h1_str, h2_str, h3_str, a_str};
+dim = [0.5 0.5 0.3 0.3];
 
 figure
 
 scatter(s_values_array, q_values_array)
 xscale log
-yscale log
 title('Allele Frequency vs. Selection Coefficient')
 ylabel('q (ancestral allele frequency)')
 xlabel('s (selection coefficient)')
 
 figure
 title('Gamete Equilibria vs. s')
+annotation('textbox', dim, 'String', parameters_str, 'FitBoxToText','on')
 
 subplot(1, 3, 1)
 scatter(s_values_array, g0_values_array)
 xscale log
-yscale log
 title('g0 vs. s')
 xlabel('s')
 ylabel('g0')
@@ -106,7 +106,6 @@ ylabel('g0')
 subplot(1, 3, 2)
 scatter(s_values_array, g1_values_array)
 xscale log
-yscale log
 title('g1 vs. s')
 xlabel('s')
 ylabel('g1')
@@ -114,7 +113,6 @@ ylabel('g1')
 subplot(1, 3, 3)
 scatter(s_values_array, g2_values_array)
 xscale log
-yscale log
 title('g2 vs. s')
 xlabel('s')
 ylabel('g2')
