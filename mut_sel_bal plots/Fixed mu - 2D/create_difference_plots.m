@@ -26,34 +26,34 @@ delta_HE2_HE1 = y_HE2 - y_HE1;
 delta_HE2_HE0 = y_HE2 - y_HE0;
 delta_HE1_HE0 = y_HE1 - y_HE0;
 
-delta_delta = delta_HE2_HE1 - delta_HE1_HE0;
+delta_delta = - delta_HE2_HE1 + delta_HE1_HE0;
 
 figure
 
 title('Change in q across HEs')
 ylabel('q (ancestral allele frequency)')
 
-subplot(1, 4, 1)
+subplot(1, 3, 1)
 scatter(x_HE2, delta_HE2_HE1);
 xscale log
 yscale log
 title('HE2 - HE1')
 
 
-subplot(1, 4, 2)
+subplot(1, 3, 2)
 scatter(x_HE2, delta_HE1_HE0)
 xscale log
 yscale log
 title('HE1 - HE0')
 
-subplot(1, 4, 3)
+subplot(1, 3, 3)
 scatter(x_HE2, delta_HE2_HE0)
 xscale log
 yscale log
 title('HE2 - HE0')
 
-subplot(1, 4, 4)
-scatter(x_HE2, delta_delta)
-xscale log
-yscale log
-title('Difference of differences')
+%subplot(1, 4, 4)
+%scatter(x_HE2, delta_delta)
+%xscale log
+%yscale log
+%title('Difference of differences')
