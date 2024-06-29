@@ -1,20 +1,20 @@
-%fig_HE2 = openfig("HE2 fixed mu.fig", 'invisible');
+fig_HE2 = openfig("HE2 fixed mu zoomed.fig", 'invisible');
 
-%axes_HE2 = fig_HE2.Children;
-%data_HE2 = axes_HE2.Children;
+axes_HE2 = fig_HE2.Children;
+data_HE2 = axes_HE2.Children;
 
-%x_HE2 = data_HE2.XData;
-%y_HE2 = data_HE2.YData;
+x_HE2 = data_HE2.XData;
+y_HE2 = data_HE2.YData;
 
-%fig_HE1 = openfig("HE1 fixed mu.fig", 'invisible');
+fig_HE1 = openfig("HE1 fixed mu zoomed.fig", 'invisible');
 
-%axes_HE1 = fig_HE1.Children;
-%data_HE1 = axes_HE1.Children;
+axes_HE1 = fig_HE1.Children;
+data_HE1 = axes_HE1.Children;
 
-%x_HE1 = data_HE1.XData;
-%y_HE1 = data_HE1.YData;
+x_HE1 = data_HE1.XData;
+y_HE1 = data_HE1.YData;
 
-fig_HE0 = openfig("HE0 fixed mu.fig", 'invisible');
+fig_HE0 = openfig("HE0 fixed mu zoomed.fig", 'invisible');
 
 axes_HE0 = fig_HE0.Children;
 data_HE0 = axes_HE0.Children;

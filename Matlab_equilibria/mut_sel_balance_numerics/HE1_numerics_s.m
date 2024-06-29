@@ -1,6 +1,6 @@
 % for 1 HE allos, numerical approximation of mut-sel balance for constant mu and variable s
 
-iterations = 10; % number of steps or number of data points to generate
+iterations = 1000; % number of steps or number of data points to generate
 
 s_init_val = 1e-7; % starting s value
 s_step_size = 1e-7; % size of change in s for each iteration

@@ -1,6 +1,6 @@
 % for autos, numerical approximation of mut-sel balance for variable mu and s
 
-iterations = 5; % number of steps for both s and mu; generates iterations^2 data points
+iterations = 30; % number of steps for both s and mu; generates iterations^2 data points
 
 h1_val = .25; % h1 dominance coefficient value, constant
 h2_val = .5; % h2 dominance coefficient value, constant
@@ -8,10 +8,9 @@ h3_val = .75; % h3 dominance coefficient value, constant
 
 a_val = 0; % constant value of alpha (double reduction rate)
 mu_init_val = 1e-6; % starting mu value
-mu_step_size = 1e-7; % size of change in mu for each iteration
-s_init_val = 1e-6; % starting mu value
-s_step_size = 3e-6; % size of change in s for each iteration
-
+mu_step_size = 5e-7; % size of change in mu for each iteration
+s_init_val = 3e-6; % starting mu value
+s_step_size = 1e-8; % size of change in s for each iteration
 
 syms a s q G0 G1 G2 G3 G4 g0 g1 g2 h1 h2 h3 mu 
 
