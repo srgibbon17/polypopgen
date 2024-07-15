@@ -97,11 +97,11 @@ for i = 1:length(g00_value)
 
     [eigenvectors, eigenvalues] = eig(jacobian_eval);
 
-    %g00_input_values = 0:1/(iterations-1):1;
-    %g01_input_values = 0:1/(iterations-1):1;
+    g00_input_values = 0:1/(iterations-1):1;
+    g01_input_values = 0:1/(iterations-1):1;
 
-    g00_input_values = (g00_value(i)-.01):.02/(iterations-1):(g00_value(i)+.01);
-    g01_input_values = (g01_value(i)-.01):.02/(iterations-1):(g01_value(i)+.01);
+    %g00_input_values = (g00_value(i)-.01):.02/(iterations-1):(g00_value(i)+.01);
+    %g01_input_values = (g01_value(i)-.01):.02/(iterations-1):(g01_value(i)+.01);
 
     [g00_indexing_values, g01_indexing_values] = meshgrid(g00_input_values, g01_input_values);
 
