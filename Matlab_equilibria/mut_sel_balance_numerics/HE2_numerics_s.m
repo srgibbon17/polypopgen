@@ -51,7 +51,7 @@ for i = 1:length(mut_eqn_set)
 
     % removes g10 from the equation using g01 = g10
     mut_eqn_set(i) = subs(mut_eqn_set(i), g10, g01);
-
+    
 end
 
 
