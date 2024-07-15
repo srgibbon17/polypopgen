@@ -1,12 +1,12 @@
 % for autos, numerical approximation of mut-sel balance for constant mu and variable s
 
-iterations = 10; % number of steps or number of data points to generate
+iterations = 100; % number of steps or number of data points to generate
 
-s_init_val = 1e-6; % starting s value
-s_step_size = 5e-8; % size of change in s for each iteration
+s_init_val = 5e-6; % starting s value
+s_step_size = 1e-6; % size of change in s for each iteration
 
 mu_val = 1e-6; % constant value of mutation rate
-a_val = 0; % constant value of alpha (double reduction rate)
+a_val = 8/48; % constant value of alpha (double reduction rate)
 
 h1_val = .25; % h1 dominance coefficient value, constant
 h2_val = .5; % h2 dominance coefficient value, constant
@@ -76,11 +76,6 @@ for i = 1:iterations
     for j = 1:length(g0_value)
         if g0_value(j) > 0 && g0_value(j)<=1
             g0_values_array(i) = g0_value(j);
-        end
-    end
-
-    for j = 1:length(g1_value)
-        if g1_value(j) > 0 && g1_value(j)<=1
             g1_values_array(i) = g1_value(j);
         end
     end
@@ -112,6 +107,7 @@ xscale log
 title('Autos: Allele Frequency vs. Selection Coefficient')
 ylabel('q (ancestral allele frequency)')
 xlabel('s (selection coefficient)')
+annotation('textbox', dim, 'String', parameters_str, 'FitBoxToText','on')
 
 figure
 title('Gamete Equilibria vs. s')

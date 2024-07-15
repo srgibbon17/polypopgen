@@ -1,16 +1,16 @@
 % for autos, numerical approximation of mut-sel balance for variable mu and s
 
-iterations = 30; % number of steps for both s and mu; generates iterations^2 data points
+iterations = 25; % number of steps for both s and mu; generates iterations^2 data points
 
-h1_val = .25; % h1 dominance coefficient value, constant
-h2_val = .5; % h2 dominance coefficient value, constant
-h3_val = .75; % h3 dominance coefficient value, constant
+h1_val = 0; % h1 dominance coefficient value, constant
+h2_val = 0; % h2 dominance coefficient value, constant
+h3_val = 0; % h3 dominance coefficient value, constant
 
-a_val = 0; % constant value of alpha (double reduction rate)
-mu_init_val = 1e-6; % starting mu value
-mu_step_size = 5e-7; % size of change in mu for each iteration
-s_init_val = 3e-6; % starting mu value
-s_step_size = 1e-8; % size of change in s for each iteration
+a_val = 1/6; % constant value of alpha (double reduction rate)
+mu_init_val = 1e-7; % starting mu value
+mu_step_size = 1e-7; % size of change in mu for each iteration
+s_init_val = 1e-6; % starting mu value
+s_step_size = 8e-8; % size of change in s for each iteration
 
 syms a s q G0 G1 G2 G3 G4 g0 g1 g2 h1 h2 h3 mu 
 
@@ -79,11 +79,6 @@ for i = 1:iterations
         for k = 1:length(g0_value)
             if g0_value(k) > 0 && g0_value(k) <= 1
                 g0_values_array((i-1)*iterations+j) = g0_value(k);
-            end
-        end
-
-        for k = 1:length(g1_value)
-            if g1_value(k) > 0 && g1_value(k) <= 1
                 g1_values_array((i-1)*iterations+j) = g1_value(k);
             end
         end
@@ -108,6 +103,7 @@ a_str = strcat('alpha: ',string(a_val));
 
 parameters_str = {'Parameters:', s_init_str, s_step_size_str, mu_init_str, mu_step_size_str, iterations_str, h1_str, h2_str, h3_str, a_str};
 dim = [0.5 0.5 0.3 0.3];
+
 
 figure
 

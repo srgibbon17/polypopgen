@@ -1,14 +1,14 @@
 % for 1 HE allos, numerical approximation of mut-sel balance for constant mu and variable s
 
-iterations = 1000; % number of steps or number of data points to generate
+iterations = 100; % number of steps or number of data points to generate
 
 s_init_val = 1e-7; % starting s value
 s_step_size = 1e-7; % size of change in s for each iteration
 
 mu_val = 1e-6; % constant value of mutation rate
-h1_val = .25; % h1 dominance coefficient value, constant
-h2_val = .5; % h2 dominance coefficient value, constant
-h3_val = .75; % h3 dominance coefficient value, constant
+h1_val = .0; % h1 dominance coefficient value, constant
+h2_val = .0; % h2 dominance coefficient value, constant
+h3_val = .0; % h3 dominance coefficient value, constant
 
 syms g00 g01 g10 g11 s h1 h2 h3 mu
 
@@ -98,7 +98,7 @@ dim = [0.5 0.5 0.3 0.3];
 
 figure
 
-scatter(s_values_array, q_values_array)
+scatter(s_values_array, q_values_array, 'filled')
 xscale log
 title('HE1: Allele Frequency vs. Selection Coefficient')
 ylabel('q (ancestral allele frequency)')

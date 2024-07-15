@@ -50,7 +50,7 @@ for i = 1:length(mut_eqn_set)
     %mut_eqn_set(i) = subs(mut_eqn_set(i), g11, (p^2 + D));
     
     % removes g00 from the equation using the relationship that q = g10 + g00 (implicitly that g10 = g01)
-    mut_eqn_set(i) = subs(mut_eqn_set(i), g00, q-g10);
+    %mut_eqn_set(i) = subs(mut_eqn_set(i), g00, q-g10);
     %mut_eqn_set(i) = subs(mut_eqn_set(i), g00, (q^2 + D));
     
     % removes g10 from the equation using g01 = g10
@@ -58,7 +58,7 @@ for i = 1:length(mut_eqn_set)
     %mut_eqn_set(i) = subs(mut_eqn_set(i), g10, g01);
     
     % removes g01 from the equation using above expression (ld_5) for D
-    mut_eqn_set(i) = subs(mut_eqn_set(i), g01, -q^2 + q - D);
+    %mut_eqn_set(i) = subs(mut_eqn_set(i), g01, -q^2 + q - D);
     %mut_eqn_set(i) = subs(mut_eqn_set(i), g01, (p*q + D));
 end
 

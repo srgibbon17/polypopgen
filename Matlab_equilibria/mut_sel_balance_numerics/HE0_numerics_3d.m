@@ -1,6 +1,6 @@
 % for 0 HE allos, numerical approximation of mut-sel balance for variable mu and s
 
-iterations = 5; % number of steps for both s and mu; generates iterations^2 data points
+iterations = 30; % number of steps for both s and mu; generates iterations^2 data points
 
 h1_val = .25; % h1 dominance coefficient value, constant
 h2_val = .5; % h2 dominance coefficient value, constant
@@ -73,17 +73,7 @@ for i = 1:iterations
         for k = 1:length(g00_value)
             if g00_value(k) > 0 && g00_value(k) <= 1
                 g00_values_array((i-1)*iterations+j) = g00_value(k);
-            end
-        end
-
-        for k = 1:length(g01_value)
-            if g01_value(k) > 0 && g01_value(k) <= 1
                 g01_values_array((i-1)*iterations+j) = g01_value(k);
-            end
-        end
-
-        for k = 1:length(g10_value)
-            if g10_value(k) > 0 && g10_value(k) <= 1
                 g10_values_array((i-1)*iterations+j) = g10_value(k);
             end
         end
@@ -103,7 +93,7 @@ s_step_size_str = strcat('s step-size: ',string(s_step_size));
 h1_str = strcat('h1: ',string(h1_val));
 h2_str = strcat('h2: ',string(h2_val));
 h3_str = strcat('h3: ',string(h3_val));
-mu_init_str = strcat('initial mu: ',string(mu_val));
+mu_init_str = strcat('initial mu: ',string(mu_init_val));
 mu_step_size_str = strcat('mu step-size: ',string(mu_step_size));
 
 parameters_str = {'Parameters:', s_init_str, s_step_size_str, mu_init_str, mu_step_size_str, iterations_str, h1_str, h2_str, h3_str};
