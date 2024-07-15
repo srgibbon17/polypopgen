@@ -1,8 +1,8 @@
 % for 2 HE allos, numerical approximation of mut-sel balance for constant mu and variable s
 
-iterations = 100; % number of steps or number of data points to generate
+iterations = 10; % number of steps or number of data points to generate
 
-s_init_val = 1e-7; % starting s value
+s_init_val = 5e-5; % starting s value
 s_step_size = 1e-7; % size of change in s for each iteration
 
 mu_val = 1e-6; % constant value of mutation rate
@@ -69,13 +69,8 @@ for i = 1:iterations
 
 
     for j = 1:length(g00_value)
-        if g00_value(j) > 0 && g00_value(j) <= 1
+        if g00_value(j) == max(g00_value)
             g00_values_array(i) = g00_value(j);
-        end
-    end
-
-    for j = 1:length(g01_value)
-        if g01_value(j) > 0 && g01_value(j) <= 1
             g01_values_array(i) = g01_value(j);
         end
     end
