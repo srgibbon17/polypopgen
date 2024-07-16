@@ -2,7 +2,7 @@
 
 iterations = 11; % number of steps or number of data points to generate
 
-s_init_val = 5e-5; % starting s value
+s_init_val = .8; % starting s value
 s_step_size = 1e-7; % size of change in s for each iteration
 
 mu_val = 1e-6; % constant value of mutation rate
@@ -12,7 +12,7 @@ h1_val = 1; % h1 dominance coefficient value, constant
 h2_val = 1; % h2 dominance coefficient value, constant
 h3_val = 1; % h3 dominance coefficient value, constant
 
-point_1 = [.08, .45];
+point_1 = [.3, .2];
 point_2 = [.4, .1];
 point_3 = [0, .5];
 point_4 = [.5, 0];
