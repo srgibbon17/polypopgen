@@ -1,4 +1,4 @@
-% for 1 HE allos, numerical approximation of mut-sel balance for variable mu and s
+% for 1 HE allos, creates a 3D plot of q values over variable s and mu
 
 iterations = 30; % number of steps for both s and mu; generates iterations^2 data points
 
@@ -53,9 +53,9 @@ for i = 1:length(mut_eqn_set)
 
     % removes g10 from the equation using g01 = g10
     mut_eqn_set(i) = subs(mut_eqn_set(i), g10, g01);
-
 end
 
+%creates arrays/matrices to store data
 g00_values_array = zeros(1, iterations^2);
 g01_values_array = zeros(1, iterations^2);
 s_values_array = zeros(1, iterations^2);
@@ -63,35 +63,40 @@ mu_values_array = zeros(1, iterations^2);
 
 mu_current_val = mu_init_val;
 
+%iterates through values of s and mu to find the stable fixed point
 for i = 1:iterations
     s_current_val = s_init_val;
     for j = 1:iterations
     
+        %stores the s and mu values in respective arrays
         s_values_array((i-1)*iterations+j) = s_current_val;
         mu_values_array((i-1)*iterations+j) = mu_current_val;
+        
+        %calls a numeric solving function to find all fixed points
         [g00_value, g01_value] = numeric_solver(mut_eqn_set(1), mut_eqn_set(2), mu, mu_current_val, s, s_current_val, h1, h1_val, h2, h2_val, h3, h3_val, g00, g01);
 
-
+        %selects the stable fixed point as being that with the largest g00
+        %value (this has not been formally proven, but has support from 
+        %both biological intuition and linear stability analysis
         for k = 1:length(g00_value)
-            if g00_value(k) > 0 && g00_value(k) <= 1
+            if g00_value(k) == max(g00_value)
                 g00_values_array((i-1)*iterations+j) = g00_value(k);
-            end
-        end
-
-        for k = 1:length(g01_value)
-            if g01_value(k) > 0 && g01_value(k) <= 1
                 g01_values_array((i-1)*iterations+j) = g01_value(k);
             end
         end
 
+        %increase s by the specified step size
         s_current_val = s_current_val + s_step_size;
 
     end
+    %increase mu by the specified step size
     mu_current_val = mu_current_val + mu_step_size;
 end
 
+%calculates the value of q using g00 and g01 values
 q_values_array = g00_values_array + g01_values_array;
 
+%creates strings of the input parameters to be put on the graphs
 iterations_str = strcat('# steps: ', string(iterations));
 s_init_str = strcat('initial s: ', string(s_init_val));
 s_step_size_str = strcat('s step-size: ',string(s_step_size));
@@ -104,7 +109,7 @@ mu_step_size_str = strcat('mu step-size: ',string(mu_step_size));
 parameters_str = {'Parameters:', s_init_str, s_step_size_str, mu_init_str, mu_step_size_str, iterations_str, h1_str, h2_str, h3_str};
 dim = [0.5 0.5 0.3 0.3];
 
-
+%plots a 3D figure of the stable q values over mu and s
 figure
 
 scatter3(s_values_array, mu_values_array, q_values_array)
@@ -117,14 +122,7 @@ ylabel('mu')
 xlabel('s (selection coefficient)')
 annotation('textbox', dim, 'String', parameters_str, 'FitBoxToText','on')
 
-%Y = solve(mut_eqn_set(1), mut_eqn_set(2), mut_eqn_set(4), s, 'ReturnConditions', true)
-
-%Y_2 = vpasolve([mut_eqn_set(1), mut_eqn_set(2), mut_eqn_set(4)], q, .01)
-%eqn5 = g00+g01+g10+g11 == 1; - used in simplifications above using subs()
-%eqn6 = g00+g01 == qa; - used in simplifications above using subs()
-%eqn7 = g00+g10 == qb; - used in simplifications above using subs()
-%eqn8 = g10 == g01; - used in simplifications above using subs()
-
+%function which uses vpasolve to evaluate the fixed points of the system
 function [g00_value, g01_value] = numeric_solver(mut_g00_eqn, mut_g01_eqn, mu, mut_value, s, sel_value, h1, h1_value, h2, h2_value, h3, h3_value, g00, g01)
     
     g00_eqn = subs(mut_g00_eqn, mu, mut_value);

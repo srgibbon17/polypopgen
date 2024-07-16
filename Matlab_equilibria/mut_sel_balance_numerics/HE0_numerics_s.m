@@ -1,4 +1,4 @@
-% for 0 HE allos, numerical approximation of mut-sel balance for constant mu and variable s
+% for 0 HE allos, creates a 2D plot of q values over variable s
 
 iterations = 1; % number of steps or number of data points to generate
 
@@ -50,7 +50,7 @@ for i = 1:length(mut_eqn_set)
     mut_eqn_set(i) = subs(mut_eqn_set(i), g11, 1-(g00+g01+g10));
 end
 
-
+%creates arrays/matrices to store data
 g00_values_array = zeros(1, iterations);
 g01_values_array = zeros(1, iterations);
 g10_values_array = zeros(1, iterations);
@@ -59,27 +59,35 @@ s_values_array = zeros(1, iterations);
 
 s_current_val = s_init_val;
 
+%iterates through values of s to find the stable fixed point
 for i = 1:iterations
 
+    %stores the s value in an array
     s_values_array(i) = s_current_val;
 
+    %calls a numeric solving function to find all fixed points
     [g00_value, g01_value, g10_value] = numeric_solver(mut_eqn_set(1), mut_eqn_set(2), mut_eqn_set(3), mu, mu_val, s, s_current_val, h1, h1_val, h2, h2_val, h3, h3_val, g00, g01, g10);
 
-    stable_eq = max(g00_value);
+    %selects the stable fixed point as being that with the largest g00
+    %value (this has not been formally proven, but has support from 
+    %both biological intuition and linear stability analysis
     for j = 1:length(g00_value)
-        if g00_value(j) == stable_eq  
+        if g00_value(j) == max(g00_value)
             g00_values_array(i) = g00_value(j);
             g01_values_array(i) = g01_value(j);
             g10_values_array(i) = g10_value(j);
         end
     end
 
+    %increase s by the specified step size
     s_current_val = s_current_val + s_step_size;
 
 end
 
+%calculates the value of q using g00, g01, and g10 values
 q_values_array = (2*g00_values_array + g01_values_array + g10_values_array)/2; 
 
+%creates strings of the input parameters to be put on the graphs
 iterations_str = strcat('# steps: ', string(iterations));
 s_init_str = strcat('initial s: ', string(s_init_val));
 s_step_size_str = strcat('s step-size: ',string(s_step_size));
@@ -91,6 +99,7 @@ mu_str = strcat('mu: ',string(mu_val));
 parameters_str = {'Parameters:', s_init_str, s_step_size_str, iterations_str, mu_str, h1_str, h2_str, h3_str};
 dim = [0.5 0.5 0.3 0.3];
 
+%plots a 2D figure of the stable q values over s
 figure
 
 scatter(s_values_array, q_values_array, 'filled')
@@ -100,7 +109,7 @@ ylabel('q (ancestral allele frequency)')
 xlabel('s (selection coefficient)')
 annotation('textbox', dim, 'String', parameters_str, 'FitBoxToText','on')
 
-
+%function which uses vpasolve to evaluate the fixed points of the system
 function [g00_value, g01_value, g10_value] = numeric_solver(mut_g00_eqn, mut_g01_eqn, mut_g10_eqn, mu, mut_value, s, sel_value, h1, h1_value, h2, h2_value, h3, h3_value, g00, g01, g10)
 
     g00_eqn = subs(mut_g00_eqn, mu, mut_value);

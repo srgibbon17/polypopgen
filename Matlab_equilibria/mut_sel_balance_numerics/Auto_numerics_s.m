@@ -1,12 +1,12 @@
 % for autos, creates a 2D plot of q values over variable s
 
-iterations = 10; % number of steps or number of data points to generate
+iterations = 1000; % number of steps or number of data points to generate
 
-s_init_val = 5e-6; % starting s value
-s_step_size = 1e-6; % size of change in s for each iteration
+s_init_val = 1e-7; % starting s value
+s_step_size = 1e-7; % size of change in s for each iteration
 
 mu_val = 1e-6; % constant value of mutation rate
-a_val = 0; % constant value of alpha (double reduction rate)
+a_val = 1/12; % constant value of alpha (double reduction rate)
 
 h1_val = 1; % h1 dominance coefficient value, constant
 h2_val = 1; % h2 dominance coefficient value, constant
@@ -68,7 +68,7 @@ g1_values_array = zeros(1, iterations);
 s_values_array = zeros(1, iterations);
 s_current_val = s_init_val;
 
-%iterates through values of s and mu to find the stable fixed point
+%iterates through values of s to find the stable fixed point
 for i = 1:iterations
 
     %stores the s value in an array

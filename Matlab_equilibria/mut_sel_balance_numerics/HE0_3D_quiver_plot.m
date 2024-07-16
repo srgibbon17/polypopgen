@@ -1,4 +1,7 @@
-% for 0 HE allos, numerical approximation of mut-sel balance for constant mu and variable s
+% for 0 HE allos, creates a 3D vector field in the g00, g01, g10 phase space
+
+%NOTE: Currently there is a bug such that only an upper triangle of the
+%vectors are being generated and plotted... not really sure why this is???
 
 iterations = 11; % number of steps or number of data points to generate
 
@@ -10,6 +13,7 @@ h1_val = .25; % h1 dominance coefficient value, constant
 h2_val = .5; % h2 dominance coefficient value, constant
 h3_val = .75; % h3 dominance coefficient value, constant
 
+%starting point for a trajectory in the phase plane
 point = [.4, .3, .3];
 
 syms g00 g01 g10 g11 s h1 h2 h3 mu
@@ -52,11 +56,14 @@ for i = 1:length(mut_eqn_set)
     mut_eqn_set(i) = subs(mut_eqn_set(i), g11, 1-(g00+g01+g10));
 end
 
-s_values_array = zeros(1, iterations);
-
 s_current_val = s_init_val;
 
+%initializes equations which are then used to calculate the vectors for the
+%quiver plot
 [g00_exp, g01_exp, g10_exp] = quiver_plot_init(mut_eqn_set(1), mut_eqn_set(2), mut_eqn_set(3), mu, mu_val, s, s_current_val, h1, h1_val, h2, h2_val, h3, h3_val);
+
+%%% sets the range of input values for g0 and g1
+%essentially defines the coordinate range for the vector field
 
 g00_input_values = 0:1/(iterations-1):1;
 g01_input_values = 0:1/(iterations-1):1;
@@ -65,14 +72,17 @@ g10_input_values = 0:1/(iterations-1):1;
 %g00_input_values = 0:.001/(iterations-1):.001;
 %g01_input_values = 0:.001/(iterations-1):.001;
 %g10_input_values = 0:.001/(iterations-1):.001;
+%%%
 
+%creates coordinate data for go and g1 using meshgrid
 [g00_indexing_values, g01_indexing_values, g10_indexing_values] = meshgrid(g00_input_values, g01_input_values, g10_input_values);
 
+%creates blank arrays which will store the vector values
 g00_vector_values = zeros(iterations, iterations, iterations);
 g01_vector_values = zeros(iterations, iterations, iterations);
 g10_vector_values = zeros(iterations, iterations, iterations);
 
-
+%calculates vectors by substituting in values of g00, g01, and g10
 for i = 1:iterations
     for j = i:iterations
         for k = i:iterations
@@ -84,8 +94,10 @@ for i = 1:iterations
     end
 end
 
+%calculates a stream which is used to plot a trajectory in the phase space
 streamline_data = stream3(g00_indexing_values, g01_indexing_values, g10_indexing_values, g00_vector_values, g01_vector_values, g10_vector_values, point(1), point(2), point(3));
 
+%creates the quiver plot using the vector and coordinate data
 figure
 quiver3(g00_indexing_values, g01_indexing_values, g10_indexing_values, g00_vector_values, g01_vector_values, g10_vector_values)
 streamline(streamline_data)
@@ -94,18 +106,8 @@ ylabel('g01')
 zlabel('g10')
 title('0 HEs: Phase Space Flow Diagram')
 
-% iterations_str = strcat('# steps: ', string(iterations));
-% s_init_str = strcat('initial s: ', string(s_init_val));
-% s_step_size_str = strcat('s step-size: ',string(s_step_size));
-% h1_str = strcat('h1: ',string(h1_val));
-% h2_str = strcat('h2: ',string(h2_val));
-% h3_str = strcat('h3: ',string(h3_val));
-% mu_str = strcat('mu: ',string(mu_val));
-% 
-% parameters_str = {'Parameters:', s_init_str, s_step_size_str, iterations_str, mu_str, h1_str, h2_str, h3_str};
-% dim = [0.5 0.5 0.3 0.3];
-
-
+%initializes the quiver plot by substituting in all of the parameter values
+%which are constant (i.e. s, mu, h1, h2, h3)
 function [g00_eqn, g01_eqn, g10_eqn] = quiver_plot_init(mut_g00_eqn, mut_g01_eqn, mut_g10_eqn, mu, mut_value, s, sel_value, h1, h1_value, h2, h2_value, h3, h3_value)
 
     g00_eqn = subs(mut_g00_eqn, mu, mut_value);
@@ -127,6 +129,8 @@ function [g00_eqn, g01_eqn, g10_eqn] = quiver_plot_init(mut_g00_eqn, mut_g01_eqn
     g10_eqn = subs(g10_eqn, h3, h3_value);
 end
 
+%generates vectors for the quiver plot by substituting the current values
+%of g00, g01, and g10
 function [g00_vector, g01_vector, g10_vector] = quiver_plot_vectors(g00_eqn, g01_eqn, g10_eqn, g00_value, g01_value, g10_value, g00, g01, g10)
 
     g00_vector = subs(g00_eqn, g00, g00_value);
