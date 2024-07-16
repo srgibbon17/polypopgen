@@ -1,19 +1,18 @@
-% for 2 HE allos, classification of fixed points using linear stability
+% for 1 HE allos, classification of fixed points using linear stability
 % analysis and the Jacobian matrix
 
 iterations = 11; % number of steps or number of data points to generate
 
-s_init_val = .1; % starting s value
+s_init_val = 1e-4; % starting s value
 
-mu_val = 1e-7; % constant value of mutation rate
+mu_val = 1e-6; % constant value of mutation rate
 h1_val = .25; % h1 dominance coefficient value, constant
 h2_val = .5; % h2 dominance coefficient value, constant
 h3_val = .75; % h3 dominance coefficient value, constant
 
-syms g00 g01 g10 g11 s h1 h2 h3 mu
+coord_range = .001; % sets range for vector field
 
-%sets the size of vector field near the fixed points
-coord_range = .0001;
+syms g00 g01 g10 g11 s h1 h2 h3 mu
 
 % assumptions on the parameters of the model; theoretical bounds
 assume(g00>=0 & g00<=1);
@@ -35,10 +34,10 @@ w3 = (1-s*h3)/wbar;
 w4 = (1-s)/wbar;
 
 % equations for selection
-sel_g00 = g00^2*w0+(9/8)*g00*g01*w1+(9/8)*g00*g10*w1+(1/4)*g01^2*w2+(1/4)*g10^2*w2+(1/2)*g01*g10*w2+(1/2)*g00*g11*w2+(1/8)*g01*g11*w3+(1/8)*g10*g11*w3;
-sel_g10 = (3/8)*g00*g01*w1+(3/8)*g00*g10*w1+(1/4)*g01^2*w2+(1/4)*g10^2*w2+(1/2)*g01*g10*w2+(1/2)*g00*g11*w2+(3/8)*g01*g11*w3+(3/8)*g10*g11*w3;
-sel_g01 = (3/8)*g00*g01*w1+(3/8)*g00*g10*w1+(1/4)*g01^2*w2+(1/4)*g10^2*w2+(1/2)*g01*g10*w2+(1/2)*g00*g11*w2+(3/8)*g01*g11*w3+(3/8)*g10*g11*w3;
-sel_g11 = (1/8)*g00*g01*w1+(1/8)*g00*g10*w1+(1/4)*g01^2*w2+(1/4)*g10^2*w2+(1/2)*g01*g10*w2+(1/2)*g00*g11*w2+(9/8)*g01*g11*w3+(9/8)*g10*g11*w3+g11^2*w4;
+sel_g00 = g00^2*w0+(17/16)*g00*g01*w1+(17/16)*g00*g10*w1+(3/16)*g01^2*w2+(3/16)*g10^2*w2+(7/16)*g01*g10*w2+(7/16)*g00*g11*w2+(1/16)*g01*g11*w3+(1/16)*g10*g11*w3;
+sel_g10 = (3/16)*g00*g01*w1+(11/16)*g00*g10*w1+(1/16)*g01^2*w2+(9/16)*g10^2*w2+(9/16)*g01*g10*w2+(9/16)*g00*g11*w2+(3/16)*g01*g11*w3+(11/16)*g10*g11*w3;
+sel_g01 = (11/16)*g00*g01*w1+(3/16)*g00*g10*w1+(9/16)*g01^2*w2+(1/16)*g10^2*w2+(9/16)*g01*g10*w2+(9/16)*g00*g11*w2+(11/16)*g01*g11*w3+(3/16)*g10*g11*w3;
+sel_g11 = (1/16)*g00*g01*w1+(1/16)*g00*g10*w1+(3/16)*g01^2*w2+(3/16)*g10^2*w2+(7/16)*g01*g10*w2+(7/16)*g00*g11*w2+(17/16)*g01*g11*w3+(17/16)*g10*g11*w3+g11^2*w4;
 
 % expressions for mutation
 mut_g00 = sel_g00*(1-mu)^2 - g00;
@@ -90,7 +89,7 @@ for i = 1:length(g00_value)
     if det_jac < 0
         disp(strcat(current_pt_str, " is a saddle point"))
     elseif det_jac == 0
-        disp(strcat(current_pt_str, " is non-isolated"))
+        ddisp(strcat(current_pt_str, " is non-isolated"))
     elseif det_jac > 0
         if trace_jac == 0
             disp(strcat(current_pt_str, " is a center"))
@@ -108,7 +107,7 @@ for i = 1:length(g00_value)
     end
 
     %computes the eigenvectors and values of the jacobian
-    [eigenvectors, eigenvalues] = eig(jacobian_eval)
+    [eigenvectors, eigenvalues] = eig(jacobian_eval);
 
     %g00_input_values = 0:1/(iterations-1):1;
     %g01_input_values = 0:1/(iterations-1):1;
@@ -138,7 +137,8 @@ for i = 1:length(g00_value)
     
     quiver(g00_indexing_values, g01_indexing_values, g00_vector_values, g01_vector_values)
     hold on
-    plot(g00_value(i), g01_value(i), '.', 'MarkerSize', 15)
+    plot(g00_value(i), g01_value(i), '.', 'MarkerSize', 10)
+
     for j = 1:length(eigenvectors)
         slope = eigenvectors(j, 2)/eigenvectors(j, 1);
         x = linspace(g00_value(i)-coord_range, g00_value(i)+coord_range, 50);
@@ -146,8 +146,7 @@ for i = 1:length(g00_value)
         plot(x, y);
     end
 
-
-    title('2HEs: Phase Space Flow Diagram')
+    title('1HE: Phase Space Flow Diagram')
     xlabel('g00 value')
     ylabel('g01 value')
 end

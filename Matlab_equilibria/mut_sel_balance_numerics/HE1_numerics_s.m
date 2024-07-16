@@ -109,6 +109,17 @@ ylabel('q (ancestral allele frequency)')
 xlabel('s (selection coefficient)')
 annotation('textbox', dim, 'String', parameters_str, 'FitBoxToText','on')
 
+%plots a 2D figure of the stable q values over s
+figure
+
+plot(s_values_array, q_values_array)
+xscale log
+title('HE1: Allele Frequency vs. Selection Coefficient')
+ylabel('q (ancestral allele frequency)')
+xlabel('s (selection coefficient)')
+annotation('textbox', dim, 'String', parameters_str, 'FitBoxToText','on')
+
+
 %function which uses vpasolve to evaluate the fixed points of the system
 function [g00_value, g01_value] = numeric_solver(mut_g00_eqn, mut_g01_eqn, mu, mut_value, s, sel_value, h1, h1_value, h2, h2_value, h3, h3_value, g00, g01)
 

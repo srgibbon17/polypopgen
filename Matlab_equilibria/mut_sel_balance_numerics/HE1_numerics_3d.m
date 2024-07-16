@@ -1,6 +1,6 @@
 % for 1 HE allos, creates a 3D plot of q values over variable s and mu
 
-iterations = 30; % number of steps for both s and mu; generates iterations^2 data points
+iterations = 15; % number of steps for both s and mu; generates iterations^2 data points
 
 h1_val = .25; % h1 dominance coefficient value, constant
 h2_val = .5; % h2 dominance coefficient value, constant
