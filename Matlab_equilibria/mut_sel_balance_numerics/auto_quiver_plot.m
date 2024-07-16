@@ -1,4 +1,4 @@
-% for autos, numerical approximation of mut-sel balance for constant mu and variable s
+% for autos, creates a vector field in the g0, g1 phase plane
 
 iterations = 11; % number of steps or number of data points to generate
 
@@ -58,6 +58,7 @@ mut_g2 = sel_meiosis_g0*mu^2 + sel_meiosis_g1*mu + sel_meiosis_g2 - g2;
 
 mut_eqn_set = [mut_g0, mut_g1, mut_g2];
 
+%substituing genotypes for gametes and removing g2 using g0+g1+g2 = 1
 for i = 1:length(mut_eqn_set)
     mut_eqn_set(i) = subs(mut_eqn_set(i), G0, g0^2);
     mut_eqn_set(i) = subs(mut_eqn_set(i), G1, 2*g0*g1);
@@ -69,16 +70,25 @@ end
 
 s_current_val = s_init_val;
 
+%initializes equations which are then used to calculate the vectors for the
+%quiver plot
 [g0_eqn, g1_eqn] = quiver_plot_init(mut_eqn_set(1), mut_eqn_set(2), mu, mu_val, s, s_current_val, h1, h1_val, h2, h2_val, h3, h3_val, a, a_val);
 
+%finds all fixed points of the system
 [g0_value, g1_value] = numeric_solver(mut_eqn_set(1), mut_eqn_set(2), mu, mu_val, s, s_current_val, h1, h1_val, h2, h2_val, h3, h3_val, a, a_val, g0, g1);
 
+%selects the stable fixed point as being that with the largest g00
+%value (this has not been formally proven, but has support from 
+%both biological intuition and linear stability analysis
 for j = 1:length(g0_value)
     if g0_value(j) > 0 && g0_value(j)<=1
         g0_value_eq= g0_value(j);
         g1_value_eq = g1_value(j);
     end
 end
+
+%%% sets the range of input values for g0 and g1
+%essentially defines the coordinate range for the vector field
 
 %g0_input_values = (g0_value_eq-.0001):(.0002/(iterations-1)):(g0_value_eq+.0001);
 %g1_input_values = (g1_value_eq-.0001):(.0002/(iterations-1)):(g1_value_eq+.0001);
@@ -88,13 +98,17 @@ g1_input_values = 0:1/(iterations-1):1;
 
 %g0_input_values = 0:.0001/(iterations-1):.0001;
 %g1_input_values = 0:.001/(iterations-1):.001;
+%%%
 
+
+%creates coordinate data for go and g1 using meshgrid
 [g0_indexing_values, g1_indexing_values] = meshgrid(g0_input_values, g1_input_values);
 
+%creates blank arrays which will store the vector values
 g0_vector_values = zeros(iterations, iterations);
 g1_vector_values = zeros(iterations, iterations);
 
-
+%calculates vectors by substituting in values of g0 and g1
 for i = 1:iterations
     for j = 1:iterations
         [g0_vector, g1_vector] = quiver_plot_vectors(g0_eqn, g1_eqn, g0_indexing_values(i, j), g1_indexing_values(i, j), g0, g1);
@@ -103,6 +117,7 @@ for i = 1:iterations
     end
 end
 
+%calculates streams which are used to plot trajectories in the phase plane
 stream_1 = stream2(g0_indexing_values, g1_indexing_values, g0_vector_values, g1_vector_values, point_1(1), point_1(2), [0.01, 1000000]);
 % stream_2 = stream2(g0_indexing_values, g1_indexing_values, g0_vector_values, g1_vector_values, point_2(1), point_2(2), [0.01, 1000000]);
 % stream_3 = stream2(g0_indexing_values, g1_indexing_values, g0_vector_values, g1_vector_values, point_3(1), point_3(2), [0.01, 1000000]);
@@ -110,7 +125,7 @@ stream_1 = stream2(g0_indexing_values, g1_indexing_values, g0_vector_values, g1_
 % stream_5 = stream2(g0_indexing_values, g1_indexing_values, g0_vector_values, g1_vector_values, point_5(1), point_5(2), [0.01, 1000000]);
 % stream_6 = stream2(g0_indexing_values, g1_indexing_values, g0_vector_values, g1_vector_values, point_6(1), point_6(2), [0.01, 1000000]);
 
-
+%creates the quiver plot using the vector and coordinate data
 figure
 
 quiver(g0_indexing_values, g1_indexing_values, g0_vector_values, g1_vector_values)
@@ -120,87 +135,7 @@ ylabel('g1 value')
 xlabel('g0 value')
 
 
-% g2_values_array = ones(1, iterations);
-% g0_values_array = zeros(1, iterations);
-% g1_values_array = zeros(1, iterations);
-% s_values_array = zeros(1, iterations);
-% 
-% 
-% for i = 1:iterations
-% 
-%     s_values_array(i) = s_current_val;
-% 
-%     [g0_value, g1_value] = numeric_solver(mut_eqn_set(1), mut_eqn_set(2), mu, mu_val, s, s_current_val, h1, h1_val, h2, h2_val, h3, h3_val, a, a_val, g0, g1);
-% 
-% 
-%     for j = 1:length(g0_value)
-%         if g0_value(j) > 0 && g0_value(j)<=1
-%             g0_values_array(i) = g0_value(j);
-%             g1_values_array(i) = g1_value(j);
-%         end
-%     end
-% 
-%     %for j = 1:length(g1_value)
-%         %if g1_value(j) > 0 && g1_value(j)<=1
-%             %g1_values_array(i) = g1_value(j);
-%         %end
-%     %end
-% 
-%     s_current_val = s_current_val + s_step_size;
-% 
-% end
-% 
-% q_values_array = g0_values_array + (1/2)*g1_values_array;
-% 
-% g2_values_array = g2_values_array - g0_values_array - g1_values_array;
-% 
-% iterations_str = strcat('# steps: ', string(iterations));
-% s_init_str = strcat('initial s: ', string(s_init_val));
-% s_step_size_str = strcat('s step-size: ',string(s_step_size));
-% h1_str = strcat('h1: ',string(h1_val));
-% h2_str = strcat('h2: ',string(h2_val));
-% h3_str = strcat('h3: ',string(h3_val));
-% mu_str = strcat('mu: ',string(mu_val));
-% a_str = strcat('alpha: ',string(a_val));
-% 
-% parameters_str = {'Parameters:', s_init_str, s_step_size_str, iterations_str, mu_str, h1_str, h2_str, h3_str, a_str};
-% dim = [0.5 0.5 0.3 0.3];
-% 
-% figure
-% 
-% scatter(s_values_array, q_values_array)
-% xscale log
-% title('Autos: Allele Frequency vs. Selection Coefficient')
-% ylabel('q (ancestral allele frequency)')
-% xlabel('s (selection coefficient)')
-% annotation('textbox', dim, 'String', parameters_str, 'FitBoxToText','on')
-% 
-% figure
-% title('Gamete Equilibria vs. s')
-% annotation('textbox', dim, 'String', parameters_str, 'FitBoxToText','on')
-% 
-% subplot(1, 3, 1)
-% scatter(s_values_array, g0_values_array)
-% xscale log
-% title('g0 vs. s')
-% xlabel('s')
-% ylabel('g0')
-% 
-% subplot(1, 3, 2)
-% scatter(s_values_array, g1_values_array)
-% xscale log
-% title('g1 vs. s')
-% xlabel('s')
-% ylabel('g1')
-% 
-% subplot(1, 3, 3)
-% scatter(s_values_array, g2_values_array)
-% xscale log
-% title('g2 vs. s')
-% xlabel('s')
-% ylabel('g2')
-% 
-% 
+%function which uses vpasolve to evaluate the fixed points of the system
 function [g0_value, g1_value] = numeric_solver(mut_g0_eqn, mut_g1_eqn, mu, mut_value, s, sel_value, h1, h1_value, h2, h2_value, h3, h3_value, a, a_value, g0, g1)
 
     g0_eqn = subs(mut_g0_eqn, mu, mut_value);
@@ -222,6 +157,8 @@ function [g0_value, g1_value] = numeric_solver(mut_g0_eqn, mut_g1_eqn, mu, mut_v
 
 end
 
+%initializes the quiver plot by substituting in all of the parameter values
+%which are constant (i.e. s, mu, h1, h2, h3, a)
 function [g0_eqn, g1_eqn] = quiver_plot_init(mut_g0_eqn, mut_g1_eqn, mu, mut_value, s, sel_value, h1, h1_value, h2, h2_value, h3, h3_value, a, a_value)
 
     g0_eqn = subs(mut_g0_eqn, mu, mut_value);
@@ -240,6 +177,8 @@ function [g0_eqn, g1_eqn] = quiver_plot_init(mut_g0_eqn, mut_g1_eqn, mu, mut_val
 
 end
 
+%generates vectors for the quiver plot by substituting the current values
+%of g0 and g1
 function [g0_vector, g1_vector] = quiver_plot_vectors(g0_eqn, g1_eqn, g0_value, g1_value, g0, g1)
 
     g0_vector = subs(g0_eqn, g0, g0_value);

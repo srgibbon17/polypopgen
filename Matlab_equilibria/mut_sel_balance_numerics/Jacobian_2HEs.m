@@ -1,8 +1,9 @@
-% for 2 HE allos, numerical approximation of mut-sel balance for constant mu and variable s
+% for 2 HE allos, classification of fixed points using linear stability
+% analysis and the Jacobian matrix
 
 iterations = 11; % number of steps or number of data points to generate
 
-s_init_val = .7; % starting s value
+s_init_val = 1e-4; % starting s value
 
 mu_val = 1e-6; % constant value of mutation rate
 h1_val = .25; % h1 dominance coefficient value, constant
@@ -57,57 +58,70 @@ end
 %solves for the fixed points of the system
 [g00_value, g01_value] = numeric_solver(mut_exp_set(1), mut_exp_set(2), mu, mu_val, s, s_init_val, h1, h1_val, h2, h2_val, h3, h3_val, g00, g01);
 
-%computes the Jacobian of the system
+%creates the Jacobian of the system
 jacobian_1 = [diff(mut_exp_set(1), g00), diff(mut_exp_set(1), g01); diff(mut_exp_set(2), g00), diff(mut_exp_set(2), g01)];
 
-%initializes equations which can be evaluated over the phase space by
-%substituting in parameter values
+%initializes equations to create vectors for the quiver plot
 [g00_eqn, g01_eqn] = quiver_plot_init(mut_exp_set(1), mut_exp_set(2), mu, mu_val, s, s_init_val, h1, h1_val, h2, h2_val, h3, h3_val);
 
+% for each fixed point, evaluates the jacobian at that point
+% for the evaluated jacobian, calculates eigenvalues and vectors
+% uses the determinant and trace to classify the fixed points of the system
 for i = 1:length(g00_value)
     jacobian_eval = zeros(length(jacobian_1));
+    %evaluating the jacobian
     for j = 1:length(jacobian_eval)
         for k = 1:length(jacobian_eval)
            jacobian_eval(j, k) = pd_evaluation(jacobian_1(j, k), mu, mu_val, s, s_init_val, h1, h1_val, h2, h2_val, h3, h3_val, g00, g00_value(i), g01, g01_value(i)); 
         end
     end
-   
+    
+    %calulating the trace and determinant of the evaluated jacobian
     trace_jac = trace(jacobian_eval);
     det_jac = det(jacobian_eval);
 
+    %creates a string of the current point
+    current_pt_str = strcat(string(g00_value(i)), ', ', string(g01_value(i)));
+
+    %classifies the fixed point according to the trace and determinant
     if det_jac < 0
-        disp("Fixed point is a saddle point")
+        disp(strcat(current_pt_str, " is a saddle point"))
     elseif det_jac == 0
-        disp("Fixed point is non-isolated")
+        ddisp(strcat(current_pt_str, " is non-isolated"))
     elseif det_jac > 0
         if trace_jac == 0
-            disp("Fixed point is a center")
+            disp(strcat(current_pt_str, " is a center"))
         elseif trace_jac^2 - 4*det_jac == 0
-            disp("Fixed point is a star or degenerate node")
+            disp(strcat(current_pt_str, " is a star or degenerate node"))
         elseif trace_jac > 0 && trace_jac^2 - 4*det_jac < 0
-            disp("Fixed point is an unstable spiral")
+            disp(strcat(current_pt_str, " is an unstable spiral"))
         elseif trace_jac > 0 && trace_jac^2 - 4*det_jac > 0
-            disp("Fixed point is an unstable node")
+            disp(strcat(current_pt_str, " is an unstable node"))
         elseif trace_jac < 0 && trace_jac^2 - 4*det_jac < 0
-            disp("Fixed point is a stable spiral")
+            disp(strcat(current_pt_str, " is a stable spiral"))
         elseif trace_jac < 0 && trace_jac^2 - 4*det_jac > 0
-            disp("Fixed point is a stable node")
+            disp(strcat(current_pt_str, " is a stable node"))
         end
     end
 
-    [eigenvectors, eigenvalues] = eig(jacobian_eval)
+    %computes the eigenvectors and values of the jacobian
+    [eigenvectors, eigenvalues] = eig(jacobian_eval);
 
     %g00_input_values = 0:1/(iterations-1):1;
     %g01_input_values = 0:1/(iterations-1):1;
-
+    
+    %creates a small range of values near the fixed point
     g00_input_values = (g00_value(i)-.01):.02/(iterations-1):(g00_value(i)+.01);
     g01_input_values = (g01_value(i)-.01):.02/(iterations-1):(g01_value(i)+.01);
 
+    %creates coordinate data for the quiver plot using meshgrid
     [g00_indexing_values, g01_indexing_values] = meshgrid(g00_input_values, g01_input_values);
 
+    %creates a blank array to store vector values for the quiver plot
     g00_vector_values = zeros(iterations, iterations);
     g01_vector_values = zeros(iterations, iterations);
 
+    %generates the vectors for the quiver plot
     for j = 1:iterations
         for k = 1:iterations
             [g00_vector, g01_vector] = quiver_plot_vectors(g00_eqn, g01_eqn, g00_indexing_values(j, k), g01_indexing_values(j, k), g00, g01);
@@ -116,19 +130,19 @@ for i = 1:length(g00_value)
         end
     end
 
+    %creates a figure for the quiver plot and fixed point
     figure
-
+    
     quiver(g00_indexing_values, g01_indexing_values, g00_vector_values, g01_vector_values)
     hold on
     plot(g00_value(i), g01_value(i), '.', 'MarkerSize', 10)
-    %hold on
-    %plot(eigenvectors)
 
     title('2HEs: Phase Space Flow Diagram')
     xlabel('g00 value')
     ylabel('g01 value')
 end
 
+%function which uses vpasolve to evaluate the fixed points of the system
 function [g00_value, g01_value] = numeric_solver(mut_g00_eqn, mut_g01_eqn, mu, mut_value, s, sel_value, h1, h1_value, h2, h2_value, h3, h3_value, g00, g01)
 
     g00_eqn = subs(mut_g00_eqn, mu, mut_value);
@@ -148,6 +162,8 @@ function [g00_value, g01_value] = numeric_solver(mut_g00_eqn, mut_g01_eqn, mu, m
 
 end
 
+%function which acts as a partial derivative evaluation tool 
+%used to evaluate the jacobian at each entry
 function [pd_value] = pd_evaluation(jacobian_entry, mu, mu_value, s, s_value, h1, h1_value, h2, h2_value, h3, h3_value, g00, g00_sub_value, g01, g01_sub_value)
 
     pd_value = subs(jacobian_entry, mu, mu_value);
@@ -160,6 +176,8 @@ function [pd_value] = pd_evaluation(jacobian_entry, mu, mu_value, s, s_value, h1
 
 end
 
+%initializes the quiver plot by substituting in all of the parameter values
+%which are constant (i.e. s, mu, h1, h2, h3)
 function [g00_eqn, g01_eqn] = quiver_plot_init(mut_g00_eqn, mut_g01_eqn, mu, mut_value, s, sel_value, h1, h1_value, h2, h2_value, h3, h3_value)
 
     g00_eqn = subs(mut_g00_eqn, mu, mut_value);
@@ -176,6 +194,8 @@ function [g00_eqn, g01_eqn] = quiver_plot_init(mut_g00_eqn, mut_g01_eqn, mu, mut
 
 end
 
+%generates vectors for the quiver plot by substituting the current values
+%of g00 and g01
 function [g00_vector, g01_vector] = quiver_plot_vectors(g00_eqn, g01_eqn, g00_value, g01_value, g00, g01)
 
     g00_vector = subs(g00_eqn, g00, g00_value);

@@ -1,4 +1,4 @@
-% for autos, numerical approximation of mut-sel balance for constant mu and variable s
+% for autos, creates a 2D plot of q values over variable mu 
 
 iterations = 100; % number of steps or number of data points to generate
 
@@ -51,6 +51,7 @@ mut_g2 = sel_meiosis_g0*mu^2 + sel_meiosis_g1*mu + sel_meiosis_g2 - g2 == 0;
 
 mut_eqn_set = [mut_g0, mut_g1, mut_g2];
 
+%substituing genotypes for gametes and removing g2 using g0+g1+g2 = 1
 for i = 1:length(mut_eqn_set)
     mut_eqn_set(i) = subs(mut_eqn_set(i), G0, g0^2);
     mut_eqn_set(i) = subs(mut_eqn_set(i), G1, 2*g0*g1);
@@ -60,34 +61,44 @@ for i = 1:length(mut_eqn_set)
     mut_eqn_set(i) = subs(mut_eqn_set(i), g2, (1-g1-g0));
 end
 
+%creates arrays/matrices to store data
 g2_values_array = ones(1, iterations);
 g0_values_array = zeros(1, iterations);
 g1_values_array = zeros(1, iterations);
 mu_values_array = zeros(1, iterations);
 mu_current_val = mu_init_val;
 
+%iterates through values of mu to find the stable fixed point
 for i = 1:iterations
 
     mu_values_array(i) = mu_current_val;
 
+    %calls a numeric solving function to find all fixed points
     [g0_value, g1_value] = numeric_solver(mut_eqn_set(1), mut_eqn_set(2), mu, mu_current_val, s, s_val, h1, h1_val, h2, h2_val, h3, h3_val, a, a_val, g0, g1);
 
-
+    %selects the stable fixed point as being that with the largest g0
+    %value (this has not been formally proven, but has support from 
+    %both biological intuition and linear stability analysis 
     for j = 1:length(g0_value)
         if g0_value(j) == max(g0_value)
             g0_values_array(i) = g0_value(j);
             g1_values_array(i) = g1_value(j);
         end
     end
-
+    %increase mu by the specified step size
     mu_current_val = mu_current_val + mu_step_size;
 
 end
 
+%calculates the value of q using g0 and g1 values
 q_values_array = g0_values_array + (1/2)*g1_values_array;
 
+%calculates the g2_values by subtracting the g0 and g1 values from an array
+%of ones
 g2_values_array = g2_values_array - g0_values_array - g1_values_array;
 
+
+%creates strings of the input parameters to be put on the graphs
 iterations_str = strcat('# steps: ', string(iterations));
 mu_init_str = strcat('initial mu: ', string(mu_init_val));
 mu_step_size_str = strcat('mu step-size: ',string(mu_step_size));
@@ -100,15 +111,18 @@ a_str = strcat('alpha: ',string(a_val));
 parameters_str = {'Parameters:', mu_init_str, mu_step_size_str, iterations_str, s_str, h1_str, h2_str, h3_str, a_str};
 dim = [0.5 0.5 0.3 0.3];
 
+%plots a 2D figure of the stable q values over mu
 figure
 
 scatter(mu_values_array, q_values_array)
 xscale log
-title('Autos: Allele Frequency vs. Selection Coefficient')
+title('Autos: Allele Frequency vs. Mutation')
 ylabel('q (ancestral allele frequency)')
-xlabel('s (selection coefficient)')
+xlabel('mu (mutation rate)')
 annotation('textbox', dim, 'String', parameters_str, 'FitBoxToText','on')
 
+
+%plots the g0, g1, and g2 stable equilibria values over mu
 figure
 title('Gamete Equilibria vs. s')
 annotation('textbox', dim, 'String', parameters_str, 'FitBoxToText','on')
@@ -134,7 +148,7 @@ title('g2 vs. s')
 xlabel('s')
 ylabel('g2')
 
-
+%function which uses vpasolve to evaluate the fixed points of the system
 function [g0_value, g1_value] = numeric_solver(mut_g0_eqn, mut_g1_eqn, mu, mut_value, s, sel_value, h1, h1_value, h2, h2_value, h3, h3_value, a, a_value, g0, g1)
 
     g0_eqn = subs(mut_g0_eqn, mu, mut_value);
