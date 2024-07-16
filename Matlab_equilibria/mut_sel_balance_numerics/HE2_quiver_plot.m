@@ -1,16 +1,14 @@
 % for 2 HE allos, numerical approximation of mut-sel balance for constant mu and variable s
 
-iterations = 11; % number of steps or number of data points to generate
+iterations = 21; % number of steps or number of data points to generate
 
-s_init_val = 1e-7; % starting s value
+s_init_val = .7; % starting s value
 s_step_size = 1e-7; % size of change in s for each iteration
 
 mu_val = 1e-6; % constant value of mutation rate
 h1_val = .25; % h1 dominance coefficient value, constant
 h2_val = .5; % h2 dominance coefficient value, constant
 h3_val = .75; % h3 dominance coefficient value, constant
-
-point = [0, 0];
 
 syms g00 g01 g10 g11 s h1 h2 h3 mu
 
@@ -40,10 +38,10 @@ sel_g01 = (3/8)*g00*g01*w1+(3/8)*g00*g10*w1+(1/4)*g01^2*w2+(1/4)*g10^2*w2+(1/2)*
 sel_g11 = (1/8)*g00*g01*w1+(1/8)*g00*g10*w1+(1/4)*g01^2*w2+(1/4)*g10^2*w2+(1/2)*g01*g10*w2+(1/2)*g00*g11*w2+(9/8)*g01*g11*w3+(9/8)*g10*g11*w3+g11^2*w4;
 
 % equations for mutation
-mut_g00 = sel_g00*(1-mu)^2 - g00 == 0;
-mut_g01 = sel_g00*mu*(1-mu) + sel_g01*(1-mu) - g01 == 0;
-mut_g10 = sel_g00*mu*(1-mu) + sel_g10*(1-mu) - g10 == 0;
-mut_g11 = sel_g00*mu^2 + sel_g01*mu + sel_g10*mu + sel_g11 - g11 == 0;
+mut_g00 = sel_g00*(1-mu)^2 - g00;
+mut_g01 = sel_g00*mu*(1-mu) + sel_g01*(1-mu) - g01;
+mut_g10 = sel_g00*mu*(1-mu) + sel_g10*(1-mu) - g10;
+mut_g11 = sel_g00*mu^2 + sel_g01*mu + sel_g10*mu + sel_g11 - g11;
 
 mut_eqn_set = [mut_g00, mut_g01, mut_g10, mut_g11];
 
@@ -99,13 +97,12 @@ mu_str = strcat('mu: ',string(mu_val));
 parameters_str = {'Parameters:', s_init_str, s_step_size_str, iterations_str, mu_str, h1_str, h2_str, h3_str};
 dim = [0.5 0.5 0.3 0.3];
 
-[g00_eqn, g01_eqn] = quiver_plot_init(mut_eqn_set(1), mut_eqn_set(2), mu, mu_val, s, s_init_val, h1, h1_val, h2, h2_val, h3, h3_val, g00, g01);
+[g00_eqn, g01_eqn] = quiver_plot_init(mut_eqn_set(1), mut_eqn_set(2), mu, mu_val, s, s_init_val, h1, h1_val, h2, h2_val, h3, h3_val);
 
-g00_input_values = 0:1/(iterations-1):1;
-g01_input_values = 0:1/(iterations-1):1;
+g00_input_values = 0:.01/(iterations-1):.01;
+g01_input_values = 0:.01/(iterations-1):.01;
 
-g00_indexing_values = zeros(iterations, iterations);
-g01_indexing_values = zeros(iterations, iterations);
+[g00_indexing_values, g01_indexing_values] = meshgrid(g00_input_values, g01_input_values);
 
 g00_vector_values = zeros(iterations, iterations);
 g01_vector_values = zeros(iterations, iterations);
@@ -113,24 +110,27 @@ g01_vector_values = zeros(iterations, iterations);
 
 for i = 1:iterations
     for j = 1:iterations
-        [g00_vector, g01_vector] = quiver_plot_vectors(g00_eqn, g01_eqn, g00_input_values(j), g01_input_values(i), g0, g1);
+        [g00_vector, g01_vector] = quiver_plot_vectors(g00_eqn, g01_eqn, g00_indexing_values(i, j), g01_indexing_values(i, j), g00, g01);
         g00_vector_values(i, j) = g00_vector;
         g01_vector_values(i, j) = g01_vector;
     end
-    g00_indexing_values(i, :) = g00_input_values;
-    g01_indexing_values(:, i) = g01_input_values;
 end
 
-example_stream = stream2(g00_indexing_values, g01_indexing_values, g00_vector_values, g01_vector_values, point(1), point(2));
+[g00_value, g01_value] = numeric_solver(mut_eqn_set(1), mut_eqn_set(2), mu, mu_val, s, s_init_val, h1, h1_val, h2, h2_val, h3, h3_val, g00, g01);
+
+stream_1 = stream2(g00_indexing_values, g01_indexing_values, g00_vector_values, g01_vector_values, .1, .1, [0.01, 1000000]);
 
 figure
 
+%plot(max(g00_value), max(g01_value), '.', 'MarkerSize', 10)
+hold on
 quiver(g00_indexing_values, g01_indexing_values, g00_vector_values, g01_vector_values)
-streamline(example_stream)
+streamline(stream_1)
 
-title('Autos: Phase Space Flow Diagram')
-ylabel('g1 value')
-xlabel('g0 value')
+title('2 HEs: Phase Space Flow Diagram')
+xlabel('g00 value')
+ylabel('g01 value')
+
 
 
 % figure
@@ -161,21 +161,19 @@ function [g00_value, g01_value] = numeric_solver(mut_g00_eqn, mut_g01_eqn, mu, m
 
 end
 
-function [g00_eqn, g01_eqn] = quiver_plot_init(mut_g00_eqn, mut_g01_eqn, mu, mut_value, s, sel_value, h1, h1_value, h2, h2_value, h3, h3_value, a, a_value)
+function [g00_eqn, g01_eqn] = quiver_plot_init(mut_g00_eqn, mut_g01_eqn, mu, mut_value, s, sel_value, h1, h1_value, h2, h2_value, h3, h3_value)
 
     g00_eqn = subs(mut_g00_eqn, mu, mut_value);
     g00_eqn = subs(g00_eqn, s, sel_value);
     g00_eqn = subs(g00_eqn, h1, h1_value);
     g00_eqn = subs(g00_eqn, h2, h2_value);
     g00_eqn = subs(g00_eqn, h3, h3_value);
-    g00_eqn = subs(g00_eqn, a, a_value);
 
     g01_eqn = subs(mut_g01_eqn, mu, mut_value);
     g01_eqn = subs(g01_eqn, s, sel_value);
     g01_eqn = subs(g01_eqn, h1, h1_value);
     g01_eqn = subs(g01_eqn, h2, h2_value);
     g01_eqn = subs(g01_eqn, h3, h3_value);
-    g01_eqn = subs(g01_eqn, a, a_value);
 
 end
 

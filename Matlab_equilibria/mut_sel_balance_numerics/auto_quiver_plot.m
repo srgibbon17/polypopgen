@@ -2,17 +2,17 @@
 
 iterations = 11; % number of steps or number of data points to generate
 
-s_init_val = 8e-6; % starting s value
+s_init_val = 5e-5; % starting s value
 s_step_size = 1e-7; % size of change in s for each iteration
 
 mu_val = 1e-6; % constant value of mutation rate
 a_val = 0; % constant value of alpha (double reduction rate)
 
-h1_val = .25; % h1 dominance coefficient value, constant
-h2_val = .5; % h2 dominance coefficient value, constant
-h3_val = .75; % h3 dominance coefficient value, constant
+h1_val = 1; % h1 dominance coefficient value, constant
+h2_val = 1; % h2 dominance coefficient value, constant
+h3_val = 1; % h3 dominance coefficient value, constant
 
-point_1 = [.2, .3];
+point_1 = [.08, .45];
 point_2 = [.4, .1];
 point_3 = [0, .5];
 point_4 = [.5, 0];
@@ -104,18 +104,17 @@ for i = 1:iterations
 end
 
 stream_1 = stream2(g0_indexing_values, g1_indexing_values, g0_vector_values, g1_vector_values, point_1(1), point_1(2), [0.01, 1000000]);
-stream_2 = stream2(g0_indexing_values, g1_indexing_values, g0_vector_values, g1_vector_values, point_2(1), point_2(2), [0.01, 1000000]);
-stream_3 = stream2(g0_indexing_values, g1_indexing_values, g0_vector_values, g1_vector_values, point_3(1), point_3(2), [0.01, 1000000]);
-stream_4 = stream2(g0_indexing_values, g1_indexing_values, g0_vector_values, g1_vector_values, point_4(1), point_4(2), [0.01, 1000000]);
-stream_5 = stream2(g0_indexing_values, g1_indexing_values, g0_vector_values, g1_vector_values, point_5(1), point_5(2), [0.01, 1000000]);
-stream_6 = stream2(g0_indexing_values, g1_indexing_values, g0_vector_values, g1_vector_values, point_6(1), point_6(2), [0.01, 1000000]);
+% stream_2 = stream2(g0_indexing_values, g1_indexing_values, g0_vector_values, g1_vector_values, point_2(1), point_2(2), [0.01, 1000000]);
+% stream_3 = stream2(g0_indexing_values, g1_indexing_values, g0_vector_values, g1_vector_values, point_3(1), point_3(2), [0.01, 1000000]);
+% stream_4 = stream2(g0_indexing_values, g1_indexing_values, g0_vector_values, g1_vector_values, point_4(1), point_4(2), [0.01, 1000000]);
+% stream_5 = stream2(g0_indexing_values, g1_indexing_values, g0_vector_values, g1_vector_values, point_5(1), point_5(2), [0.01, 1000000]);
+% stream_6 = stream2(g0_indexing_values, g1_indexing_values, g0_vector_values, g1_vector_values, point_6(1), point_6(2), [0.01, 1000000]);
 
 
 figure
 
 quiver(g0_indexing_values, g1_indexing_values, g0_vector_values, g1_vector_values)
-streamline(stream_3)
-streamline(stream_4)
+streamline(stream_1)
 title('Autos: Phase Space Flow Diagram')
 ylabel('g1 value')
 xlabel('g0 value')
