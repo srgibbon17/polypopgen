@@ -1,16 +1,14 @@
 % for 2 HE allos, numerical approximation of mut-sel balance for constant mu and variable s
 
-iterations = 11; % number of steps or number of data points to generate
+iterations = 21; % number of steps or number of data points to generate
 
-s_init_val = 5e-6; % starting s value
+s_init_val = .7; % starting s value
 s_step_size = 1e-7; % size of change in s for each iteration
 
 mu_val = 1e-6; % constant value of mutation rate
 h1_val = .25; % h1 dominance coefficient value, constant
 h2_val = .5; % h2 dominance coefficient value, constant
 h3_val = .75; % h3 dominance coefficient value, constant
-
-point = [0, 0];
 
 syms g00 g01 g10 g11 s h1 h2 h3 mu
 
@@ -101,8 +99,8 @@ dim = [0.5 0.5 0.3 0.3];
 
 [g00_eqn, g01_eqn] = quiver_plot_init(mut_eqn_set(1), mut_eqn_set(2), mu, mu_val, s, s_init_val, h1, h1_val, h2, h2_val, h3, h3_val);
 
-g00_input_values = 0:1/(iterations-1):1;
-g01_input_values = 0:1/(iterations-1):1;
+g00_input_values = 0:.01/(iterations-1):.01;
+g01_input_values = 0:.01/(iterations-1):.01;
 
 [g00_indexing_values, g01_indexing_values] = meshgrid(g00_input_values, g01_input_values);
 
@@ -120,12 +118,14 @@ end
 
 [g00_value, g01_value] = numeric_solver(mut_eqn_set(1), mut_eqn_set(2), mu, mu_val, s, s_init_val, h1, h1_val, h2, h2_val, h3, h3_val, g00, g01);
 
+stream_1 = stream2(g00_indexing_values, g01_indexing_values, g00_vector_values, g01_vector_values, .1, .1, [0.01, 1000000]);
 
 figure
 
-plot(max(g00_value), max(g01_value), '.', 'MarkerSize', 10)
+%plot(max(g00_value), max(g01_value), '.', 'MarkerSize', 10)
 hold on
 quiver(g00_indexing_values, g01_indexing_values, g00_vector_values, g01_vector_values)
+streamline(stream_1)
 
 title('2 HEs: Phase Space Flow Diagram')
 xlabel('g00 value')

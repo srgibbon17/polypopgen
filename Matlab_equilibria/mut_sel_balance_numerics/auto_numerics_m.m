@@ -74,7 +74,7 @@ for i = 1:iterations
 
 
     for j = 1:length(g0_value)
-        if g0_value(j) > 0 && g0_value(j)<=1
+        if g0_value(j) == max(g0_value)
             g0_values_array(i) = g0_value(j);
             g1_values_array(i) = g1_value(j);
         end

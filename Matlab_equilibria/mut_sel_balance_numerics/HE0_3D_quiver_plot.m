@@ -49,45 +49,45 @@ mut_eqn_set = [mut_g00, mut_g01, mut_g10, mut_g11];
 
 for i = 1:length(mut_eqn_set)
     % removes g11 from the equation by replacing it with 1-(g00+g01+g10)
-    mut_eqn_set(i) = subs(mut_eqn_set(i), g10, 1-(g00+g01+g11));
+    mut_eqn_set(i) = subs(mut_eqn_set(i), g11, 1-(g00+g01+g10));
 end
 
 s_values_array = zeros(1, iterations);
 
 s_current_val = s_init_val;
 
-[g00_exp, g01_exp, g11_exp] = quiver_plot_init(mut_eqn_set(1), mut_eqn_set(2), mut_eqn_set(4), mu, mu_val, s, s_current_val, h1, h1_val, h2, h2_val, h3, h3_val);
+[g00_exp, g01_exp, g10_exp] = quiver_plot_init(mut_eqn_set(1), mut_eqn_set(2), mut_eqn_set(3), mu, mu_val, s, s_current_val, h1, h1_val, h2, h2_val, h3, h3_val);
 
 g00_input_values = 0:1/(iterations-1):1;
 g01_input_values = 0:1/(iterations-1):1;
-g11_input_values = 0:1/(iterations-1):1;
+g10_input_values = 0:1/(iterations-1):1;
 
 %g00_input_values = 0:.001/(iterations-1):.001;
 %g01_input_values = 0:.001/(iterations-1):.001;
 %g10_input_values = 0:.001/(iterations-1):.001;
 
-[g00_indexing_values, g01_indexing_values, g11_indexing_values] = meshgrid(g00_input_values, g01_input_values, g11_input_values);
+[g00_indexing_values, g01_indexing_values, g10_indexing_values] = meshgrid(g00_input_values, g01_input_values, g10_input_values);
 
 g00_vector_values = zeros(iterations, iterations, iterations);
 g01_vector_values = zeros(iterations, iterations, iterations);
-g11_vector_values = zeros(iterations, iterations, iterations);
+g10_vector_values = zeros(iterations, iterations, iterations);
 
 
 for i = 1:iterations
     for j = i:iterations
         for k = i:iterations
-            [g00_vector, g01_vector, g11_vector] = quiver_plot_vectors(g00_exp, g01_exp, g11_exp, g00_indexing_values(i, j, k), g01_indexing_values(i, j, k), g11_indexing_values(i, j, k), g00, g01, g11);
+            [g00_vector, g01_vector, g10_vector] = quiver_plot_vectors(g00_exp, g01_exp, g10_exp, g00_indexing_values(i, j, k), g01_indexing_values(i, j, k), g10_indexing_values(i, j, k), g00, g01, g10);
             g00_vector_values(i, j, k) = g00_vector;
             g01_vector_values(i, j, k) = g01_vector;
-            g11_vector_values(i, j, k) = g11_vector;
+            g10_vector_values(i, j, k) = g10_vector;
         end 
     end
 end
 
-streamline_data = stream3(g00_indexing_values, g01_indexing_values, g11_indexing_values, g00_vector_values, g01_vector_values, g11_vector_values, point(1), point(2), point(3));
+streamline_data = stream3(g00_indexing_values, g01_indexing_values, g10_indexing_values, g00_vector_values, g01_vector_values, g10_vector_values, point(1), point(2), point(3));
 
 figure
-quiver3(g00_indexing_values, g01_indexing_values, g11_indexing_values, g00_vector_values, g01_vector_values, g11_vector_values)
+quiver3(g00_indexing_values, g01_indexing_values, g10_indexing_values, g00_vector_values, g01_vector_values, g10_vector_values)
 streamline(streamline_data)
 xlabel('g00')
 ylabel('g01')
@@ -106,7 +106,7 @@ title('0 HEs: Phase Space Flow Diagram')
 % dim = [0.5 0.5 0.3 0.3];
 
 
-function [g00_eqn, g01_eqn, g11_eqn] = quiver_plot_init(mut_g00_eqn, mut_g01_eqn, mut_g11_eqn, mu, mut_value, s, sel_value, h1, h1_value, h2, h2_value, h3, h3_value)
+function [g00_eqn, g01_eqn, g10_eqn] = quiver_plot_init(mut_g00_eqn, mut_g01_eqn, mut_g10_eqn, mu, mut_value, s, sel_value, h1, h1_value, h2, h2_value, h3, h3_value)
 
     g00_eqn = subs(mut_g00_eqn, mu, mut_value);
     g00_eqn = subs(g00_eqn, s, sel_value);
@@ -120,25 +120,25 @@ function [g00_eqn, g01_eqn, g11_eqn] = quiver_plot_init(mut_g00_eqn, mut_g01_eqn
     g01_eqn = subs(g01_eqn, h2, h2_value);
     g01_eqn = subs(g01_eqn, h3, h3_value);
 
-    g11_eqn = subs(mut_g11_eqn, mu, mut_value);
-    g11_eqn = subs(g11_eqn, s, sel_value);
-    g11_eqn = subs(g11_eqn, h1, h1_value);
-    g11_eqn = subs(g11_eqn, h2, h2_value);
-    g11_eqn = subs(g11_eqn, h3, h3_value);
+    g10_eqn = subs(mut_g10_eqn, mu, mut_value);
+    g10_eqn = subs(g10_eqn, s, sel_value);
+    g10_eqn = subs(g10_eqn, h1, h1_value);
+    g10_eqn = subs(g10_eqn, h2, h2_value);
+    g10_eqn = subs(g10_eqn, h3, h3_value);
 end
 
-function [g00_vector, g01_vector, g11_vector] = quiver_plot_vectors(g00_eqn, g01_eqn, g11_eqn, g00_value, g01_value, g11_value, g00, g01, g11)
+function [g00_vector, g01_vector, g10_vector] = quiver_plot_vectors(g00_eqn, g01_eqn, g10_eqn, g00_value, g01_value, g10_value, g00, g01, g10)
 
     g00_vector = subs(g00_eqn, g00, g00_value);
     g00_vector = subs(g00_vector, g01, g01_value);
-    g00_vector = subs(g00_vector, g11, g11_value);
+    g00_vector = subs(g00_vector, g10, g10_value);
 
     g01_vector = subs(g01_eqn, g00, g00_value);
     g01_vector = subs(g01_vector, g01, g01_value);
-    g01_vector = subs(g01_vector, g11, g11_value);
+    g01_vector = subs(g01_vector, g10, g10_value);
 
-    g11_vector = subs(g11_eqn, g00, g00_value);
-    g11_vector = subs(g11_vector, g01, g01_value);
-    g11_vector = subs(g11_vector, g11, g11_value);
+    g10_vector = subs(g10_eqn, g00, g00_value);
+    g10_vector = subs(g10_vector, g01, g01_value);
+    g10_vector = subs(g10_vector, g10, g10_value);
 
 end

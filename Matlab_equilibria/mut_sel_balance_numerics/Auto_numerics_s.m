@@ -1,16 +1,16 @@
 % for autos, numerical approximation of mut-sel balance for constant mu and variable s
 
-iterations = 100; % number of steps or number of data points to generate
+iterations = 10; % number of steps or number of data points to generate
 
 s_init_val = 5e-6; % starting s value
 s_step_size = 1e-6; % size of change in s for each iteration
 
 mu_val = 1e-6; % constant value of mutation rate
-a_val = 8/48; % constant value of alpha (double reduction rate)
+a_val = 0; % constant value of alpha (double reduction rate)
 
-h1_val = .25; % h1 dominance coefficient value, constant
-h2_val = .5; % h2 dominance coefficient value, constant
-h3_val = .75; % h3 dominance coefficient value, constant
+h1_val = 1; % h1 dominance coefficient value, constant
+h2_val = 1; % h2 dominance coefficient value, constant
+h3_val = 1; % h3 dominance coefficient value, constant
 
 
 syms a s q G0 G1 G2 G3 G4 g0 g1 g2 h1 h2 h3 mu 
@@ -74,7 +74,7 @@ for i = 1:iterations
 
 
     for j = 1:length(g0_value)
-        if g0_value(j) > 0 && g0_value(j)<=1
+        if g0_value(j) == max(g0_value)
             g0_values_array(i) = g0_value(j);
             g1_values_array(i) = g1_value(j);
         end

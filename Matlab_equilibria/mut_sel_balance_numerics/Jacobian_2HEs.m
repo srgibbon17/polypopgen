@@ -2,7 +2,7 @@
 
 iterations = 11; % number of steps or number of data points to generate
 
-s_init_val = 5e-6; % starting s value
+s_init_val = .7; % starting s value
 
 mu_val = 1e-6; % constant value of mutation rate
 h1_val = .25; % h1 dominance coefficient value, constant
@@ -55,30 +55,30 @@ end
 
 
 %solves for the fixed points of the system
-[g00_value, g01_value] = numeric_solver(mut_exp_set(1), mut_exp_set(2), mu, mu_val, s, s_init_val, h1, h1_val, h2, h2_val, h3, h3_val, g00, g01)
+[g00_value, g01_value] = numeric_solver(mut_exp_set(1), mut_exp_set(2), mu, mu_val, s, s_init_val, h1, h1_val, h2, h2_val, h3, h3_val, g00, g01);
 
 %computes the Jacobian of the system
-jacobian = [diff(mut_exp_set(1), g00), diff(mut_exp_set(1), g01); diff(mut_exp_set(2), g00), diff(mut_exp_set(2), g01)];
+jacobian_1 = [diff(mut_exp_set(1), g00), diff(mut_exp_set(1), g01); diff(mut_exp_set(2), g00), diff(mut_exp_set(2), g01)];
 
 %initializes equations which can be evaluated over the phase space by
 %substituting in parameter values
 [g00_eqn, g01_eqn] = quiver_plot_init(mut_exp_set(1), mut_exp_set(2), mu, mu_val, s, s_init_val, h1, h1_val, h2, h2_val, h3, h3_val);
 
-
 for i = 1:length(g00_value)
-    jacobian_eval = zeros(2);
-    jacobian_eval(1, 1) = pd_evaluation(jacobian(1, 1), mu, mu_val, s, s_init_val, h1, h1_val, h2, h2_val, h3, h3_val, g00, g00_value(i), g01, g01_value(i));
-    jacobian_eval(1, 2) = pd_evaluation(jacobian(1, 2), mu, mu_val, s, s_init_val, h1, h1_val, h2, h2_val, h3, h3_val, g00, g00_value(i), g01, g01_value(i));
-    jacobian_eval(2, 1) = pd_evaluation(jacobian(2, 1), mu, mu_val, s, s_init_val, h1, h1_val, h2, h2_val, h3, h3_val, g00, g00_value(i), g01, g01_value(i));
-    jacobian_eval(2, 2) = pd_evaluation(jacobian(2, 2), mu, mu_val, s, s_init_val, h1, h1_val, h2, h2_val, h3, h3_val, g00, g00_value(i), g01, g01_value(i));
-
+    jacobian_eval = zeros(length(jacobian_1));
+    for j = 1:length(jacobian_eval)
+        for k = 1:length(jacobian_eval)
+           jacobian_eval(j, k) = pd_evaluation(jacobian_1(j, k), mu, mu_val, s, s_init_val, h1, h1_val, h2, h2_val, h3, h3_val, g00, g00_value(i), g01, g01_value(i)); 
+        end
+    end
+   
     trace_jac = trace(jacobian_eval);
     det_jac = det(jacobian_eval);
 
     if det_jac < 0
         disp("Fixed point is a saddle point")
     elseif det_jac == 0
-        disp("Fixed point is non-solated")
+        disp("Fixed point is non-isolated")
     elseif det_jac > 0
         if trace_jac == 0
             disp("Fixed point is a center")
@@ -95,7 +95,7 @@ for i = 1:length(g00_value)
         end
     end
 
-    [eigenvectors, eigenvalues] = eig(jacobian_eval);
+    [eigenvectors, eigenvalues] = eig(jacobian_eval)
 
     %g00_input_values = 0:1/(iterations-1):1;
     %g01_input_values = 0:1/(iterations-1):1;
@@ -117,7 +117,7 @@ for i = 1:length(g00_value)
     end
 
     figure
-    
+
     quiver(g00_indexing_values, g01_indexing_values, g00_vector_values, g01_vector_values)
     hold on
     plot(g00_value(i), g01_value(i), '.', 'MarkerSize', 10)
@@ -128,9 +128,6 @@ for i = 1:length(g00_value)
     xlabel('g00 value')
     ylabel('g01 value')
 end
-
-
-
 
 function [g00_value, g01_value] = numeric_solver(mut_g00_eqn, mut_g01_eqn, mu, mut_value, s, sel_value, h1, h1_value, h2, h2_value, h3, h3_value, g00, g01)
 
@@ -151,15 +148,15 @@ function [g00_value, g01_value] = numeric_solver(mut_g00_eqn, mut_g01_eqn, mu, m
 
 end
 
-function [pd_value] = pd_evaluation(jacobian_entry, mu, mu_value, s, s_value, h1, h1_value, h2, h2_value, h3, h3_value, g00, g00_stable_value, g01, g01_stable_value)
+function [pd_value] = pd_evaluation(jacobian_entry, mu, mu_value, s, s_value, h1, h1_value, h2, h2_value, h3, h3_value, g00, g00_sub_value, g01, g01_sub_value)
 
     pd_value = subs(jacobian_entry, mu, mu_value);
     pd_value = subs(pd_value, s, s_value);
     pd_value = subs(pd_value, h1, h1_value);
     pd_value = subs(pd_value, h2, h2_value);
     pd_value = subs(pd_value, h3, h3_value);
-    pd_value = subs(pd_value, g00, g00_stable_value);
-    pd_value = subs(pd_value, g01, g01_stable_value);
+    pd_value = subs(pd_value, g00, g00_sub_value);
+    pd_value = subs(pd_value, g01, g01_sub_value);
 
 end
 
