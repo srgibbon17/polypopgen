@@ -1,16 +1,16 @@
 % for 2 HE allos, classification of fixed points using linear stability
-% analysis and the Jacobian matrix
+% analysis, the Jacobian matrix, and eigendirections
 
-iterations = 11; % number of steps or number of data points to generate
+iterations = 16; % number of vectors in each dimension of the vector field
 
 s_val = [1e-8, 1e-5, .3]; % starting s value
 
 mu_val = 1e-6; % constant value of mutation rate
-h1_val = 1; % h1 dominance coefficient value, constant
-h2_val = 1; % h2 dominance coefficient value, constant
-h3_val = 1; % h3 dominance coefficient value, constant
+h1_val = .25; % h1 dominance coefficient value, constant
+h2_val = .5; % h2 dominance coefficient value, constant
+h3_val = .75; % h3 dominance coefficient value, constant
 
-coord_range = .2; % sets range for vector field
+coord_range = .2; % sets range for eigenvectors
 
 
 syms g00 g01 g10 g11 s h1 h2 h3 mu
@@ -20,7 +20,7 @@ assume(g00>=0 & g00<=1);
 assume(g10>=0 & g10<=1);
 assume(g01>=0 & g01<=1);
 assume(g11>=0 & g11<=1);
-assume(s>=0 & s<=1);
+assume(s>=-1 & s<=1);
 assume(h1>=0 & h1<=1);
 assume(h2>=0 & h2<=1);
 assume(h3>=0 & h3<=1);
@@ -120,48 +120,8 @@ for h = 1:length(s_val)
 
         %computes the eigenvectors and values of the jacobian
         [eigenvectors, eigenvalues] = eig(jacobian_eval);
-
-        %g00_input_values = 0:1/(iterations-1):1;
-        %g01_input_values = 0:1/(iterations-1):1;
-
-        %creates a small range of values near the fixed point
-        g00_input_values = (g00_value(i)-coord_range):2*coord_range/(iterations-1):(g00_value(i)+coord_range);
-        g01_input_values = (g01_value(i)-coord_range):2*coord_range/(iterations-1):(g01_value(i)+coord_range);
-
-        %creates coordinate data for the quiver plot using meshgrid
-        [g00_indexing_values, g01_indexing_values] = meshgrid(g00_input_values, g01_input_values);
-
-        %creates a blank array to store vector values for the quiver plot
-        g00_vector_values = zeros(iterations, iterations);
-        g01_vector_values = zeros(iterations, iterations);
-
-        %generates the vectors for the quiver plot
-        for j = 1:iterations
-            for k = 1:iterations
-                [g00_vector, g01_vector] = quiver_plot_vectors(g00_eqn, g01_eqn, g00_indexing_values(j, k), g01_indexing_values(j, k), g00, g01);
-                g00_vector_values(j, k) = g00_vector;
-                g01_vector_values(j, k) = g01_vector;
-            end
-        end
-
-        % %creates a figure for the quiver plot and fixed point
-        % figure
-        % 
-        % quiver(g00_indexing_values, g01_indexing_values, g00_vector_values, g01_vector_values)
-        % hold on
-        % plot(g00_value(i), g01_value(i), '.', 'MarkerSize', 10)
-        % 
-        % for j = 1:length(eigenvectors)
-        %     slope = eigenvectors(j, 2)/eigenvectors(j, 1);
-        %     x = linspace(g00_value(i)-coord_range, g00_value(i)+coord_range, 50);
-        %     y = slope*(x - g00_value(i)) + g01_value(i);
-        %     plot(x, y);
-        % end
-        % 
-        % title('2HE: Phase Space Flow Diagram')
-        % xlabel('g00 value')
-        % ylabel('g01 value')
     end
+
 
     %creates strings of the input parameters to be put on the graphs
     s_init_str = strcat('s: ', string(s_val(h)));
@@ -187,7 +147,7 @@ for h = 1:length(s_val)
                 y_1(i) = y_1_soln(j);
             end
         end
-        y_2_soln = vpasolve(subs(g01_eqn==0, g00, x_1(i)), g01);
+        y_2_soln = vpasolve(subs(g01_eqn, g00, x_1(i)), g01);
         for j = 1:length(y_2_soln)    
             if y_2_soln(j) >= 0 && y_2_soln(j) <= 1
                 y_2(i) = y_2_soln(j);
@@ -256,7 +216,7 @@ for h = 1:length(s_val)
         % lineobj_2 = streamline(g00_coordinates, g01_coordinates, g00_vector_values, g01_vector_values, 0, .3, [0.01, 1000000]);
         % lineobj_2.Color = "#7E2F8E";
         % 
-        % lineobj_3 = streamline(g00_coordinates, g01_coordinates, g00_vector_values, g01_vector_values, .15, .2, [0.01, 1000000]);
+        % lineobj_3 = streamline(g00_coordinates, g01_coordinates, g00_vector_values, g01_vector_values, .27, .15, [0.01, 1000000]);
         % lineobj_3.Color = "#77AC30";
         % 
         % lineobj_4 = streamline(g00_coordinates, g01_coordinates, g00_vector_values, g01_vector_values, .35, .4, [0.01, 1000000]);
@@ -286,7 +246,7 @@ for h = 1:length(s_val)
     xlim([0 1])
     ylim([0 .5])
     if h == 3
-        legend('g00 nullcline', 'g01 nullcline', 'stable node', '', '', '', '', '', '', '', 'saddle point', '', 'eigenvectors', 'FontSize', 12)
+        legend('g00 nullcline', 'g01 nullcline', 'stable node', '', '', '', '', '', '', '', '', 'saddle point', '', 'eigenvectors', 'FontSize', 12)
     end
 end
 
