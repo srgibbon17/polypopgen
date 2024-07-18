@@ -1,6 +1,6 @@
 % for autos, creates a 3D plot of q values over variable s and mu
 
-iterations = 25; % number of steps for both s and mu; generates iterations^2 data points
+iterations = 15; % number of steps for both s and mu; generates iterations^2 data points
 
 h1_val = 0; % h1 dominance coefficient value, constant
 h2_val = 0; % h2 dominance coefficient value, constant
@@ -108,7 +108,7 @@ s_step_size_str = strcat('s step-size: ',string(s_step_size));
 h1_str = strcat('h1: ',string(h1_val));
 h2_str = strcat('h2: ',string(h2_val));
 h3_str = strcat('h3: ',string(h3_val));
-mu_init_str = strcat('initial mu: ',string(mu_val));
+mu_init_str = strcat('initial mu: ',string(mu_init_val));
 mu_step_size_str = strcat('mu step-size: ',string(mu_step_size));
 a_str = strcat('alpha: ',string(a_val));
 
