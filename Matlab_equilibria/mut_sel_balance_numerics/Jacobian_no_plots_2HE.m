@@ -3,7 +3,7 @@
 
 iterations = 11; % number of steps or number of data points to generate
 
-s_val = [1e-8, 1e-5, .3]; % starting s value
+s_val = 7.4256e-6; % starting s value
 
 mu_val = 1e-6; % constant value of mutation rate
 h1_val = 1; % h1 dominance coefficient value, constant
@@ -61,7 +61,7 @@ end
 %creates the Jacobian of the system
 jacobian_1 = [diff(mut_exp_set(1), g00), diff(mut_exp_set(1), g01); diff(mut_exp_set(2), g00), diff(mut_exp_set(2), g01)];
 
-figure
+%figure
 
 for h = 1:length(s_val)
     if h == 1
@@ -120,6 +120,7 @@ for h = 1:length(s_val)
 
         %computes the eigenvectors and values of the jacobian
         [eigenvectors, eigenvalues] = eig(jacobian_eval);
+        disp(eigenvalues)
 
         %g00_input_values = 0:1/(iterations-1):1;
         %g01_input_values = 0:1/(iterations-1):1;
@@ -174,120 +175,120 @@ for h = 1:length(s_val)
     dim = [0.5 0.5 0.3 0.3];
 
 
-    subplot(1, 3, h)
+    % subplot(1, 3, h)
+    % 
+    % x_1 = linspace(0, 1, 100);
+    % y_1 = zeros(1, 100);
+    % y_2 = zeros(1, 100);
+    % 
+    % for i = 1:length(x_1)
+    %     y_1_soln = vpasolve(subs(g00_eqn, g00, x_1(i)), g01);
+    %     for j = 1:length(y_1_soln)    
+    %         if y_1_soln(j) >= 0 && y_1_soln(j) <= 1
+    %             y_1(i) = y_1_soln(j);
+    %         end
+    %     end
+    %     y_2_soln = vpasolve(subs(g01_eqn==0, g00, x_1(i)), g01);
+    %     for j = 1:length(y_2_soln)    
+    %         if y_2_soln(j) >= 0 && y_2_soln(j) <= 1
+    %             y_2(i) = y_2_soln(j);
+    %         end
+    %     end
+    % end
+    % 
+    % null_1 = plot(x_1, y_1);
+    % null_1.Color = "#0072BD";
+    % hold on
+    % null_2 = plot(x_1, y_2);
+    % null_2.Color = "#D95319";
+    % 
+    % for i = 1:length(g00_value)
+    % 
+    %     jacobian_eval = zeros(length(jacobian_1));
+    %     evaluating the jacobian
+    %     for j = 1:length(jacobian_eval)
+    %         for k = 1:length(jacobian_eval)
+    %         jacobian_eval(j, k) = pd_evaluation(jacobian_1(j, k), mu, mu_val, s, s_val(h), h1, h1_val, h2, h2_val, h3, h3_val, g00, g00_value(i), g01, g01_value(i)); 
+    %         end
+    %     end
+    % 
+    %     det_jac = det(jacobian_eval);
+    %     if det_jac < 0
+    %         plot(g00_value(i), g01_value(i), 'square', 'MarkerFaceColor', 'k', 'MarkerEdgeColor', 'k', 'MarkerSize', 8)
+    %     else
+    %         plot(g00_value(i), g01_value(i), 'o', 'Color', 'k', 'LineWidth', 2, 'MarkerSize', 8)
+    %     end
+    % 
+    %     [eigenvectors, eigenvalues] = eig(jacobian_eval);
+    %     for j = 1:length(eigenvectors)
+    %         slope = eigenvectors(2, j)/eigenvectors(1, j);
+    %         x = linspace(g00_value(i)-.2, g00_value(i)+.2, 50);
+    %         y = slope*(x - g00_value(i)) + g01_value(i);
+    %         if det_jac < 0 && sum(eigenvalues(:, j)) < 0 
+    %            plot(x, y, 'k', 'LineStyle', '--')
+    %         else 
+    %            plot(x, y, 'k');
+    %         end
+    %     end
+    % 
+    %     creates a small range of values near the fixed point
+    %     g00_input_values = 0:1/(iterations-1):1;
+    %     g01_input_values = 0:.5/(iterations-1):.5;
+    % 
+    %     creates coordinate data for the quiver plot using meshgrid
+    %     [g00_coordinates, g01_coordinates] = meshgrid(g00_input_values, g01_input_values);
+    % 
+    %     creates a blank array to store vector values for the quiver plot
+    %     g00_vector_values = zeros(iterations, iterations);
+    %     g01_vector_values = zeros(iterations, iterations);
+    % 
+    %     generates the vectors for the quiver plot
+    %     for j = 1:iterations
+    %         for k = 1:iterations
+    %             [g00_vector, g01_vector] = quiver_plot_vectors(g00_eqn, g01_eqn, g00_coordinates(j, k), g01_coordinates(j, k), g00, g01);
+    %             g00_vector_values(j, k) = g00_vector;
+    %             g01_vector_values(j, k) = g01_vector;
+    %         end
+    %     end
 
-    x_1 = linspace(0, 1, 100);
-    y_1 = zeros(1, 100);
-    y_2 = zeros(1, 100);
-
-    for i = 1:length(x_1)
-        y_1_soln = vpasolve(subs(g00_eqn, g00, x_1(i)), g01);
-        for j = 1:length(y_1_soln)    
-            if y_1_soln(j) >= 0 && y_1_soln(j) <= 1
-                y_1(i) = y_1_soln(j);
-            end
-        end
-        y_2_soln = vpasolve(subs(g01_eqn==0, g00, x_1(i)), g01);
-        for j = 1:length(y_2_soln)    
-            if y_2_soln(j) >= 0 && y_2_soln(j) <= 1
-                y_2(i) = y_2_soln(j);
-            end
-        end
-    end
-
-    null_1 = plot(x_1, y_1);
-    null_1.Color = "#0072BD";
-    hold on
-    null_2 = plot(x_1, y_2);
-    null_2.Color = "#D95319";
-
-    for i = 1:length(g00_value)
-        
-        jacobian_eval = zeros(length(jacobian_1));
-        %evaluating the jacobian
-        for j = 1:length(jacobian_eval)
-            for k = 1:length(jacobian_eval)
-            jacobian_eval(j, k) = pd_evaluation(jacobian_1(j, k), mu, mu_val, s, s_val(h), h1, h1_val, h2, h2_val, h3, h3_val, g00, g00_value(i), g01, g01_value(i)); 
-            end
-        end
-
-        det_jac = det(jacobian_eval);
-        if det_jac < 0
-            plot(g00_value(i), g01_value(i), 'square', 'MarkerFaceColor', 'k', 'MarkerEdgeColor', 'k', 'MarkerSize', 8)
-        else
-            plot(g00_value(i), g01_value(i), 'o', 'Color', 'k', 'LineWidth', 2, 'MarkerSize', 8)
-        end
-
-        [eigenvectors, eigenvalues] = eig(jacobian_eval);
-        for j = 1:length(eigenvectors)
-            slope = eigenvectors(2, j)/eigenvectors(1, j);
-            x = linspace(g00_value(i)-.2, g00_value(i)+.2, 50);
-            y = slope*(x - g00_value(i)) + g01_value(i);
-            if det_jac < 0 && sum(eigenvalues(:, j)) < 0 
-               plot(x, y, 'k', 'LineStyle', '--')
-            else 
-               plot(x, y, 'k');
-            end
-        end
-
-        %creates a small range of values near the fixed point
-        g00_input_values = 0:1/(iterations-1):1;
-        g01_input_values = 0:.5/(iterations-1):.5;
-
-        %creates coordinate data for the quiver plot using meshgrid
-        [g00_coordinates, g01_coordinates] = meshgrid(g00_input_values, g01_input_values);
-
-        %creates a blank array to store vector values for the quiver plot
-        g00_vector_values = zeros(iterations, iterations);
-        g01_vector_values = zeros(iterations, iterations);
-
-        %generates the vectors for the quiver plot
-        for j = 1:iterations
-            for k = 1:iterations
-                [g00_vector, g01_vector] = quiver_plot_vectors(g00_eqn, g01_eqn, g00_coordinates(j, k), g01_coordinates(j, k), g00, g01);
-                g00_vector_values(j, k) = g00_vector;
-                g01_vector_values(j, k) = g01_vector;
-            end
-        end
-
-        lineobj_1 = streamline(g00_coordinates, g01_coordinates, g00_vector_values, g01_vector_values, .3, 0, [1, 1000000]);
-        lineobj_1.Color = "#EDB120";
-
+        % lineobj_1 = streamline(g00_coordinates, g01_coordinates, g00_vector_values, g01_vector_values, .3, 0, [0.01, 1000000]);
+        % lineobj_1.Color = "#EDB120";
+        % 
         % lineobj_2 = streamline(g00_coordinates, g01_coordinates, g00_vector_values, g01_vector_values, 0, .3, [0.01, 1000000]);
         % lineobj_2.Color = "#7E2F8E";
         % 
         % lineobj_3 = streamline(g00_coordinates, g01_coordinates, g00_vector_values, g01_vector_values, .27, .15, [0.01, 1000000]);
         % lineobj_3.Color = "#77AC30";
         % 
-        lineobj_4 = streamline(g00_coordinates, g01_coordinates, g00_vector_values, g01_vector_values, .35, .4, [0.1, 1000000]);
-        lineobj_4.Color = "#4DBEEE";
+        % lineobj_4 = streamline(g00_coordinates, g01_coordinates, g00_vector_values, g01_vector_values, .35, .4, [0.01, 1000000]);
+        % lineobj_4.Color = "#4DBEEE";
         % 
         % lineobj_5 = streamline(g00_coordinates, g01_coordinates, g00_vector_values, g01_vector_values, .9, .05, [0.01, 1000000]);
         % lineobj_5.Color = "#A2142F";
 
-        quiver(g00_coordinates, g01_coordinates, g00_vector_values, g01_vector_values, 'Color', [.7 .7 .7])
+        %quiver(g00_coordinates, g01_coordinates, g00_vector_values, g01_vector_values, 'Color', [.7 .7 .7])
 
-    end
+    % end
     
-    annotation('textbox', dim, 'String', parameters_str,'FontSize', 12, 'FitBoxToText','on')
-    sgtitle('2HEs: Nullclines for Dominant Allele', 'FontSize', 16)
-    if h == 1
-        title('s<mu', 'FontSize', 14)
-    elseif h == 2
-        title('s>mu', 'FontSize', 14)
-    else
-        title('s>>mu', 'FontSize', 14)
-    end
-    
-    xlabel('g00', 'FontSize', 14)
-    if h == 1
-        ylabel('g01', 'FontSize', 14)
-    end
-    xlim([0 1])
-    ylim([0 .5])
-    if h == 3
-        legend('g00 nullcline', 'g01 nullcline', 'stable node', '', '', '', '', '', '', '', '', 'saddle point', '', 'eigenvectors', 'FontSize', 12)
-    end
+    % annotation('textbox', dim, 'String', parameters_str,'FontSize', 12, 'FitBoxToText','on')
+    % sgtitle('2HEs: Nullclines for Dominant Allele', 'FontSize', 16)
+    % if h == 1
+    %     title('s<mu', 'FontSize', 14)
+    % elseif h == 2
+    %     title('s>mu', 'FontSize', 14)
+    % else
+    %     title('s>>mu', 'FontSize', 14)
+    % end
+    % 
+    % xlabel('g00', 'FontSize', 14)
+    % if h == 1
+    %     ylabel('g01', 'FontSize', 14)
+    % end
+    % xlim([0 1])
+    % ylim([0 .5])
+    % if h == 3
+    %     legend('g00 nullcline', 'g01 nullcline', 'stable node', '', '', '', '', '', '', '', '', 'saddle point', '', 'eigenvectors', 'FontSize', 12)
+    % end
 end
 
 
