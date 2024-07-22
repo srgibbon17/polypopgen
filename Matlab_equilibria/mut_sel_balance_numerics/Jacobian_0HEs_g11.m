@@ -3,13 +3,13 @@
 
 iterations = 1; % number of steps or number of data points to generate
 
-s_init_val = .3; % starting s value
+s_init_val = 9.4815e-6; % starting s value
 s_step_size = 1e-7; % size of change in s for each iteration
 
 mu_val = 1e-6; % constant value of mutation rate
-h1_val = .25; % h1 dominance coefficient value, constant
-h2_val = .5; % h2 dominance coefficient value, constant
-h3_val = .75; % h3 dominance coefficient value, constant
+h1_val = 1; % h1 dominance coefficient value, constant
+h2_val = 1; % h2 dominance coefficient value, constant
+h3_val = 1; % h3 dominance coefficient value, constant
 
 syms g00 g01 g10 g11 s h1 h2 h3 mu
 
@@ -48,14 +48,14 @@ mut_eqn_set = [mut_g00, mut_g01, mut_g10, mut_g11];
 
 for i = 1:length(mut_eqn_set)
     % removes g11 from the equation by replacing it with 1-(g00+g01+g10)
-    mut_eqn_set(i) = subs(mut_eqn_set(i), g11, 1-(g00+g01+g10));
+    mut_eqn_set(i) = subs(mut_eqn_set(i), g10, 1-(g00+g01+g11));
 end
 
 %find the fixed points of the system given the input parameters
-[g00_value, g01_value, g10_value] = numeric_solver(mut_eqn_set(1), mut_eqn_set(2), mut_eqn_set(3), mu, mu_val, s, s_init_val, h1, h1_val, h2, h2_val, h3, h3_val, g00, g01, g10);
+[g00_value, g01_value, g11_value] = numeric_solver(mut_eqn_set(1), mut_eqn_set(2), mut_eqn_set(4), mu, mu_val, s, s_init_val, h1, h1_val, h2, h2_val, h3, h3_val, g00, g01, g11);
 
 %creates the jacobian matrix for the system before subbing parameter values
-jacobian_1 = [diff(mut_eqn_set(1), g00), diff(mut_eqn_set(1), g01), diff(mut_eqn_set(1), g10); diff(mut_eqn_set(2), g00), diff(mut_eqn_set(2), g01), diff(mut_eqn_set(2), g10); diff(mut_eqn_set(3), g00), diff(mut_eqn_set(3), g01), diff(mut_eqn_set(3), g10)];
+jacobian_1 = [diff(mut_eqn_set(1), g00), diff(mut_eqn_set(1), g01), diff(mut_eqn_set(1), g11); diff(mut_eqn_set(2), g00), diff(mut_eqn_set(2), g01), diff(mut_eqn_set(2), g11); diff(mut_eqn_set(4), g00), diff(mut_eqn_set(4), g01), diff(mut_eqn_set(4), g11)];
 
 % for each fixed point, evaluates the jacobian at that point
 % for the evaluated jacobian, calculates eigenvalues and vectors
@@ -65,7 +65,7 @@ for i = 1:length(g00_value)
     %evaluating each entry of the jacobian
     for j = 1:length(jacobian_1)
         for k = 1:length(jacobian_1)
-            jacobian_eval(j, k) = pd_evaluation(jacobian_1(j, k), mu, mu_val, s, s_init_val, h1, h1_val, h2, h2_val, h3, h3_val, g00, g00_value(i), g01, g01_value(i), g10, g10_value(i));
+            jacobian_eval(j, k) = pd_evaluation(jacobian_1(j, k), mu, mu_val, s, s_init_val, h1, h1_val, h2, h2_val, h3, h3_val, g00, g00_value(i), g01, g01_value(i), g11, g11_value(i));
         end
     end
     
@@ -73,7 +73,7 @@ for i = 1:length(g00_value)
     [eigenvectors, eigenvalues] = eig(jacobian_eval);
 
     %creates a string of the current point
-    current_pt_str = strcat(string(g00_value(i)), ', ', string(g01_value(i)), ', ', string(g10_value(i)));
+    current_pt_str = strcat(string(g00_value(i)), ', ', string(g01_value(i)), ', ', string(g11_value(i)));
 
     %displays the stability of the current fixed point
     %if all eigenvalues are <0=stable, if all >0=unstable, else saddle
@@ -109,7 +109,7 @@ end
 % annotation('textbox', dim, 'String', parameters_str, 'FitBoxToText','on')
 
 %function which uses vpasolve to evaluate the fixed points of the system
-function [g00_value, g01_value, g10_value] = numeric_solver(mut_g00_eqn, mut_g01_eqn, mut_g10_eqn, mu, mut_value, s, sel_value, h1, h1_value, h2, h2_value, h3, h3_value, g00, g01, g10)
+function [g00_value, g01_value, g11_value] = numeric_solver(mut_g00_eqn, mut_g01_eqn, mut_g11_eqn, mu, mut_value, s, sel_value, h1, h1_value, h2, h2_value, h3, h3_value, g00, g01, g11)
 
     g00_eqn = subs(mut_g00_eqn, mu, mut_value);
     g00_eqn = subs(g00_eqn, s, sel_value);
@@ -123,19 +123,19 @@ function [g00_value, g01_value, g10_value] = numeric_solver(mut_g00_eqn, mut_g01
     g01_eqn = subs(g01_eqn, h2, h2_value);
     g01_eqn = subs(g01_eqn, h3, h3_value);
 
-    g10_eqn = subs(mut_g10_eqn, mu, mut_value);
-    g10_eqn = subs(g10_eqn, s, sel_value);
-    g10_eqn = subs(g10_eqn, h1, h1_value);
-    g10_eqn = subs(g10_eqn, h2, h2_value);
-    g10_eqn = subs(g10_eqn, h3, h3_value);
+    g11_eqn = subs(mut_g11_eqn, mu, mut_value);
+    g11_eqn = subs(g11_eqn, s, sel_value);
+    g11_eqn = subs(g11_eqn, h1, h1_value);
+    g11_eqn = subs(g11_eqn, h2, h2_value);
+    g11_eqn = subs(g11_eqn, h3, h3_value);
 
-    [g00_value, g01_value, g10_value] = vpasolve([g00_eqn, g01_eqn, g10_eqn], [g00, g01, g10]);
+    [g00_value, g01_value, g11_value] = vpasolve([g00_eqn, g01_eqn, g11_eqn], [g00, g01, g11]);
 
 end
 
 %function which acts as a partial derivative evaluation tool 
 %used to evaluate the jacobian at each entry
-function [pd_value] = pd_evaluation(jacobian_entry, mu, mu_value, s, s_value, h1, h1_value, h2, h2_value, h3, h3_value, g00, g00_stable_value, g01, g01_stable_value, g10, g10_stable_value)
+function [pd_value] = pd_evaluation(jacobian_entry, mu, mu_value, s, s_value, h1, h1_value, h2, h2_value, h3, h3_value, g00, g00_stable_value, g01, g01_stable_value, g11, g11_stable_value)
 
     pd_value = subs(jacobian_entry, mu, mu_value);
     pd_value = subs(pd_value, s, s_value);
@@ -144,6 +144,6 @@ function [pd_value] = pd_evaluation(jacobian_entry, mu, mu_value, s, s_value, h1
     pd_value = subs(pd_value, h3, h3_value);
     pd_value = subs(pd_value, g00, g00_stable_value);
     pd_value = subs(pd_value, g01, g01_stable_value);
-    pd_value = subs(pd_value, g10, g10_stable_value);
+    pd_value = subs(pd_value, g11, g11_stable_value);
 
 end

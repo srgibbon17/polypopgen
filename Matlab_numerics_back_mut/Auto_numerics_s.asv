@@ -2,8 +2,8 @@
 
 iterations = 100; % number of steps or number of data points to generate
 
-s_init_val = 1.7e-4; % starting s value
-s_step_size = 1e-7; % size of change in s for each iteration
+s_init_val = 8e-; % starting s value
+s_step_size = 1e-5; % size of change in s for each iteration
 
 mu_val = 1e-6; % constant value of mutation rate
 nu_val = 1e-7; % constant value of backward mutation rate

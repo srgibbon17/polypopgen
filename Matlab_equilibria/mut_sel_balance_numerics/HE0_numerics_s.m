@@ -1,14 +1,14 @@
 % for 0 HE allos, creates a 2D plot of q values over variable s
 
-iterations = 1; % number of steps or number of data points to generate
+iterations = 100; % number of steps or number of data points to generate
 
-s_init_val = 1e-5; % starting s value
-s_step_size = 1e-7; % size of change in s for each iteration
+s_init_val = 9.4815e-6; % starting s value
+s_step_size = 1e-10; % size of change in s for each iteration
 
 mu_val = 1e-6; % constant value of mutation rate
-h1_val = .25; % h1 dominance coefficient value, constant
-h2_val = .5; % h2 dominance coefficient value, constant
-h3_val = .75; % h3 dominance coefficient value, constant
+h1_val = 1; % h1 dominance coefficient value, constant
+h2_val = 1; % h2 dominance coefficient value, constant
+h3_val = 1; % h3 dominance coefficient value, constant
 
 syms g00 g01 g10 g11 s h1 h2 h3 mu
 
@@ -102,7 +102,7 @@ dim = [0.5 0.5 0.3 0.3];
 %plots a 2D figure of the stable q values over s
 figure
 
-scatter(s_values_array, q_values_array, 'filled')
+scatter(s_values_array, q_values_array)
 xscale log
 title('HE0: Allele Frequency vs. Selection Coefficient')
 ylabel('q (ancestral allele frequency)')
