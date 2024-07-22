@@ -22,21 +22,24 @@ Additionally, if the self_rate is set to zero, selfing will still occur with pro
 """
 
 # Let's define some parameters
-p = .5  # allele frequency for A
-q = 1-p  # allele frequency for a
+p = .3  # allele frequency for A (derived allele)
+q = 1-p  # allele frequency for a (ancestral allele)
+g0_init_value = .3
+g1_init_value = 0
+g2_init_value = 1 - g0_init_value - g1_init_value
 N = 10000  # population size
 g = 1000  # number of generations
-g_bottleneck_start = 400  # generation at which bottleneck starts
+g_bottleneck_start = 100000  # generation at which bottleneck starts
 g_bottleneck_length = 200  # number of generations for which the bottleneck lasts
 N_bottleneck = 2000  # population size during the bottleneck
-s = 0.001  # selection coefficient
-h1 = .25  # dominance coefficient for G3
-h2 = .5  # dominance coefficient for G2
-h3 = .75  # dominance coefficient for G1
-mu = 0.00001  # mutation rate (from 'A' to 'a')
-nu = 0.00001  # mutation rate (from 'a' to 'A')
-self_rate = 0.33  # selfing rate 
-alpha = 1/12  # probability of double reduction; shown to have a maximum of 1/6=.16667
+s = 1e-5  # selection coefficient
+h1 = 1  # dominance coefficient for G3
+h2 = 1  # dominance coefficient for G2
+h3 = 1  # dominance coefficient for G1
+mu = 1e-6  # mutation rate (from 'A' to 'a')
+nu = 1e-7  # mutation rate (from 'a' to 'A')
+self_rate = 0  # selfing rate 
+alpha = 0  # probability of double reduction; shown to have a maximum of 1/6=.16667
 
 # Let's create some functions
 
@@ -78,24 +81,24 @@ def gamete_frequencies(gametes_j, mutation_status):
         mutation_boolean: True if mutation has occurred in present generation, False otherwise
 
     Returns:
-        g00_freq: gamete freq. (pre or post mutation) of g00 
-        g01_freq: gamete freq. (pre or post mutation) of g01 and g10 (heterozygotes in general)
-        g11_freq: gamete freq. (pre or post mutation) of g11
+        g0_freq: gamete freq. (pre or post mutation) of g0 
+        g1_freq: gamete freq. (pre or post mutation) of g1
+        g2_freq: gamete freq. (pre or post mutation) of g2
     """
 
 
-    g00 = gametes_j.count(['A', 'A'])/(2*N_j)
-    g11 = gametes_j.count(['a', 'a'])/(2*N_j)
-    g01 = 1 - g00 - g11
+    g0 = gametes_j.count(['A', 'A'])/(2*N_j)
+    g2 = gametes_j.count(['a', 'a'])/(2*N_j)
+    g1 = 1 - g0 - g2
 
     if mutation_status == 'post-mutation':
-        g00_freq_post_mut.append(g00)
-        g01_freq_post_mut.append(g01)
-        g11_freq_post_mut.append(g11)
+        g0_freq_post_mut.append(g0)
+        g1_freq_post_mut.append(g1)
+        g2_freq_post_mut.append(g2)
     elif mutation_status== 'pre-mutation':
-        g00_freq_pre_mut.append(g00)
-        g01_freq_pre_mut.append(g01)
-        g11_freq_pre_mut.append(g11)
+        g0_freq_pre_mut.append(g0)
+        g1_freq_pre_mut.append(g1)
+        g2_freq_pre_mut.append(g2)
 
 
 # counts relative genotype frequencies
@@ -328,13 +331,13 @@ gen0 = []
 # initializes variables to hold the gamete frequencies for all generations 
 # these lists are delineated across both pre and post mutation as well as g00, g01/g10, and g11
 # pre mutation
-g00_freq_pre_mut = []
-g01_freq_pre_mut = [] 
-g11_freq_pre_mut = []  
+g0_freq_pre_mut = []
+g1_freq_pre_mut = [] 
+g2_freq_pre_mut = []  
 # post mutation
-g00_freq_post_mut = []
-g01_freq_post_mut = []  
-g11_freq_post_mut = []  
+g0_freq_post_mut = []
+g1_freq_post_mut = []  
+g2_freq_post_mut = []  
 
 # initializes variables to hold the genotype frequencies for all generations
 G0_freq = []
@@ -344,9 +347,14 @@ G3_freq = []
 G4_freq = []
 
 # creates the initial generation of N individuals using random sampling with replacement
-for i in range(N):  
-    individual = random.choices(['A', 'a'], [p, q], k=4)
-    gen0.append(individual)
+#for i in range(N):  
+#    individual = random.choices(['A', 'a'], [p, q], k=4)
+#    gen0.append(individual)
+
+# alternative sampling scheme which uses random sampling of gametes instead of alleles
+for i in range(N):
+    individual = random.choices([['A', 'A'], ['A', 'a'], ['a', 'a']], [g0_init_value, g1_init_value, g2_init_value], k=2)
+    gen0.append(individual[0] + individual[1])
 
 # set the pre-selection generation to initially be the 0th generation created immediately above
 gen_j_pre_sel = gen0  
@@ -398,10 +406,10 @@ def plot_gamete_and_genotype_freq():
     fig, axs = plt.subplots(2, 1, sharex = 'col', sharey = 'row')  
 
     fig.set_size_inches(14, 8) 
-    axs[0].plot(x_index, g00_freq_pre_mut, color = '#008aff')
-    axs[0].plot(x_index, g01_freq_pre_mut, color = '#00a50e')
-    axs[0].plot(x_index, g11_freq_pre_mut, color = '#da1b00')
-    axs[0].legend(['g00', 'g01', 'g11'])
+    axs[0].plot(x_index, g0_freq_pre_mut, color = '#008aff')
+    axs[0].plot(x_index, g1_freq_pre_mut, color = '#00a50e')
+    axs[0].plot(x_index, g2_freq_pre_mut, color = '#da1b00')
+    axs[0].legend(['g0', 'g1', 'g2'])
     axs[0].set_ylabel('Gamete Frequencies')
 
     axs[1].plot(x_index, G0_freq, color = '#008aff')
@@ -435,12 +443,12 @@ def plot_gamete_freq():
     fig, axs = plt.subplots(1, 3, sharex = 'col', sharey = 'row')  
 
     fig.set_size_inches(16, 6) 
-    axs[0].plot(x_index, g00_freq_pre_mut)
-    axs[0].set_xlabel('g00')
-    axs[1].plot(x_index, g01_freq_pre_mut)
-    axs[1].set_xlabel('g01')
-    axs[2].plot(x_index, g11_freq_pre_mut)
-    axs[2].set_xlabel('g11')
+    axs[0].plot(x_index, g0_freq_pre_mut)
+    axs[0].set_xlabel('g0')
+    axs[1].plot(x_index, g1_freq_pre_mut)
+    axs[1].set_xlabel('g1')
+    axs[2].plot(x_index, g2_freq_pre_mut)
+    axs[2].set_xlabel('g2')
 
     # labels
     fig.supxlabel('Time (in generations)')
@@ -508,10 +516,10 @@ def plot_gamete_freq_single_axis():
     fig, ax = plt.subplots(figsize=(16, 6))
     plt.axis([0, g-1, -.1, 1.1])  
  
-    ax.plot(x_index, g00_freq_pre_mut, color = '#008aff')
-    ax.plot(x_index, g01_freq_pre_mut, color = '#00a50e' )
-    ax.plot(x_index, g11_freq_pre_mut, color = '#da1b00')
-    ax.legend(['g00', 'g01', 'g11'])
+    ax.plot(x_index, g0_freq_pre_mut, color = '#008aff')
+    ax.plot(x_index, g1_freq_pre_mut, color = '#00a50e' )
+    ax.plot(x_index, g2_freq_pre_mut, color = '#da1b00')
+    ax.legend(['g0', 'g1', 'g2'])
     
     # labels
     fig.supxlabel('Time (in generations)')
@@ -556,25 +564,25 @@ def plot_genotype_freq_single_axis():
 # plots the gamete differential between before and after mutation on a single axis
 # note: only useful for simulations with a 200 or fewer generations
 def plot_gamete_diff_single_axis():
-    global g00_freq_pre_mut
-    global g01_freq_pre_mut
-    global g11_freq_pre_mut
+    global g0_freq_pre_mut
+    global g1_freq_pre_mut
+    global g2_freq_pre_mut
 
-    global g00_freq_post_mut
-    global g01_freq_post_mut
-    global g11_freq_post_mut
+    global g0_freq_post_mut
+    global g1_freq_post_mut
+    global g2_freq_post_mut
 
-    g00_freq_pre_mut = np.array(g00_freq_pre_mut)
-    g00_freq_post_mut = np.array(g00_freq_post_mut)
-    g00_freq_diff = g00_freq_post_mut - g00_freq_pre_mut
+    g0_freq_pre_mut = np.array(g0_freq_pre_mut)
+    g0_freq_post_mut = np.array(g0_freq_post_mut)
+    g0_freq_diff = g0_freq_post_mut - g0_freq_pre_mut
 
-    g01_freq_pre_mut = np.array(g01_freq_pre_mut)
-    g01_freq_post_mut = np.array(g01_freq_post_mut)
-    g01_freq_diff = g01_freq_post_mut - g01_freq_pre_mut
+    g1_freq_pre_mut = np.array(g1_freq_pre_mut)
+    g1_freq_post_mut = np.array(g1_freq_post_mut)
+    g1_freq_diff = g1_freq_post_mut - g1_freq_pre_mut
 
-    g11_freq_pre_mut = np.array(g11_freq_pre_mut)
-    g11_freq_post_mut = np.array(g11_freq_post_mut)
-    g11_freq_diff = g11_freq_post_mut - g11_freq_pre_mut
+    g2_freq_pre_mut = np.array(g2_freq_pre_mut)
+    g2_freq_post_mut = np.array(g2_freq_post_mut)
+    g2_freq_diff = g2_freq_post_mut - g2_freq_pre_mut
 
     x_index = range(g)  # creates a discrete time variable to plot against
     fig, ax = plt.subplots(figsize=(16, 6))  
@@ -584,9 +592,9 @@ def plot_gamete_diff_single_axis():
     fig.suptitle('Gamete Differentials Over Time')
     fig.supylabel('Gamete Differential (post-mut - pre-mut)')
 
-    ax.plot(x_index, g00_freq_diff, color = '#008aff')
-    ax.plot(x_index, g01_freq_diff, color = '#00a50e')
-    ax.plot(x_index, g11_freq_diff, color = '#da1b00')
+    ax.plot(x_index, g0_freq_diff, color = '#008aff')
+    ax.plot(x_index, g1_freq_diff, color = '#00a50e')
+    ax.plot(x_index, g2_freq_diff, color = '#da1b00')
     ax.legend(['g00', 'g01', 'g11'])
 
     # creates a light gray shaded region for the population shift or bottleneck
