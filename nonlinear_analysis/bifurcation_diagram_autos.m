@@ -3,17 +3,17 @@
 
 iterations = 100; % number of steps or number of data points to generate
 
-x_lower_lim = 1e-4; % should be ~ equal to mu-val
-x_upper_lim = 1e-1; % should be approximately 3 orders of magnitude larger than x lower lim
+x_lower_lim = 1e-6; % should be ~ equal to mu-val
+x_upper_lim = 1e-3; % should be approximately 3 orders of magnitude larger than x lower lim
 
-s_val = logspace(-4, -1, iterations);
+s_val = logspace(-6, -3, iterations);
 %s_val = [1e-7, 9.16e-6, 1e-5, 2e-5, 1.75e-4, 1e-3]; % starting s value
 %s_val = 1e-5;
 
-mu_val = 1e-4; % constant value of forward mutation rate
-nu_val = 1e-5; % constant value of backward mutation rate
+mu_val = 1e-6; % constant value of forward mutation rate
+nu_val = 1e-7; % constant value of backward mutation rate
 mut_ratio_val = mu_val/nu_val; % ratio of forward to backward mutation rate
-a_val = 0; % constant value of alpha (double reduction rate)
+a_val = 1/12; % constant value of alpha (double reduction rate)
 
 h1_val = 1; % h1 dominance coefficient value, constant
 h2_val = 1; % h2 dominance coefficient value, constant
