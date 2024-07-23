@@ -1,14 +1,17 @@
 % for autos, classification of fixed points using linear stability
 % analysis, the Jacobian matrix, and eigendirections
 
-iterations = 11; % number of steps or number of data points to generate
+iterations = 100; % number of steps or number of data points to generate
 
-s_val = logspace(-6, -3, 1000);
+x_lower_lim = 1e-4; % should be ~ equal to mu-val
+x_upper_lim = 1e-1; % should be approximately 3 orders of magnitude larger than x lower lim
+
+s_val = logspace(-4, -1, iterations);
 %s_val = [1e-7, 9.16e-6, 1e-5, 2e-5, 1.75e-4, 1e-3]; % starting s value
 %s_val = 1e-5;
 
-mu_val = 1e-6; % constant value of forward mutation rate
-nu_val = 1e-7; % constant value of backward mutation rate
+mu_val = 1e-4; % constant value of forward mutation rate
+nu_val = 1e-5; % constant value of backward mutation rate
 mut_ratio_val = mu_val/nu_val; % ratio of forward to backward mutation rate
 a_val = 0; % constant value of alpha (double reduction rate)
 
@@ -122,21 +125,87 @@ parameters_str = {'Parameters:', mu_str, nu_str, mut_ratio_str, h1_str, h2_str, 
 dim = [0.5 0.5 0.3 0.3];
 
 figure 
+%%%
+subplot(2, 2, 1)
 
-plot(s_stable_1, g0_stable_1)
+plot(s_stable_1, g0_stable_1, 'Color', 'k', 'LineWidth', 1.5, 'DisplayName', 'Stable')
 hold on
-plot(s_unstable, g0_unstable, 'LineStyle','--')
-plot(s_stable_2, g0_stable_2)
-   
-annotation('textbox', dim, 'String', parameters_str,'FontSize', 8, 'FitBoxToText','on')
-    
-xlabel('s', 'FontSize', 12)
-ylabel('g0', 'FontSize', 12)
+plot(s_unstable, g0_unstable, 'LineStyle','--', 'Color', 'k', 'LineWidth', 1.5, 'DisplayName', 'Unstable')
+plot(s_stable_2, g0_stable_2, 'Color', 'k', 'LineWidth', 1.5, 'DisplayName', 'Stable')
+plot(s_bifn_value_1, g0_bifn_value_1, '.', 'Color', '#0072BD', 'MarkerSize', 20, 'DisplayName', 'Bifurcation Point 1')
+plot(s_bifn_value_2, g0_bifn_value_2, '.', 'Color', '#0072BD','MarkerSize', 20, 'DisplayName', 'Bifurcation Point 2')
+
+xlabel('s', 'FontSize', 14)
+ylabel('g0', 'FontSize', 14)
   
 xscale log
 
-xlim([0 1])
+xlim([0 x_upper_lim])
 ylim([0 1])
+annotation('textbox', dim, 'String', parameters_str,'FontSize', 10, 'FitBoxToText','on')
+
+%%%
+subplot(2, 2, 2)
+
+plot(s_stable_1, g1_stable_1, 'Color', 'k', 'LineWidth', 1.5, 'DisplayName', 'Stable')
+hold on
+plot(s_unstable, g1_unstable, 'LineStyle','--', 'Color', 'k', 'LineWidth', 1.5, 'DisplayName', 'Unstable')
+plot(s_stable_2, g1_stable_2, 'Color', 'k', 'LineWidth', 1.5, 'DisplayName', 'Stable')
+plot(s_bifn_value_1, g1_bifn_value_1, '.', 'Color', '#0072BD', 'MarkerSize', 20, 'DisplayName', 'Bifurcation Point 1')
+plot(s_bifn_value_2, g1_bifn_value_2, '.', 'Color', '#0072BD','MarkerSize', 20, 'DisplayName', 'Bifurcation Point 2')
+
+xlabel('s', 'FontSize', 14)
+ylabel('g1', 'FontSize', 14)
+  
+xscale log
+
+xlim([0 x_upper_lim])
+ylim([0 1])
+
+legend()
+
+%%%
+subplot(2, 2, 3)
+
+g2_stable_1 = ones(1, length(g0_stable_1)) - g0_stable_1 - g1_stable_1;
+g2_stable_2 = ones(1, length(g0_stable_2)) - g0_stable_2 - g1_stable_2;
+g2_unstable = ones(1, length(g0_unstable)) - g0_unstable - g1_unstable;
+
+plot(s_stable_1, g2_stable_1, 'Color', 'k', 'LineWidth', 1.5, 'DisplayName', 'Stable')
+hold on
+plot(s_unstable, g2_unstable, 'LineStyle','--', 'Color', 'k', 'LineWidth', 1.5, 'DisplayName', 'Unstable')
+plot(s_stable_2, g2_stable_2, 'Color', 'k', 'LineWidth', 1.5, 'DisplayName', 'Stable')
+plot(s_bifn_value_1, 1-g0_bifn_value_1-g1_bifn_value_1, '.', 'Color', '#0072BD', 'MarkerSize', 20, 'DisplayName', 'Bifurcation Point 1')
+plot(s_bifn_value_2, 1-g0_bifn_value_2-g1_bifn_value_2, '.', 'Color', '#0072BD','MarkerSize', 20, 'DisplayName', 'Bifurcation Point 2')
+
+xlabel('s', 'FontSize', 14)
+ylabel('g2', 'FontSize', 14)
+  
+xscale log
+
+xlim([0 x_upper_lim])
+ylim([0 1])
+
+%%%
+subplot(2, 2, 4)
+
+plot(s_stable_1, g0_stable_1+.5*g1_stable_1, 'Color', 'k', 'LineWidth', 1.5, 'DisplayName', 'Stable')
+hold on
+plot(s_unstable, g0_unstable+.5*g1_unstable, 'LineStyle','--', 'Color', 'k', 'LineWidth', 1.5, 'DisplayName', 'Unstable')
+plot(s_stable_2, g0_stable_2+.5*g1_stable_2, 'Color', 'k', 'LineWidth', 1.5, 'DisplayName', 'Stable')
+plot(s_bifn_value_1, g0_bifn_value_1+.5*g1_bifn_value_1, '.', 'Color', '#0072BD', 'MarkerSize', 20, 'DisplayName', 'Bifurcation Point 1')
+plot(s_bifn_value_2, g0_bifn_value_2+.5*g1_bifn_value_2, '.', 'Color', '#0072BD','MarkerSize', 20, 'DisplayName', 'Bifurcation Point 2')
+
+xlabel('s', 'FontSize', 14)
+ylabel('q', 'FontSize', 14)
+  
+xscale log
+
+xlim([0 x_upper_lim])
+ylim([0 1])
+
+sgtitle('Bifurcation Diagram: Autos', 'FontSize', 18)
+
 
 
 %function which uses vpasolve to evaluate the fixed points of the system
