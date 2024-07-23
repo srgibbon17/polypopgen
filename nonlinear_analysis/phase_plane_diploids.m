@@ -1,11 +1,11 @@
 % for diploids, a nonlinear model and analysis
 
-iterations = 100;
+iterations = 1000;
 
-s_val = .99; % starting s value
+s_val = 1e-3; % starting s value
 
-mu_val = 1e-6; % constant value of forward mutation rate
-nu_val = 1e-7; % constant value of backward mutation rate
+mu_val = 1e-4; % constant value of forward mutation rate
+nu_val = 1e-6; % constant value of backward mutation rate
 mut_ratio_val = mu_val/nu_val; % ratio of forward to backward mutation rate
 h_val = 1; % h1 dominance coefficient value, constant
 
@@ -44,7 +44,7 @@ mut_g0 = subs(mut_g0, g1, 1-g0);
 %derivative_g0 = diff(mut_g0, g0);
 %derivative_g1 = diff(mut_g1, g1);
 
-g0_values = linspace(-1, 2, iterations);
+g0_values = linspace(0, 1, iterations);
 g0_diff_values = [1, iterations];
 
 %g1_values = linspace(-1, 2, iterations);
