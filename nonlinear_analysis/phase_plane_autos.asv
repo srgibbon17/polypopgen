@@ -182,8 +182,8 @@ for h = 1:length(s_val)
     hold on
     null_2 = plot(x_1, y_2, 'DisplayName', 'g1 nullcline');
     null_2.Color = "#D95319";
-    % HWE = plot(x_1, y_3);
-    % HWE.Color = "#77AC30";
+    HWE = plot(x_1, y_3);
+    HWE.color = "#77AC30";
 
     for i = 1:length(g0_value)
         
