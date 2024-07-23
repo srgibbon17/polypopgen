@@ -4,12 +4,11 @@
 iterations = 11; % number of steps or number of data points to generate
 
 s_val = [1e-7, 9.16e-6, 1e-5, 2e-5, 1.75e-4, 1e-3]; % starting s value
-%s_val = .5;
+%s_val = 1e-5;
 
 mu_val = 1e-6; % constant value of forward mutation rate
 nu_val = 1e-7; % constant value of backward mutation rate
-mut_ratio_val = mu
-_val/nu_val; % ratio of forward to backward mutation rate
+mut_ratio_val = mu_val/nu_val; % ratio of forward to backward mutation rate
 a_val = 0; % constant value of alpha (double reduction rate)
 
 h1_val = 1; % h1 dominance coefficient value, constant
@@ -67,6 +66,12 @@ end
 
 %creates the Jacobian of the system
 jacobian_1 = [diff(mut_exp_set(1), g0), diff(mut_exp_set(1), g1); diff(mut_exp_set(2), g0), diff(mut_exp_set(2), g1)];
+
+%bifurcation analysis using det(eigenvalues)
+[g0_bifn_value_1, g1_bifn_value_1, s_bifn_value_1] = bifn_numeric_solver(mut_exp_set(1), mut_exp_set(2), jacobian_1, mu, mu_val, nu, nu_val, h1, h1_val, h2, h2_val, h3, h3_val, a, a_val, g0, g1, s, [.545, .385, 9.2e-6]);
+
+[g0_bifn_value_2, g1_bifn_value_2, s_bifn_value_2] = bifn_numeric_solver(mut_exp_set(1), mut_exp_set(2), jacobian_1, mu, mu_val, nu, nu_val, h1, h1_val, h2, h2_val, h3, h3_val, a, a_val, g0, g1, s, [.015, .215, 1.75e-4]);
+
 
 figure
 
@@ -281,13 +286,6 @@ for h = 1:length(s_val)
     ylim([0 1])
 end
 
-
-%bifurcation analysis using det(Jacobian)
-
-det_jac_bifn = det(jacobian_1);
-
-[g0_bifn_value, g1_bifn_value, s_bifn_value] = bifn_numeric_solver(mut_exp_set(1), mut_exp_set(2), det_jac_bifn, mu, mu_val, nu, nu_val, h1, h1_val, h2, h2_val, h3, h3_val, a, a_val, g0, g1, s);
-
 %function which uses vpasolve to evaluate the fixed points of the system
 function [g0_value, g1_value] = numeric_solver(mut_g0_eqn, mut_g1_eqn, mu, mu_value, nu, nu_value, s, sel_value, h1, h1_value, h2, h2_value, h3, h3_value, a, a_value, g0, g1)
 
@@ -375,7 +373,7 @@ function [pd_value] = bifn_pd_evaluation(jacobian_entry, mu, mu_value, nu, nu_va
 
 end
 
-function [g0_bifn_value, g1_bifn_value, s_bifn_value] = bifn_numeric_solver(mut_g0_eqn, mut_g1_eqn, det_jacobian, mu, mu_value, nu, nu_value, h1, h1_value, h2, h2_value, h3, h3_value, a, a_value, g0, g1, s)
+function [g0_bifn_value, g1_bifn_value, s_bifn_value] = bifn_numeric_solver(mut_g0_eqn, mut_g1_eqn, jacobian, mu, mu_value, nu, nu_value, h1, h1_value, h2, h2_value, h3, h3_value, a, a_value, g0, g1, s, initial_conditions)
 
     g0_eqn = subs(mut_g0_eqn, mu, mu_value);
     g0_eqn = subs(g0_eqn, nu, nu_value);
@@ -391,13 +389,19 @@ function [g0_bifn_value, g1_bifn_value, s_bifn_value] = bifn_numeric_solver(mut_
     g1_eqn = subs(g1_eqn, h3, h3_value);
     g1_eqn = subs(g1_eqn, a, a_value);
 
-    det_jac_eqn = subs(det_jacobian, mu, mu_value);
-    det_jac_eqn = subs(det_jac_eqn, nu, nu_value);
-    det_jac_eqn = subs(det_jac_eqn, h1, h1_value);
-    det_jac_eqn = subs(det_jac_eqn, h2, h2_value);
-    det_jac_eqn = subs(det_jac_eqn, h3, h3_value);
-    det_jac_eqn = subs(det_jac_eqn, a, a_value);
+    jacobian_eval_bifn = jacobian;
 
-    [g0_bifn_value, g1_bifn_value, s_bifn_value] = vpasolve([g0_eqn, g1_eqn, det_jac_eqn], [g0, g1, s], [.55, .38, 9.16e-6]);
+    for j = 1:length(jacobian_eval_bifn)
+        for k = 1:length(jacobian_eval_bifn)
+            jacobian_eval_bifn(j, k) = bifn_pd_evaluation(jacobian(j, k), mu, mu_value, nu, nu_value, h1, h1_value, h2, h2_value, h3, h3_value, a, a_value); 
+        end
+    end
+
+    [bifn_eigenvectors, bifn_eigenvalues] = eig(jacobian_eval_bifn);
+
+    bifn_eig_det = det(bifn_eigenvalues) == 0;
+    
+    [g0_bifn_value, g1_bifn_value, s_bifn_value] = vpasolve([g0_eqn, g1_eqn, bifn_eig_det], [g0, g1, s], initial_conditions);
 
 end
+
