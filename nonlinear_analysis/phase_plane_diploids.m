@@ -1,16 +1,16 @@
 % for diploids, a nonlinear model and analysis
 clc
 
-iterations = 1000;
+iterations = 100;
 
-s_val = logspace(-7, -5, 1000);
-%s_val = 5e-7; % starting s value
+s_val = logspace(-7, -6, 100);
+%s_val = 2e-7; % starting s value
 
 mu_val = 5e-8; % constant value of forward mutation rate
 %mu_val = logspace(-9, -7, 100);
 nu_val = 1e-9; % constant value of backward mutation rate
 mut_ratio_val = mu_val/nu_val; % ratio of forward to backward mutation rate
-h_val = 1; % h1 dominance coefficient value, constant
+h_val = .791; % h1 dominance coefficient value, constant
 
 syms s q G0 G1 G2 g0 g1 h mu nu
 
