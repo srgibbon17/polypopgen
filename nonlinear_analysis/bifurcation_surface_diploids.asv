@@ -1,6 +1,6 @@
 % for diploids, a nonlinear model and analysis
 
-iterations = 20;
+iterations = 25;
 
 %s_val = logspace(-7, -5, 1000);
 s_val = 2e-7; % starting s value
@@ -50,7 +50,7 @@ g0_max_array = ones(iterations, iterations);
 g0_min_array = ones(iterations, iterations);
 
 s_max_array = ones(iterations, iterations);
-s_min_array = ones(iterations, iterations);
+s_min_array = zeros(iterations, iterations);
 
 [mu_coord, nu_coord] = meshgrid(mu_val, nu_val);
 
@@ -177,11 +177,11 @@ s_unstable = [];
 % ylim([0 1])
 
 figure
-surf(mu_coord, nu_coord, abs(s_max_array-s_min_array), g0_max_array-g0_min_array)
+surf(mu_coord, nu_coord, s_min_array./s_max_array, abs(g0_min_array-g0_max_array))
 
 xlabel('mu (forward mutation)')
 ylabel('nu (back mutation)')
-zlabel('|s1 - s2|')
+zlabel('s2/s1')
 xscale log
 yscale log
 
