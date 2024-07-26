@@ -177,14 +177,18 @@ s_unstable = [];
 % ylim([0 1])
 
 figure
-surf(mu_coord, nu_coord, s_max_array, g0_max_array)
+surf(mu_coord, nu_coord, abs(s_max_array-s_min_array), g0_max_array-g0_min_array)
 
-xlabel()
-ylabel()
-zlabel()
+xlabel('mu (forward mutation)')
+ylabel('nu (back mutation)')
+zlabel('|s1 - s2|')
+xscale log
+yscale log
 
 title("Diploid Bifurcation Surface")
 colorbar
+
+
 function [diff_eqn_value] = diff_eqn_eval(mut_exp_g0, mu, mu_value, nu, nu_value, s, s_value, h, h_value, g0, g0_sub_value)
 
     diff_eqn_value = subs(mut_exp_g0, mu, mu_value);
@@ -204,7 +208,7 @@ function [soln] = numeric_solver(mut_exp_g0, mu, mu_value, nu, nu_value, s, s_va
     soln = vpasolve(sub_eqn, g0);
 end
 
-function [g0_soln, h_soln] = bifn_numeric_solver(delta_g0, derivative_g0, mu, mu_value, nu, nu_value, h, h_value, g0, s)
+function [g0_soln, s_soln] = bifn_numeric_solver(delta_g0, derivative_g0, mu, mu_value, nu, nu_value, h, h_value, g0, s)
 
     delta_g0 = subs(delta_g0, mu, mu_value);
     delta_g0 = subs(delta_g0, nu, nu_value);
@@ -214,5 +218,5 @@ function [g0_soln, h_soln] = bifn_numeric_solver(delta_g0, derivative_g0, mu, mu
     derivative_g0 = subs(derivative_g0, nu, nu_value);
     derivative_g0 = subs(derivative_g0, h, h_value);
     
-    [g0_soln, h_soln] = vpasolve([delta_g0, derivative_g0], [g0, s]);
+    [g0_soln, s_soln] = vpasolve([delta_g0, derivative_g0], [g0, s]);
 end
