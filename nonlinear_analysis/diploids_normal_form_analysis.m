@@ -43,18 +43,18 @@ mut_g0 = subs(mut_g0, g1, 1-g0);
 
 mut_g0 = simplify(expand(mut_g0));
 
-%returns a list of symbolic coefficients of g0 from lowest order to highest
-coefficients = coeffs(mut_g0, g0);
-
-%flips order of symbolic coefficients to be from highest to lowest order
-coefficients = fliplr(coefficients);
-
-%defines components of the cubic formula
-delta_0 = coefficients(2)^2 - 3*coefficients(1)*coefficients(3);
-delta_1 = 2*coefficients(2)^3 - 9*coefficients(1)*coefficients(2)*coefficients(3) + 27*coefficients(1)^2*coefficients(4);
-
-%calculates the "determinant" of the cubic equation
-determinant = sqrt(delta_1^2 - 4*delta_0^3);
+% %returns a list of symbolic coefficients of g0 from lowest order to highest
+% coefficients = coeffs(mut_g0, g0);
+% 
+% %flips order of symbolic coefficients to be from highest to lowest order
+% coefficients = fliplr(coefficients);
+% 
+% %defines components of the cubic formula
+% delta_0 = coefficients(2)^2 - 3*coefficients(1)*coefficients(3);
+% delta_1 = 2*coefficients(2)^3 - 9*coefficients(1)*coefficients(2)*coefficients(3) + 27*coefficients(1)^2*coefficients(4);
+% 
+% %calculates the "determinant" of the cubic equation
+% determinant = sqrt(delta_1^2 - 4*delta_0^3);
 
 
 function [diff_eqn_value] = diff_eqn_eval(mut_exp_g0, mu, mu_value, nu, nu_value, s, s_value, h, h_value, g0, g0_sub_value)

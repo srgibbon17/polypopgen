@@ -193,29 +193,30 @@ h_val = 1; % h1 dominance coefficient value, constant
 % title("Diploid Bifurcation Surface")
 % colorbar
 
-h = .8;
-mu = .01;
-nu = .0001;
-s = .5;
+h = 0;
+mu = 1e-9;
+nu = 1e-7;
+s = 1e-7;
+k = 1e10;
 
-fun_1 = @(x)parameterized_bifn_functions(x, h, mu, nu);
-x0 = [.5, .5];
-x1 = [.02, .5];
+fun_1 = @(x)parameterized_bifn_functions(x, h, mu, nu, k);
+x0 = [.5, -.000001];
+x1 = [.999, -.000001];
 
-options = optimoptions('fsolve', 'Display','iter');
+options = optimoptions('fsolve', 'Display', 'iter', 'OptimalityTolerance', 1e-6, 'StepTolerance', 1e-6, 'FunctionTolerance', 1e-6);
 
-% x0_soln = fsolve(fun_1, x0, options);
-% x1_soln = fsolve(fun_1, x1);
+[x0_soln fval exitflag] = fsolve(fun_1, x0)
+[x1_soln fval exitflag] = fsolve(fun_1, x1, options)
 
-fun_2 = @(x)parameterized_functions(x, s, h, mu, nu);
-
-x0_prime = 0;
-x1_prime = 1;
-x2_prime = .5;
-
-x0_soln = fsolve(fun_2, x0_prime, options)
-x1_soln = fsolve(fun_2, x1_prime, options)
-x2_soln = fsolve(fun_2, x2_prime, options)
+% fun_2 = @(x)parameterized_functions(x, s, h, mu, nu, k);
+% 
+% x0_prime = 0.0001;
+% x1_prime = .45;
+% x2_prime = .999;
+% 
+% x0_soln = fsolve(fun_2, x0_prime, options)
+% x1_soln = fsolve(fun_2, x1_prime, options)
+% x2_soln = fsolve(fun_2, x2_prime, options)
 
 
 
@@ -254,24 +255,25 @@ end
 
 %%% new functions for fsolve
 
-function F = parameterized_bifn_functions(x, h, m, n)
+function F = parameterized_bifn_functions(x, h, m, n, k)
     a = x(2)*(1-2*h);
     b = x(2)*(3*h-2-n-h*m+h*n);
     c = -m-n+x(2)-h*x(2)+2*n*x(2)+h*m*x(2)-h*n*x(2);
     d = n*(1-x(2));
 
-    F(1) = a*x(1)^3 + b*x(1)^2 + c*x(1) + d;
+    F(1) = k*(a*x(1)^3 + b*x(1)^2 + c*x(1) + d);
 
-    F(2) = 3*a*x(1)^2 + 2*b*x(1) + c;
+    F(2) = k*(3*a*x(1)^2 + 2*b*x(1) + c);
 
 end
 
-function F = parameterized_functions(x, s, h, m, n)
+function F = parameterized_functions(x, s, h, m, n, k)
     a = s*(1-2*h);
     b = s*(3*h-2-n-h*m+h*n);
     c = -m-n+s-h*s+2*n*s+h*m*s-h*n*s;
+    d = n*(1-s);
     
 
-    F = 3*a*x^2 + 2*b*x + c;
+    F = k*(a*x^3 + b*x^2 + c*x + d);
 
 end
