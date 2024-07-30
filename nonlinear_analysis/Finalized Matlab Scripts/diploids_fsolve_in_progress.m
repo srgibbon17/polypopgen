@@ -4,23 +4,24 @@
 iterations = 1000;
 
 
-%%% single point parameter values
+% single point parameter values
 s_val = 1e-7; % constant value of selection coefficient
-mu_val = 1e-8; % constant value of forward mutation rate
-nu_val = 1e-11; % constant value of backward mutation rate
+mu_val = 2e-8; % constant value of forward mutation rate
+nu_val = 1e-9; % constant value of backward mutation rate
 h_val = 1; % constant value of dominance coefficient
 mut_ratio_val = mu_val/nu_val; % ratio of forward to backward mutation rate
 
-%%% parameter ranges 
-s_val_range = logspace(-9, -5, iterations); % range of selection coefficients
+% parameter ranges 
+s_val_range = logspace(-8, -6, iterations); % range of selection coefficients
 mu_val_range = logspace(-9, -5, iterations); % range of forward mutation rates
-nu_val_range = logspace(-11, -7, iterations); % range of backward mutation rates
+nu_val_range = logspace(-8, -5, iterations); % range of backward mutation rates
 h_val_range = linspace(.6, 1, iterations); % range of dominance coefficients
 
 syms s q G0 G1 G2 g0 g1 h mu nu
 
-specified_parameter = h;
-specified_param_range = h_val_range;
+specified_parameter = s;
+specified_param_range = s_val_range;
+specified_param_value = s_val;
 
 variable_list = [g0, specified_parameter];
 parameter_list = [s, mu, nu, h];
@@ -54,7 +55,7 @@ mut_g1 = sel_g0*mu + sel_g1*(1-nu) - g1;
 %removing g1 from the equations
 mut_g0 = subs(mut_g0, g1, 1-g0);
 
-
+fsolve_phase_plane_plot(mut_g0, parameter_values);
 
 [diff_eqn_function, bifn_point_1, bifn_point_2] = fsolve_bifn_diagram_init(mut_g0, specified_parameter, parameter_list, parameter_values, g0, scaling_coefficient); 
 
@@ -92,16 +93,37 @@ function [g0_soln, s_soln] = bifn_vpasolve(delta_g0, derivative_g0, mu, mu_value
     [g0_soln, s_soln] = vpasolve([delta_g0, derivative_g0], [g0, s]);
 end
 
-function [delta_g0_value] = delta_g0_eval_implicit(g, s, h, m, n)
-    a = s*(1-2*h);
-    b = s*(3*h-2-n-h*m+h*n);
-    c = -m-n+s-h*s+2*n*s+h*m*s-h*n*s;
-    d = n*(1-s);
+function [] = fsolve_phase_plane_plot(delta_g0, param_values)
+    
+    diff_eqn = matlabFunction(delta_g0);
 
-    delta_g0_value = a*g^3 + b*g^2 + c*g + d;
+    s = param_values(1);
+    mu = param_values(2);
+    nu = param_values(3);
+    h = param_values(4);
+
+    diff_eqn_2 = @(g0)diff_eqn(g0, h, mu, nu, s);
+
+    g0_values = linspace(0, 1, 1000);
+    delta_g0_values = zeros(1, length(g0_values));
+    
+    for i = 1:length(g0_values)
+        delta_g0_values(i) = diff_eqn_2(g0_values(i));
+    end
+
+    fixed_point_1 = fzero(diff_eqn_2, 1);
+    fixed_point_2 = fzero(diff_eqn_2, 0);
+    fixed_point_3 = fzero(diff_eqn_2, .25);
+
+    figure
+    plot(g0_values, delta_g0_values, 'Color', '#0072BD', 'LineWidth', 2)
+    hold on
+    plot(g0_values, zeros(1, length(g0_values)), 'LineStyle','--', 'Color', 'k', 'LineWidth', 1)
+    plot(fixed_point_1, 0, 'o', 'Color', "#D95319", 'LineWidth', 2, 'MarkerSize', 8)
+    plot(fixed_point_2, 0, 'o', 'Color', "#D95319", 'LineWidth', 2, 'MarkerSize', 8)
+    plot(fixed_point_3, 0, 'o', 'Color', "#D95319", 'LineWidth', 2, 'MarkerSize', 8)
+
 end
-
-
 
 function bifn_surface_plot_pos_sel(G, mu_val_range, h_val_range, nu_val)
 
@@ -239,8 +261,8 @@ function [diff_eqn_function, varargout] = fsolve_bifn_diagram_init(diff_eqn, spe
         x1_guess = [.01, .0000001];
         
         %solves for the bifurcation points
-        [x0_soln, x0_fval, x0_exitflag] = fsolve(modG, x0_guess);
-        [x1_soln, x1_fval, x1_exitflag] = fsolve(modG, x1_guess);
+        [x0_soln, x0_fval, x0_exitflag] = fsolve(modG, x0_guess)
+        [x1_soln, x1_fval, x1_exitflag] = fsolve(modG, x1_guess)
         
         varargout = {[], []};
         if  x0_exitflag > 0
@@ -321,12 +343,12 @@ function [] = fsolve_bifn_diagram_plot(diff_eqn_function_param, specified_parame
 
             unstable_guess = max_g0_bifn_value - .5*bifn_g0_range;
 
-            stable_1_guess = .99;
+            stable_1_guess = 1;
 
-            stable_2_guess = .001;
+            stable_2_guess = 0;
 
             percent_up = 1.01;
-            percent_down = .97;
+            percent_down = .9;
 
             bifn_param_max = max(bifn_1(2), bifn_2(2));
             bifn_param_min = min(bifn_1(2), bifn_2(2));
