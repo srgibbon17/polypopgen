@@ -219,8 +219,6 @@ options = optimoptions('fsolve', 'Display', 'iter', 'OptimalityTolerance', 1e-6,
 % x2_soln = fsolve(fun_2, x2_prime, options)
 
 
-
-
 function [diff_eqn_value] = diff_eqn_eval(mut_exp_g0, mu, mu_value, nu, nu_value, s, s_value, h, h_value, g0, g0_sub_value)
 
     diff_eqn_value = subs(mut_exp_g0, mu, mu_value);

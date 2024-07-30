@@ -89,8 +89,8 @@ for i = 1:length(mu_val)
     for j = 1:length(h_val)
         fun_1 = @(x)parameterized_bifn_functions(x, h_coord(i, j), mu_coord(i, j), nu_val);
 
-        [x0_soln x0_fval x0_exitflag] = fsolve(fun_1, x0);
-        [x1_soln x1_fval x1_exitflag] = fsolve(fun_1, x1);
+        [x0_soln, x0_fval, x0_exitflag] = fsolve(fun_1, x0);
+        [x1_soln, x1_fval, x1_exitflag] = fsolve(fun_1, x1);
 
         if x0_exitflag > 0
             if x0_soln(1) > 0 && x0_soln(1) < 1 && x0_soln(2) > 0 && x0_soln(2) < 1
