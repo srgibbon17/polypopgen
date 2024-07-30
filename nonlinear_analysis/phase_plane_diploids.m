@@ -64,7 +64,7 @@ g0_diff_values = [1, iterations];
 
 
 
-[g0_bifn_soln, s_bifn_soln] = bifn_numeric_solver(mut_g0==0, derivative_g0==0, h, h_val, nu, nu_val, s, s_val, g0, mu)
+[g0_bifn_soln, s_bifn_soln] = bifn_numeric_solver(mut_g0==0, derivative_g0==0, nu, nu_val, mu, mu_val, s, s_val, g0, h)
 
 g0_bifn_values = [];
 s_bifn_values = [];
