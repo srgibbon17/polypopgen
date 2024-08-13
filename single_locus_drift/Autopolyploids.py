@@ -22,23 +22,23 @@ Additionally, if the self_rate is set to zero, selfing will still occur with pro
 """
 
 # Let's define some parameters
-p = .3  # allele frequency for A (derived allele)
-q = 1-p  # allele frequency for a (ancestral allele)
+p = 0.85  # allele frequency for A (ancestral allele)
+q = 1-p  # allele frequency for a (derived allele)
 g0_init_value = .3
 g1_init_value = 0
 g2_init_value = 1 - g0_init_value - g1_init_value
-N = 10000  # population size
-g = 1000  # number of generations
+N = 250  # population size
+g = 2000  # number of generations
 g_bottleneck_start = 100000  # generation at which bottleneck starts
 g_bottleneck_length = 200  # number of generations for which the bottleneck lasts
 N_bottleneck = 2000  # population size during the bottleneck
-s = 1e-5  # selection coefficient
-h1 = 1  # dominance coefficient for G3
-h2 = 1  # dominance coefficient for G2
-h3 = 1  # dominance coefficient for G1
-mu = 1e-6  # mutation rate (from 'A' to 'a')
+s = -1e-2  # selection coefficient
+h1 = 0  # dominance coefficient for G3
+h2 = 0  # dominance coefficient for G2
+h3 = 0  # dominance coefficient for G1
+mu = 1e-8  # mutation rate (from 'A' to 'a')
 nu = 1e-7  # mutation rate (from 'a' to 'A')
-self_rate = 0  # selfing rate 
+self_rate = .5  # selfing rate 
 alpha = 0  # probability of double reduction; shown to have a maximum of 1/6=.16667
 
 # Let's create some functions
@@ -347,20 +347,22 @@ G3_freq = []
 G4_freq = []
 
 # creates the initial generation of N individuals using random sampling with replacement
-#for i in range(N):  
-#    individual = random.choices(['A', 'a'], [p, q], k=4)
-#    gen0.append(individual)
+for i in range(N):  
+    individual = random.choices(['A', 'a'], [p, q], k=4)
+    gen0.append(individual)
 
 # alternative sampling scheme which uses random sampling of gametes instead of alleles
-for i in range(N):
-    individual = random.choices([['A', 'A'], ['A', 'a'], ['a', 'a']], [g0_init_value, g1_init_value, g2_init_value], k=2)
-    gen0.append(individual[0] + individual[1])
+#for i in range(N):
+    # individual = random.choices([['A', 'A'], ['A', 'a'], ['a', 'a']], [g0_init_value, g1_init_value, g2_init_value], k=2)
+    #gen0.append(individual[0] + individual[1])
 
 # set the pre-selection generation to initially be the 0th generation created immediately above
 gen_j_pre_sel = gen0  
 
 for j in range(g):  # performs the following sequence of steps for g generations
     
+    # if 
+
     # additional variables and lists
 
     # a post-selection generation (those that survive to reproduce)

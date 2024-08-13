@@ -1,18 +1,18 @@
 % for diploids, a nonlinear model and analysis
 
 % determines number of values to include in 
-iterations = 100;
+iterations = 1000;
 
 
 % single point parameter values
 s_val = 3.6e-8; % constant value of selection coefficient
 mu_val = 5e-8; % constant value of forward mutation rate
 nu_val = 1e-9; % constant value of backward mutation rate
-h_val = 1; % constant value of dominance coefficient
+h_val = .79; % constant value of dominance coefficient
 mut_ratio_val = mu_val/nu_val; % ratio of forward to backward mutation rate
 
 % parameter ranges 
-s_val_range = logspace(-7, -6, iterations); % range of selection coefficients
+s_val_range = logspace(-8, -6, iterations); % range of selection coefficients
 mu_val_range = logspace(-9, -7, iterations); % range of forward mutation rates
 nu_val_range = logspace(-8, -5, iterations); % range of backward mutation rates
 h_val_range = linspace(.6, 1, iterations); % range of dominance coefficients
@@ -58,55 +58,65 @@ mut_g1 = sel_g0*mu + sel_g1*(1-nu) - g1;
 mut_g0 = subs(mut_g0, g1, 1-g0);
 
 %making an annotation for parameter values
+s_str = strcat('s: ', string(s_val));
+h_str = strcat('h: ',string(h_val)); 
+mu_str = strcat('mu: ',string(mu_val));
+nu_str = strcat('nu: ',string(nu_val));
+mut_ratio_str = strcat(['mut-ratio ', newline, ...
+      '(mu/nu): '],string(mut_ratio_val));
+parameters_str_list = [s_str, mu_str, nu_str, mut_ratio_str, h_str];
+
 %figure
 
-v = VideoWriter('bifn_animation_diploids.m4v', 'MPEG-4');
-v.Quality = 95;
-open(v)
-for i = 1:length(s_val_range)    
-    s_val_list = s_val_range(i);
-
-    fsolve_phase_plane_plot(mut_g0, parameter_values, parameters_str_list, s_val_list, 1);
-    frame = getframe(gcf);
-    writeVideo(v, frame)
-end
-
-close(v)
+% v = VideoWriter('bifn_animation_diploids.m4v', 'MPEG-4');
+% v.Quality = 95;
+% v.FrameRate = 20;
+% open(v)
+% for k = 1:3
+%     for i = 1:length(s_val_range)    
+%         s_val_list = s_val_range(i);
+% 
+%         fsolve_phase_plane_plot(mut_g0, parameter_values, parameters_str_list, s_val_list, 1);
+%         frame = getframe(gcf);
+%         writeVideo(v, frame)
+%     end
+% end
+% close(v)
 
 % figure
 % movie(M, 2, 20)
 
-% bifn_surface_plot_pos_sel(mu_val_range, h_val_range, nu_val, iterations)
+%[x0_exitflags, x1_exitflags] = bifn_surface_plot_pos_sel(mu_val_range, h_val_range, nu_val, iterations);
 
-% s_str = strcat('s: ', string(s_val));
-% h_str = strcat('h: ',string(h_val)); 
-% mu_str = strcat('mu: ',string(mu_val));
-% nu_str = strcat('nu: ',string(nu_val));
-% mut_ratio_str = strcat(['mut-ratio ', newline, ...
-%      '(mu/nu): '],string(mut_ratio_val));
-% parameters_str_list = [s_str, mu_str, nu_str, mut_ratio_str, h_str];
-% 
+%accurate_soln = sum(x0_exitflags == 1);
+%inaccurate_soln_1 = sum(x0_exitflags == 2);
+%inaccurate_soln_2 = sum(x0_exitflags == 3);
+
+
+[diff_eqn_function, bifn_point_1, bifn_point_2] = fsolve_bifn_diagram_init(mut_g0, specified_parameter, parameter_list, parameter_values, g0, scaling_coefficient); 
+ 
+fsolve_bifn_diagram_plot(diff_eqn_function, specified_parameter, parameter_list, parameters_str_list, specified_param_range, bifn_point_1, bifn_point_2);
+
+
+
 % v = VideoWriter('bifn_diagram_h_animation_diploids.m4v', 'MPEG-4');
 % v.Quality = 95;
 % v.FrameRate = 10;
 % open(v)
-% for i = 1:length(h_val_range)
-%     parameter_values(4) = h_val_range(i);
+% figure
+% for k = 1:1
+%     for i = 1:length(h_val_range)
+%         parameter_values(4) = h_val_range(i);
 % 
-%     [diff_eqn_function, bifn_point_1, bifn_point_2] = fsolve_bifn_diagram_init(mut_g0, specified_parameter, parameter_list, parameter_values, g0, scaling_coefficient); 
+%         [diff_eqn_function, bifn_point_1, bifn_point_2] = fsolve_bifn_diagram_init(mut_g0, specified_parameter, parameter_list, parameter_values, g0, scaling_coefficient); 
 % 
-%     disp('bifn_1')
-%     disp(bifn_point_1)
-% 
-%     disp('bifn_2')
-%     disp(bifn_point_2)
-% 
-% 
-%     fsolve_bifn_diagram_plot(diff_eqn_function, specified_parameter, parameter_list, parameters_str_list, specified_param_range, bifn_point_1, bifn_point_2);
-%     frame = getframe(gcf);
-%     writeVideo(v, frame)
+%         fsolve_bifn_diagram_plot(diff_eqn_function, specified_parameter, parameter_list, parameters_str_list, specified_param_range, bifn_point_1, bifn_point_2);
+%         frame = getframe(gcf);
+%         writeVideo(v, frame)
+%     end
 % end
 % close(v)
+
 
 function [diff_eqn_value] = diff_eqn_eval_sym(mut_exp_g0, mu, mu_value, nu, nu_value, s, s_value, h, h_value, g0, g0_sub_value)
 
@@ -152,7 +162,7 @@ function F = parameterized_bifn_functions(x, h, m, n)
 
 end
 
-function bifn_surface_plot_pos_sel(mu_val_range, h_val_range, nu_val, iterations)
+function [x0_exit_list, x1_exit_list] = bifn_surface_plot_pos_sel(mu_val_range, h_val_range, nu_val, iterations)
 
     g0_max_array = zeros(iterations, iterations);
     g0_min_array = zeros(iterations, iterations);
@@ -165,11 +175,16 @@ function bifn_surface_plot_pos_sel(mu_val_range, h_val_range, nu_val, iterations
     x0_guess = [.5, .000001];
     x1_guess = [.01, .0000001];
 
+    x0_exit_list = [];
+    x1_exit_list = [];
+
     for i = 1:length(mu_val_range)
         for j = 1:length(h_val_range)
             fun_1 = @(x)parameterized_bifn_functions(x, h_coord(i,j), mu_coord(i, j), nu_val);
             [x0_soln, x0_fval, x0_exitflag] = fsolve(fun_1, x0_guess);
             [x1_soln, x1_fval, x1_exitflag] = fsolve(fun_1, x1_guess);
+            x0_exit_list(end+1) = x0_exitflag;
+            x1_exit_list(end+1) = x1_exitflag;
 
             if x0_exitflag > 0
                 if x0_soln(1) > 0 && x0_soln(1) < 1 && x0_soln(2) > 0 && x0_soln(2) < 1
@@ -380,8 +395,8 @@ function [diff_eqn_function, varargout] = fsolve_bifn_diagram_init(diff_eqn, spe
     elseif specified_parameter == param_list(2) %mu
 
         %creates two initial conditions/guesses to pass to fsolve
-        x0_guess = [.5, .000001];
-        x1_guess = [.01, .0000001];
+        x0_guess = [.5, .00000001];
+        x1_guess = [.01, .00001];
         
         %solves for the bifurcation points
         [x0_soln, x0_fval, x0_exitflag] = fsolve(modG, x0_guess);
@@ -397,10 +412,10 @@ function [diff_eqn_function, varargout] = fsolve_bifn_diagram_init(diff_eqn, spe
 
     elseif specified_parameter == param_list(3) %nu
 
-        %creates two initial conditions/guesses to pass to fsolve
+        %creates one initial condition/guess to pass to fsolve
         x0_guess = [.01, .0000001];
         
-        %solves for the bifurcation points
+        %solves for the bifurcation point
         [x0_soln, x0_fval, x0_exitflag] = fsolve(modG, x0_guess);
         
         varargout = {[], []};
@@ -409,10 +424,10 @@ function [diff_eqn_function, varargout] = fsolve_bifn_diagram_init(diff_eqn, spe
         end
 
     elseif specified_parameter == param_list(4) %h
-        %creates two initial conditions/guesses to pass to fsolve
+        %creates one initial condition/guess to pass to fsolve
         x0_guess = [.01, .6];
         
-        %solves for the bifurcation points
+        %solves for the bifurcation point
         [x0_soln, x0_fval, x0_exitflag] = fsolve(modG, x0_guess);
         
         varargout = {[], []};
@@ -444,45 +459,71 @@ function [] = fsolve_bifn_diagram_plot(diff_eqn_function_param, specified_parame
             bifn_g0_range = abs(bifn_1(1) - bifn_2(1));
 
             max_g0_bifn_value = max(bifn_1(1), bifn_2(1));
-
-            unstable_guess = max_g0_bifn_value - .1*bifn_g0_range;
+            min_g0_bifn_value = min(bifn_1(1), bifn_2(1));
 
             stable_1_guess = 1;
 
             stable_2_guess = 0;
 
-            percent_up = 1.02;
-            percent_down = .94;
-
             bifn_param_max = max(bifn_1(2), bifn_2(2));
             bifn_param_min = min(bifn_1(2), bifn_2(2));
+
+            slope = (bifn_1(1) - bifn_2(1))/(bifn_1(2) - bifn_2(2));
+            intercept = bifn_1(1) - slope*bifn_1(2);
 
             for i = 1:length(specified_param_range)
         
                 y = specified_param_range(i);
         
+                unstable_guess_1 = slope*y+intercept;
+
                 diff_eqn_function = @(x1)diff_eqn_function_param(x1, y);
 
-                if y < percent_down*bifn_param_min
-                    
-                    stable_2_g0(end+1) = fzero(diff_eqn_function, stable_2_guess);
-                    stable_2_param(end+1) = y;
+                if y < bifn_param_min
+                    stable_2_g0_value = fzero(diff_eqn_function, stable_2_guess);
+                    if stable_2_g0_value < min_g0_bifn_value
+                        stable_2_g0(end+1) = stable_2_g0_value;
+                        stable_2_param(end+1) = y;
+                    end
 
-                elseif y > percent_up*bifn_param_min && y < percent_down*bifn_param_max
+                elseif y > bifn_param_min && y < bifn_param_max
                 
-                    stable_2_g0(end+1) = fzero(diff_eqn_function, stable_2_guess);
-                    stable_2_param(end+1) = y;
+                    stable_2_g0_value = fzero(diff_eqn_function, stable_2_guess);
+                    if stable_2_g0_value < min_g0_bifn_value
+                        stable_2_g0(end+1) = stable_2_g0_value;
+                        stable_2_param(end+1) = y;
+                    end
 
-                    stable_1_g0(end+1) = fzero(diff_eqn_function, stable_1_guess);
-                    stable_1_param(end+1) = y;
+                    stable_1_g0_value = fzero(diff_eqn_function, stable_1_guess);
+                    if stable_1_g0_value > max_g0_bifn_value
+                        stable_1_g0(end+1) = stable_1_g0_value;
+                        stable_1_param(end+1) = y;
+                    end
 
-                    unstable_g0(end+1) = fzero(diff_eqn_function, unstable_guess);
+                    unstable_g0_value = fzero(diff_eqn_function, unstable_guess_1);
+                    if unstable_g0_value > min_g0_bifn_value && unstable_g0_value < max_g0_bifn_value
+                        unstable_g0(end+1) = unstable_g0_value;
+                    else
+                        unstable_g0_value = fzero(diff_eqn_function, .5*(max_g0_bifn_value + min_g0_bifn_value));
+                        if unstable_g0_value > min_g0_bifn_value && unstable_g0_value < max_g0_bifn_value
+                            unstable_g0(end+1) = unstable_g0_value;
+                        else
+                            unstable_g0_value = fzero(diff_eqn_function, min_g0_bifn_value+.001);
+                            if unstable_g0_value > min_g0_bifn_value && unstable_g0_value < max_g0_bifn_value
+                                unstable_g0(end+1) = unstable_g0_value;
+                            else 
+                                unstable_g0(end+1) = fzero(diff_eqn_function, max_g0_bifn_value-.001);
+                            end
+                        end
+                    end
                     unstable_param(end+1) = y;
 
-                elseif y > percent_up*bifn_param_max
-
-                    stable_1_g0(end+1) = fzero(diff_eqn_function, stable_2_guess);
-                    stable_1_param(end+1) = y;
+                elseif y > bifn_param_max
+                    stable_1_g0_value = fzero(diff_eqn_function, stable_1_guess);
+                    if stable_1_g0_value > max_g0_bifn_value
+                        stable_1_g0(end+1) = stable_1_g0_value;
+                        stable_1_param(end+1) = y;
+                    end
 
                 end
             
@@ -490,9 +531,9 @@ function [] = fsolve_bifn_diagram_plot(diff_eqn_function_param, specified_parame
 
             param_str = {'Parameters:', param_str_list(2), param_str_list(3), param_str_list(4), param_str_list(5)};
 
-            %figure
+            figure
 
-            %subplot(1, 2, 1)
+            subplot(1, 2, 1)
             plot(stable_1_param, stable_1_g0, 'Color', 'k', 'LineWidth', 1.5, 'DisplayName', 'Stable');
             hold on
             plot(stable_2_param, stable_2_g0, 'Color', 'k', 'LineWidth', 1.5, 'DisplayName', '');
@@ -501,37 +542,37 @@ function [] = fsolve_bifn_diagram_plot(diff_eqn_function_param, specified_parame
             plot(bifn_2(2), bifn_2(1), '.', 'Color', '#0072BD', 'MarkerSize', 20, 'DisplayName', '')
             hold off
             xlabel('s', 'FontSize', 14)
-            ylabel('g0', 'FontSize', 14)
+            ylabel('g0/p', 'FontSize', 14)
             sgtitle('Diploid Bifurcation Diagram', 'FontSize', 16)  
             ylim([0, 1])
             xlim([1e-7, 1e-6])
             xscale log
-            %title('g0 vs s Diagram', 'FontSize', 14)
-
-            % dim = [0.5 0.5 0.3 0.3];
-            % annotation('textbox', dim, 'String', param_str,'FontSize', 8, 'FitBoxToText','on')
+            title('g0 vs s Diagram', 'FontSize', 14)
+            dim = [0.2 0.2 0.3 0.3];
+            annotation('textbox', dim, 'String', param_str,'FontSize', 8, 'FitBoxToText','on')
+            
             
 
-            % subplot(1, 2, 2)
-            % 
-            % stable_1_g1 = ones(1, length(stable_1_g0)) - stable_1_g0;
-            % stable_2_g1 = ones(1, length(stable_2_g0)) - stable_2_g0;
-            % unstable_g1 = ones(1, length(unstable_g0)) - unstable_g0;
-            % 
-            % plot(stable_1_param, stable_1_g1, 'Color', 'k', 'LineWidth', 1.5);
-            % hold on
-            % plot(stable_2_param, stable_2_g1, 'Color', 'k', 'LineWidth', 1.5);
-            % plot(unstable_param, unstable_g1, 'Color', 'k', 'LineWidth', 1.5, 'LineStyle', '--');
-            % plot(bifn_1(2), 1-bifn_1(1), '.', 'Color', '#0072BD', 'MarkerSize', 20)
-            % plot(bifn_2(2), 1-bifn_2(1), '.', 'Color', '#0072BD', 'MarkerSize', 20)
-            % hold off
-            % xlabel('s', 'FontSize', 14)
-            % ylabel('g1', 'FontSize', 14)
-            % ylim([0, 1])
-            % xlim([1e-8, 1e-5])
-            % xscale log
-            % title('g1 vs s Diagram', 'FontSize', 14)
-            %legend('Stable', '', 'Unstable', 'Bifurcation Point', '')
+            subplot(1, 2, 2)
+
+            stable_1_g1 = ones(1, length(stable_1_g0)) - stable_1_g0;
+            stable_2_g1 = ones(1, length(stable_2_g0)) - stable_2_g0;
+            unstable_g1 = ones(1, length(unstable_g0)) - unstable_g0;
+
+            plot(stable_1_param, stable_1_g1, 'Color', 'k', 'LineWidth', 1.5);
+            hold on
+            plot(stable_2_param, stable_2_g1, 'Color', 'k', 'LineWidth', 1.5);
+            plot(unstable_param, unstable_g1, 'Color', 'k', 'LineWidth', 1.5, 'LineStyle', '--');
+            plot(bifn_1(2), 1-bifn_1(1), '.', 'Color', '#0072BD', 'MarkerSize', 20)
+            plot(bifn_2(2), 1-bifn_2(1), '.', 'Color', '#0072BD', 'MarkerSize', 20)
+            hold off
+            xlabel('s', 'FontSize', 14)
+            ylabel('g1/q', 'FontSize', 14)
+            ylim([0, 1])
+            xlim([1e-7, 1e-6])
+            xscale log
+            title('g1 vs s Diagram', 'FontSize', 14)
+            legend('Stable', '', 'Unstable', 'Bifurcation Point', '')
 
 
         elseif specified_parameter == param_list(2) %mu
@@ -598,7 +639,7 @@ function [] = fsolve_bifn_diagram_plot(diff_eqn_function_param, specified_parame
             plot(bifn_2(2), bifn_2(1), '.', 'Color', '#0072BD', 'MarkerSize', 20, 'DisplayName', '')
 
             xlabel('mu', 'FontSize', 14)
-            ylabel('g0', 'FontSize', 14)
+            ylabel('g0/p', 'FontSize', 14)
             sgtitle('Diploid Bifurcation Diagram', 'FontSize', 16)  
             title('g0 vs mu Diagram', 'FontSize', 14)
             xscale log
@@ -620,7 +661,7 @@ function [] = fsolve_bifn_diagram_plot(diff_eqn_function_param, specified_parame
             plot(bifn_2(2), 1-bifn_2(1), '.', 'Color', '#0072BD', 'MarkerSize', 20)
 
             xlabel('mu', 'FontSize', 14)
-            ylabel('g1', 'FontSize', 14)
+            ylabel('g1/q', 'FontSize', 14)
             title('g1 vs mu Diagram', 'FontSize', 14)
             xscale log
             legend('Stable', '', 'Unstable', 'Bifurcation Point', '')
@@ -671,7 +712,7 @@ function [] = fsolve_bifn_diagram_plot(diff_eqn_function_param, specified_parame
             plot(bifn_1(2), bifn_1(1), '.', 'Color', '#0072BD', 'MarkerSize', 20, 'DisplayName', 'Bifurcation Point 1')
 
             xlabel('nu', 'FontSize', 14)
-            ylabel('g0', 'FontSize', 14)
+            ylabel('g0/p', 'FontSize', 14)
             sgtitle('Diploid Bifurcation Diagram', 'FontSize', 16)  
             title('g0 vs nu Diagram', 'FontSize', 14)
             xscale log
@@ -692,7 +733,7 @@ function [] = fsolve_bifn_diagram_plot(diff_eqn_function_param, specified_parame
             plot(bifn_1(2), 1-bifn_1(1), '.', 'Color', '#0072BD', 'MarkerSize', 20)
 
             xlabel('nu', 'FontSize', 14)
-            ylabel('g1', 'FontSize', 14)
+            ylabel('g1/q', 'FontSize', 14)
             title('g1 vs nu Diagram', 'FontSize', 14)
             xscale log
             legend('Stable', '', 'Unstable', 'Bifurcation Point')
