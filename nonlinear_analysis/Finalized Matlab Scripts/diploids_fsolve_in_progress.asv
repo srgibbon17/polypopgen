@@ -8,7 +8,7 @@ iterations = 1000;
 s_val = 3.6e-8; % constant value of selection coefficient
 mu_val = 5e-8; % constant value of forward mutation rate
 nu_val = 1e-9; % constant value of backward mutation rate
-h_val = 1; % constant value of dominance coefficient
+h_val = .79; % constant value of dominance coefficient
 mut_ratio_val = mu_val/nu_val; % ratio of forward to backward mutation rate
 
 % parameter ranges 
@@ -95,7 +95,7 @@ parameters_str_list = [s_str, mu_str, nu_str, mut_ratio_str, h_str];
 
 [diff_eqn_function, bifn_point_1, bifn_point_2] = fsolve_bifn_diagram_init(mut_g0, specified_parameter, parameter_list, parameter_values, g0, scaling_coefficient); 
  
-fsolve_bifn_diagram_plot(diff_eqn_function, specified_parameter, parameter_list, parameters_str_list, specified_param_range, nu_val, mu_val, bifn_point_1, bifn_point_2);
+fsolve_bifn_diagram_plot(diff_eqn_function, specified_parameter, parameter_list, parameters_str_list, specified_param_range, bifn_point_1, bifn_point_2);
 
 
 
@@ -440,7 +440,7 @@ function [diff_eqn_function, varargout] = fsolve_bifn_diagram_init(diff_eqn, spe
 
 end
 
-function [] = fsolve_bifn_diagram_plot(diff_eqn_function_param, specified_parameter, param_list, param_str_list, specified_param_range, nu_val, mu_val, varargin)
+function [] = fsolve_bifn_diagram_plot(diff_eqn_function_param, specified_parameter, param_list, param_str_list, specified_param_range, s_val_range, nu_val, mu_val, varargin)
 
         stable_1_g0 = [];
         stable_2_g0 = [];
@@ -531,18 +531,16 @@ function [] = fsolve_bifn_diagram_plot(diff_eqn_function_param, specified_parame
 
             param_str = {'Parameters:', param_str_list(2), param_str_list(3), param_str_list(4), param_str_list(5)};
 
-            
-
             figure
 
             subplot(1, 2, 1)
             plot(stable_1_param, stable_1_g0, 'Color', 'k', 'LineWidth', 1.5, 'DisplayName', 'Stable');
             hold on
-            plot(stable_2_param, stable_2_g0, 'Color', 'k', 'LineWidth', 1.5, 'DisplayName', 'Stable');
+            plot(stable_2_param, stable_2_g0, 'Color', 'k', 'LineWidth', 1.5, 'DisplayName', '');
             plot(unstable_param, unstable_g0, 'Color', 'k', 'LineWidth', 1.5, 'LineStyle', '--', 'DisplayName', 'Unstable');
             plot(bifn_1(2), bifn_1(1), '.', 'Color', '#0072BD', 'MarkerSize', 20, 'DisplayName', 'Bifurcation Point')
-            plot(bifn_2(2), bifn_2(1), '.', 'Color', '#0072BD', 'MarkerSize', 20, 'DisplayName', 'Bifurcation Point')
-            yline(nu_val/(nu_val+mu_val), 'Color', "#D95319", 'LineWidth', 1.5, 'LineStyle','--', 'DisplayName', 'Mutation Equilibrium')
+            plot(bifn_2(2), bifn_2(1), '.', 'Color', '#0072BD', 'MarkerSize', 20, 'DisplayName', '')
+            plot(nu_val/(nu_val+mu_val), s_val_range, 'Color', "#D95319", 'LineWidth', 1.5, 'LineStyle','--', 'DisplayName', )
             hold off
             xlabel('s', 'FontSize', 14)
             ylabel('g0/p', 'FontSize', 14)
@@ -550,10 +548,11 @@ function [] = fsolve_bifn_diagram_plot(diff_eqn_function_param, specified_parame
             ylim([0, 1])
             xlim([1e-7, 1e-6])
             xscale log
-            title('g0 vs s Diagram', 'FontSize', 12)
+            title('g0 vs s Diagram', 'FontSize', 14)
             dim = [0.2 0.2 0.3 0.3];
-            annotation('textbox', dim, 'String', param_str,'FontSize', 14, 'FitBoxToText','on')
-            legend('FontSize', 12)
+            annotation('textbox', dim, 'String', param_str,'FontSize', 8, 'FitBoxToText','on')
+            
+            
 
             subplot(1, 2, 2)
 
@@ -567,7 +566,6 @@ function [] = fsolve_bifn_diagram_plot(diff_eqn_function_param, specified_parame
             plot(unstable_param, unstable_g1, 'Color', 'k', 'LineWidth', 1.5, 'LineStyle', '--');
             plot(bifn_1(2), 1-bifn_1(1), '.', 'Color', '#0072BD', 'MarkerSize', 20)
             plot(bifn_2(2), 1-bifn_2(1), '.', 'Color', '#0072BD', 'MarkerSize', 20)
-            yline(mu_val/(nu_val+mu_val), 'Color', "#D95319", 'LineWidth', 1.5, 'LineStyle','--', 'DisplayName', 'Mutation Equilibrium')
             hold off
             xlabel('s', 'FontSize', 14)
             ylabel('g1/q', 'FontSize', 14)
@@ -575,7 +573,7 @@ function [] = fsolve_bifn_diagram_plot(diff_eqn_function_param, specified_parame
             xlim([1e-7, 1e-6])
             xscale log
             title('g1 vs s Diagram', 'FontSize', 14)
-            
+            legend('Stable', '', 'Unstable', 'Bifurcation Point', '')
 
 
         elseif specified_parameter == param_list(2) %mu
