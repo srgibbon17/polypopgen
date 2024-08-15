@@ -1,7 +1,7 @@
 mu_val = 5e-8; % constant value of forward mutation rate
 nu_val = 1e-9; % constant value of backward mutation rate
 
-syms s q G0 G1 G2 g0 g1 h mu nu
+syms s q G0 G1 G2 g0 g1 h mu nu g0p
 
 % assumptions on the parameters of the model; theoretical bounds
 assume(g0>=0 & g0<=1);
@@ -28,37 +28,51 @@ sel_g1 = w2*g1^2 + w1*g1*g0;
 mut_g0 = sel_g0*(1-mu) + sel_g1*nu - g0*w_bar;
 mut_g1 = sel_g0*mu + sel_g1*(1-nu) - g1*w_bar;
 %removing g1 from the equations
-mut_g0 = subs(mut_g0, g1, 1-g0);
+mut_g0 = simplify(expand(subs(mut_g0, g1, 1-g0)));
 
-mut_g0_coeff = coeffs(simplify(expand(mut_g0)), g0);
+first_der = diff(mut_g0, g0);
+second_der = diff(first_der, g0);
 
-mut_g0 = mut_g0/mut_g0_coeff(4);
+eqn_set = [mut_g0, first_der, second_der];
 
-mut_g0_sub = subs(mut_g0, g0, (g0-(mut_g0_coeff(3)/3)));
+for i = 1:length(eqn_set)
+   eqn_set(i) = subs(eqn_set(i), mu, mu_val); 
+   eqn_set(i) = subs(eqn_set(i), nu, nu_val);
+end
 
-mut_g0_sub = (27*s*(2*h - 1))*simplify(expand(mut_g0_sub));
+S = vpasolve(eqn_set, [g0, s, h]);
 
-mut_g0_sub_coeff = coeffs(mut_g0_sub, g0);
-
-singularity_set = diff(mut_g0_sub, g0);
-
-isolated_g0 = isolate(singularity_set==0, g0);
-
-equilibria_set = subs(mut_g0_sub, lhs(isolated_g0), rhs(isolated_g0));
-
-% singularity_set = diff(mut_g0, g0);
+% coeffcients of g0 from lowest to highest degree (i.e. constant, linear,
+% quadratic, cubic)
+% mut_g0_coeffs = coeffs(mut_g0, g0);
 % 
-% isolated_g0 = isolate(singularity_set==0, g0);
+% % from the cubic formula/algebra, a double root occurs 
+% % if 9ad-bc = 2(b^2 - 3ac)
+% % for any cubic of the general form a*x^3 + b*x^2 + c*x + d
+% % this corresponds to the r paramter > 0 in Strogatz 3.6
 % 
-% equilibria_set = subs(mut_g0, lhs(isolated_g0), rhs(isolated_g0));
-
-eval_eq_set = subs(equilibria_set, mu, mu_val);
-eval_eq_set = subs(eval_eq_set, nu, nu_val);
-
-eval_eq_set = subs(eval_eq_set, h, 1);
-
-s_bifurcations = vpasolve(eval_eq_set==0, s, 0.000001)
-s_bifurcations_2 = vpasolve(eval_eq_set==0, s, .99)
-
-
-
+% a = mut_g0_coeffs(4);
+% b = mut_g0_coeffs(3);
+% c = mut_g0_coeffs(2);
+% d = mut_g0_coeffs(1);
+% 
+% bifn_curves = 2*(b^2 - 3*a*c) == 9*a*d - b*c;
+% 
+% bifn_curves = subs(bifn_curves, mu, mu_val);
+% bifn_curves = subs(bifn_curves, nu, nu_val);
+% 
+% s_bifn_curves = solve(bifn_curves, s);
+% 
+% discriminant = 18*a*b*c*d - 4*b^3*d + b^2*c^2 - 4*a*c^3 - 27*a^2*d^2;
+% 
+% bifn_curves_2 = (9*a*d - b*c)/2*(b^2 - 3*a*c);
+% 
+% bifn_curves_solns = bifn_curves_2 == discriminant;
+% 
+% bifn_curves_solns = subs(bifn_curves_solns, mu, mu_val);
+% bifn_curves_solns = subs(bifn_curves_solns, nu, nu_val);
+% 
+% triple_root = discriminant == b^2 - 3*a*c;
+% 
+% triple_root_solns = subs(triple_root, mu, mu_val);
+% triple_root_solns = subs(triple_root_solns, nu, nu_val);
