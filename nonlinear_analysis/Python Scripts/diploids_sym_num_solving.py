@@ -3,7 +3,7 @@ import numpy as np
 import scipy.optimize as optimize
 from sympy import *
 
-def root_eval_init(s_val, h_val, mu_val, nu_val):
+def root_solve_init():
     g0, g1, s, h, mu, nu = symbols('g0 g1 s h mu nu')
 
     g1 = 1 - g0
@@ -22,16 +22,11 @@ def root_eval_init(s_val, h_val, mu_val, nu_val):
     mut_g0_eqn = 1e7*(sel_g0_eqn*(1-mu) + sel_g1_eqn*nu - g0)
     mut_g1_eqn = sel_g0_eqn*mu + sel_g1_eqn*(1-nu) - g1
 
-    g0_eqn_sym = mut_g0_eqn.subs(s, s_val)
-    g0_eqn_sym = g0_eqn_sym.subs(h, h_val)
-    g0_eqn_sym = g0_eqn_sym.subs(mu, mu_val)
-    g0_eqn_sym = g0_eqn_sym.subs(nu, nu_val)
-
-    g0_eqn_numeric = lambdify(g0, g0_eqn_sym, 'scipy')
+    g0_eqn_numeric = lambdify([(s, h, mu, nu)], mut_g0_eqn, 'scipy')
 
     return g0_eqn_numeric
 
-def bifn_solve_init(h_val, mu_val, nu_val):
+def bifn_solve_init():
     g0, g1, s, h, mu, nu = symbols('g0 g1 s h mu nu')
 
     g1 = 1 - g0
@@ -50,21 +45,14 @@ def bifn_solve_init(h_val, mu_val, nu_val):
     mut_g0_eqn = 1e7*(sel_g0_eqn*(1-mu) + sel_g1_eqn*nu - g0)
     mut_g1_eqn = sel_g0_eqn*mu + sel_g1_eqn*(1-nu) - g1
 
-    g0_deriv = diff(mut_g0_eqn, g0)
+    g0_deriv_sym = diff(mut_g0_eqn, g0)
 
-    g0_eqn = mut_g0_eqn.subs(h, h_val)
-    g0_eqn = g0_eqn.subs(mu, mu_val)
-    g0_eqn = g0_eqn.subs(nu, nu_val)
+    g0_eqn = lambdify([(h, mu, nu)], mut_g0_eqn, 'scipy')
+    g0_deriv = lambdify([(h, mu, nu)], g0_deriv_sym, 'scipy')
 
-    g0_deriv = g0_deriv.subs(h, h_val)
-    g0_deriv = g0_deriv.subs(mu, mu_val)
-    g0_deriv = g0_deriv.subs(nu, nu_val)
+    return g0_eqn, g0_deriv
 
-    g0_eqn_set = lambdify([(g0, s)], [g0_eqn, g0_deriv], 'scipy')
-
-    return g0_eqn_set
-
-def cusp_solve_init(mu_val, nu_val):
+def cusp_solve_init():
     g0, g1, s, h, mu, nu = symbols('g0 g1 s h mu nu')
 
     g1 = 1 - g0
@@ -83,45 +71,82 @@ def cusp_solve_init(mu_val, nu_val):
     mut_g0_eqn = 1e7*(sel_g0_eqn*(1-mu) + sel_g1_eqn*nu - g0)
     mut_g1_eqn = sel_g0_eqn*mu + sel_g1_eqn*(1-nu) - g1
 
-    g0_deriv = diff(mut_g0_eqn, g0)
+    g0_deriv_sym = diff(mut_g0_eqn, g0)
+    g0_sec_deriv_sym = diff(g0_deriv_sym, g0)
 
-    g0_sec_deriv = diff(g0_deriv, g0)
+    g0_eqn = lambdify([(mu, nu)], mut_g0_eqn, 'scipy')
+    g0_deriv = lambdify([(mu, nu)], g0_deriv_sym, 'scipy')
+    g0_sec_deriv = lambdify([(mu, nu)], g0_sec_deriv_sym, 'scipy')
 
-    g0_eqn = mut_g0_eqn.subs(mu, mu_val)
-    g0_eqn = g0_eqn.subs(nu, nu_val)
-
-    g0_deriv = g0_deriv.subs(mu, mu_val)
-    g0_deriv = g0_deriv.subs(nu, nu_val)
-
-    g0_sec_deriv = g0_sec_deriv.subs(mu, mu_val)
-    g0_sec_deriv = g0_sec_deriv.subs(nu, nu_val)
-
-    g0_eqn_set = lambdify([(g0, s, h)], [g0_eqn, g0_deriv, g0_sec_deriv], 'scipy')
-
-    return g0_eqn_set
+    return g0_eqn, g0_deriv, g0_sec_deriv
 
 
+g0, s, h = symbols('g0 s h')
 
-
-iterations = 1000
-
-s_val_range = np.logspace(-6, -5, iterations)
 h_val = 1
 mu_val = 5e-8
 nu_val = 1e-9
+s_val = 6.5e-7
 
-cusp_eqn_set = cusp_solve_init(mu_val, nu_val)
-cusp_soln = optimize.fsolve(cusp_eqn_set, [.5, .000001, .9])
-print(cusp_soln)
+#cusp equations
+cusp_eqn_params_1, cusp_eqn_params_2, cusp_eqn_params_3 = cusp_solve_init()
 
-bifn_eqn_set = bifn_solve_init(h_val, mu_val, nu_val)
-bifn_soln = optimize.fsolve(bifn_eqn_set, [.5, .000001])
-print(bifn_soln)
-bifn_soln_2 = optimize.fsolve(bifn_eqn_set, [0, .00001])
-print(bifn_soln_2)
+cusp_eqn_1_eval = cusp_eqn_params_1([mu_val, nu_val])
+cusp_eqn_2_eval = cusp_eqn_params_2([mu_val, nu_val])
+cusp_eqn_3_eval = cusp_eqn_params_3([mu_val, nu_val])
 
-for i in range(iterations):
-    g0_eqn_numeric = root_eval_init(s_val_range[i], h_val, mu_val, nu_val)
-    soln = optimize.root_scalar(g0_eqn_numeric, bracket = [.5, 1], method='brentq')
+cusp_set_func = lambdify([(g0, s, h)], [cusp_eqn_1_eval, cusp_eqn_2_eval, cusp_eqn_3_eval], 'scipy')
+
+cusp_soln = optimize.root(cusp_set_func, [.5, 0, .75], method='hybr')
+
+print(cusp_soln.x)
+
+#bifn equations
+bifn_eqn_params_1, bifn_eqn_params_2 = bifn_solve_init()
+
+bifn_eqn_1_eval = bifn_eqn_params_1([h_val, mu_val, nu_val])
+bifn_eqn_2_eval = bifn_eqn_params_2([h_val, mu_val, nu_val])
+
+bifn_set_func = lambdify([(g0, s)], [bifn_eqn_1_eval, bifn_eqn_2_eval], 'scipy')
+
+bifn_soln_1 = optimize.fsolve(bifn_set_func, [.5, .000001])
+bifn_soln_2 = optimize.fsolve(bifn_set_func, [0, .00001])
+
+
+#root/equilibria equations
+g0_eqn_params = root_solve_init()
+
+g0_eqn_eval = g0_eqn_params([s_val, h_val, mu_val, nu_val])
+
+g0_eqn_func = lambdify(g0, g0_eqn_eval, 'scipy')
+
+root_soln_1 = optimize.root_scalar(g0_eqn_func, bracket = [0, bifn_soln_2[0]], method ='toms748')
+root_soln_2 = optimize.root_scalar(g0_eqn_func, bracket = [bifn_soln_2[0], bifn_soln_1[0]], method ='toms748')
+root_soln_3 = optimize.root_scalar(g0_eqn_func, bracket = [bifn_soln_1[0], 1], method = 'toms748')
+
+print(root_soln_1.root)
+print(root_soln_2.root)
+print(root_soln_3.root)
+
+# iterations = 1000
+
+# s_val_range = np.logspace(-6, -5, iterations)
+# h_val = 1
+# mu_val = 5e-8
+# nu_val = 1e-9
+
+# cusp_eqn_set = cusp_solve_init(mu_val, nu_val)
+# cusp_soln = optimize.fsolve(cusp_eqn_set, [.5, .000001, .9])
+# print(cusp_soln)
+
+# bifn_eqn_set = bifn_solve_init(h_val, mu_val, nu_val)
+# bifn_soln = optimize.fsolve(bifn_eqn_set, [.5, .000001])
+# print(bifn_soln)
+# bifn_soln_2 = optimize.fsolve(bifn_eqn_set, [0, .00001])
+# print(bifn_soln_2)
+
+# for i in range(iterations):
+#     g0_eqn_numeric = root_eval_init(s_val_range[i], h_val, mu_val, nu_val)
+#     soln = optimize.root_scalar(g0_eqn_numeric, bracket = [.5, 1], method='brentq')
 
 

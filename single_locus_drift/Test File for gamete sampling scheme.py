@@ -12,8 +12,6 @@ gen0 = []
 
 for i in range(N):
     individual = random.choices([['A', 'A'], ['A', 'a'], ['a', 'a']], [g0_init_value, g1_init_value, g2_init_value], k=2)
-    gamete_2 = random.choices([['A', 'A'], ['A', 'a'], ['a', 'a']], [g0_init_value, g1_init_value, g2_init_value], k=1)
-    #individual = gamete_1(1) + gamete_1(2) + gamete_2(1) + gamete_2(2)
     gen0.append(individual[0] + individual[1])
 
 print(gen0)
