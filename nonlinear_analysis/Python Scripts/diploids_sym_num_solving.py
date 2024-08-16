@@ -181,7 +181,34 @@ def cusp_solve_init():
 
 
 def bifn_diagram_init(s_val_range, h_val, mu_val, nu_val):
+    """
+    Calculates mut-sel equilibria for a given h, mu, and nu.
+    If h_val is greater than the value of h (h_crit) at which the cusp  point occurs, 
+    sorts the equilibria based on their stability.
 
+    Args:
+        s_val_range: a range of s values on a log scale. Defines the range of x-values for the bifn plot.
+        h_val: a value for h, dominance coefficient
+        mu_val: a value for mu, forward mutation rate
+        nu_val: a value for nu, back mutation rate
+
+    Returns:
+        if h_val > h_crit (bifurcations occur)
+            eq_solns_1: stable equilibrium values of g0/p under neutral evolution
+            s_vals_1: corresponding values of s for eq_solns_1
+            eq_solns_2: unstable, intermediate equilibrium values between the bifurcation points
+            s_vals_2: corresponding values of s for eq_solns_2
+            eq_solns_3: stable equilibrium values of g0/p under purifying selection
+            s_vals_3: corresponding values of s for eq_solns_3
+            bifn_soln_1: bifn point with higher g0 and lower s
+            bifn_soln_2: bifn point with lower g0 and higher s
+
+        if h_val < h_crit (no bifurcations occur)
+            eq_solns:
+            s_vals: 
+    """
+
+    # establish the following as symbolic variables which can be called by lambdify
     g0, s, h = symbols('g0 s h')
 
     # cusp equations
@@ -299,6 +326,7 @@ def bifn_diagram_init(s_val_range, h_val, mu_val, nu_val):
                 eq_solns_3[i] = root_soln_3.root
                 s_vals_3[i] = s_val_range[i]
 
+    # removes excess zeros from the arrays of data
     eq_solns = np.trim_zeros(eq_solns)
     s_vals = np.trim_zeros(s_vals)
     eq_solns_1 = np.trim_zeros(eq_solns_1)
@@ -312,7 +340,7 @@ def bifn_diagram_init(s_val_range, h_val, mu_val, nu_val):
     if h_val < h_crit:
         return eq_solns, s_vals
     elif h_val > h_crit:
-        return eq_solns_1, s_vals_1, eq_solns_2, s_vals_2, eq_solns_3, s_vals_3
+        return eq_solns_1, s_vals_1, eq_solns_2, s_vals_2, eq_solns_3, s_vals_3, bifn_soln_1, bifn_soln_2
         
 
 
@@ -325,4 +353,3 @@ s_val_range = np.logspace(-7, -6, iterations)
 
 outputs = bifn_diagram_init(s_val_range, h_val, mu_val, nu_val)
 
-print(outputs)
