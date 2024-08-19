@@ -5,9 +5,9 @@ iterations = 100;
 %s_val = linspace(1e-8, 1e-5, 100);
 s_val = 2e-7; % starting s value
 
-mu_val = 5e-8; % constant value of forward mutation rate
+mu_val = 5e-10; % constant value of forward mutation rate
 %mu_val = logspace(-9, -7, 100);
-nu_val = 1e-9; % constant value of backward mutation rate
+nu_val = 1e-11; % constant value of backward mutation rate
 mut_ratio_val = mu_val/nu_val; % ratio of forward to backward mutation rate
 h_val = 1; % h1 dominance coefficient value, constant
 
@@ -64,7 +64,7 @@ g0_diff_values = [1, iterations];
 
 
 
-[g0_bifn_soln, s_bifn_soln] = bifn_numeric_solver(mut_g0==0, derivative_g0==0, nu, nu_val, mu, mu_val, s, s_val, g0, h);
+[g0_bifn_soln, s_bifn_soln] = bifn_numeric_solver(mut_g0==0, derivative_g0==0, nu, nu_val, mu, mu_val, h, h_val, g0, s)
 
 g0_bifn_values = [];
 s_bifn_values = [];
@@ -84,7 +84,7 @@ s_stable_2 = [];
 g0_unstable = [];
 s_unstable = [];
 
-[g0_soln] = numeric_solver(mut_g0==0, mu, mu_val, nu, nu_val, s, s_val, h, h_val, g0)
+[g0_soln] = numeric_solver(mut_g0==0, mu, mu_val, nu, nu_val, s, s_val, h, h_val, g0);
 
 % for i = 1:length(mu_val)
 %     for j = 1:length(nu_val)

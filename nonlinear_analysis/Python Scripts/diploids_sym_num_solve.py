@@ -3,13 +3,14 @@ import numpy as np
 import scipy.optimize as optimize
 from sympy import *
 
-def root_solve_init():
+def root_solve_init(scaling_coeff):
     """
     Initializes an equation which can then be evaluated for a set of parameters
     and passed to scipy.optimize to evaluate roots of the equation
 
     Args:
-        none
+        scaling_coeff: a value equal to 1/(mu_val) that scales the systems of equatons to
+                       facilitate root-finding by offsetting the smallness of the parameter inputs
 
     Returns:
         g0_eqn_params: a function which takes four inputs:
@@ -46,21 +47,22 @@ def root_solve_init():
     # equations to model mutation
     # note: the scaling coefficient of 1e7 is necessary for numerical analysis techniques 
     # to converge appropriately; it has no effect on the roots of the equation
-    mut_g0_eqn = 1e7*(sel_g0_eqn*(1-mu) + sel_g1_eqn*nu - g0)
-    mut_g1_eqn = sel_g0_eqn*mu + sel_g1_eqn*(1-nu) - g1
+    mut_g0_eqn = scaling_coeff*(sel_g0_eqn*(1-mu) + sel_g1_eqn*nu - g0)
+    mut_g1_eqn = scaling_coeff*(sel_g0_eqn*mu + sel_g1_eqn*(1-nu) - g1)
 
     # converts symbolic expression to a scipy interpretable function
     g0_eqn_params = lambdify([(s, h, mu, nu)], mut_g0_eqn, 'scipy')
 
     return g0_eqn_params
 
-def bifn_solve_init():
+def bifn_solve_init(scaling_coeff):
     """
     Initializes a set of equations which can then be evaluated for a set of parameters
     and passed to scipy.optimize to evaluate bifurcations of the system
 
     Args:
-        none
+        scaling_coeff: a value equal to 1/(mu_val) that scales the systems of equatons to
+                       facilitate root-finding by offsetting the smallness of the parameter inputs
 
     Returns:
         g0_eqn_params: a function which takes three inputs:
@@ -102,8 +104,8 @@ def bifn_solve_init():
     sel_g1_eqn = w1*g0*g1 + w2*g1**2
 
     # equations to model mutation
-    mut_g0_eqn = 1e7*(sel_g0_eqn*(1-mu) + sel_g1_eqn*nu - g0)
-    mut_g1_eqn = sel_g0_eqn*mu + sel_g1_eqn*(1-nu) - g1
+    mut_g0_eqn = scaling_coeff*(sel_g0_eqn*(1-mu) + sel_g1_eqn*nu - g0)
+    mut_g1_eqn = scaling_coeff*(sel_g0_eqn*mu + sel_g1_eqn*(1-nu) - g1)
 
     # calculate the symbolic derivative of the differential equation
     g0_deriv_sym = diff(mut_g0_eqn, g0)
@@ -114,13 +116,14 @@ def bifn_solve_init():
 
     return g0_eqn_params, g0_deriv_params
 
-def cusp_solve_init():
+def cusp_solve_init(scaling_coeff):
     """
     Initializes a set of equations which can then be evaluated for a set of parameters
     and passed to scipy.optimize to evaluate the cusp point of the system
 
     Args:
-        none
+        scaling_coeff: a value equal to 1/(mu_val) that scales the systems of equatons to
+                       facilitate root-finding by offsetting the smallness of the parameter inputs
 
     Returns:
         g0_eqn_params: a function which takes two inputs:
@@ -165,8 +168,8 @@ def cusp_solve_init():
     sel_g1_eqn = w1*g0*g1 + w2*g1**2
 
     # equations to model mutation
-    mut_g0_eqn = 1e7*(sel_g0_eqn*(1-mu) + sel_g1_eqn*nu - g0)
-    mut_g1_eqn = sel_g0_eqn*mu + sel_g1_eqn*(1-nu) - g1
+    mut_g0_eqn = scaling_coeff*(sel_g0_eqn*(1-mu) + sel_g1_eqn*nu - g0)
+    mut_g1_eqn = scaling_coeff*(sel_g0_eqn*mu + sel_g1_eqn*(1-nu) - g1)
 
     # calculate the symbolic derivatives of the differential equation
     g0_deriv_sym = diff(mut_g0_eqn, g0)
@@ -208,24 +211,25 @@ def bifn_diagram_init(s_val_range, h_val, mu_val, nu_val):
             s_vals: 
     """
 
-    # establish the following as symbolic variables which can be called by lambdify
+    # establish symbolic variables which can be called by lambdify
     g0, s, h = symbols('g0 s h')
 
     # cusp equations
-    cusp_eqn_params_1, cusp_eqn_params_2, cusp_eqn_params_3 = cusp_solve_init()
+    cusp_eqn_set = cusp_solve_init(1e11)
 
     # evaluates cusp equations at given mu and nu
-    cusp_eqn_1_eval = cusp_eqn_params_1([mu_val, nu_val])
-    cusp_eqn_2_eval = cusp_eqn_params_2([mu_val, nu_val])
-    cusp_eqn_3_eval = cusp_eqn_params_3([mu_val, nu_val])
+    cusp_eqn_1_eval = cusp_eqn_set[0]([mu_val, nu_val])
+    cusp_eqn_2_eval = cusp_eqn_set[1]([mu_val, nu_val])
+    cusp_eqn_3_eval = cusp_eqn_set[2]([mu_val, nu_val])
 
     # creates a vectorized set of equations with variables g0, s, and h callable by scipy.optimize
     cusp_set_func = lambdify([(g0, s, h)], [cusp_eqn_1_eval, cusp_eqn_2_eval, cusp_eqn_3_eval], 'scipy')
 
     # solves the set of equations for a point (g0, s, h)
     # initial guess is of the same form (g0, s, h)
-    cusp_soln = optimize.root(cusp_set_func, [.5, 0, .75], method='hybr')
+    cusp_soln = optimize.root(cusp_set_func, [.5, mu_val, .5], method='hybr')
 
+    print(cusp_soln)
     # defines the critical h value at which the cusp occurs
     # for h_val > h_crit, two bifurcations occur
     # for h_val < h_crit, no bifurcations occur
@@ -234,23 +238,23 @@ def bifn_diagram_init(s_val_range, h_val, mu_val, nu_val):
     # if h>h_crit evaluates bifn equations
     if h_val > h_crit:
         # initializing bifn equations
-        bifn_eqn_params_1, bifn_eqn_params_2 = bifn_solve_init()
+        bifn_eqn_set = bifn_solve_init(1/(mu_val))
 
         # evaluating at given h, mu, and nu
-        bifn_eqn_1_eval = bifn_eqn_params_1([h_val, mu_val, nu_val])
-        bifn_eqn_2_eval = bifn_eqn_params_2([h_val, mu_val, nu_val])
+        bifn_eqn_1_eval = bifn_eqn_set[0]([h_val, mu_val, nu_val])
+        bifn_eqn_2_eval = bifn_eqn_set[1]([h_val, mu_val, nu_val])
 
         # creates a vectorized equation set with variable g0 and s callable by scipy.optimize
         bifn_set_func = lambdify([(g0, s)], [bifn_eqn_1_eval, bifn_eqn_2_eval], 'scipy')
 
         # solves the set of equtions for two points of form (g0, s)
         # first initial condition finds bifn for higher g0 and lower s
-        bifn_soln_1 = optimize.root(bifn_set_func, [.5, .000001], method='hybr')
+        bifn_soln_1 = optimize.root(bifn_set_func, [.5, mu_val*10], method='hybr')
         # second initial condition finds bifn for lower g0 and higher s
-        bifn_soln_2 = optimize.root(bifn_set_func, [0, .00001], method='hybr')
+        bifn_soln_2 = optimize.root(bifn_set_func, [.01, mu_val*10], method='hybr')
 
     # initializing root/equilibria equation
-    g0_eqn_params = root_solve_init()
+    g0_eqn_params = root_solve_init(1/(mu_val))
 
     # numpy arrays to store values if no bifurcations occur
     eq_solns = np.zeros_like(s_val_range)
@@ -340,16 +344,16 @@ def bifn_diagram_init(s_val_range, h_val, mu_val, nu_val):
     if h_val < h_crit:
         return eq_solns, s_vals
     elif h_val > h_crit:
-        return eq_solns_1, s_vals_1, eq_solns_2, s_vals_2, eq_solns_3, s_vals_3, bifn_soln_1, bifn_soln_2
+        return eq_solns_1, s_vals_1, eq_solns_2, s_vals_2, eq_solns_3, s_vals_3, bifn_soln_1.x, bifn_soln_2.x
         
 
 
-iterations = 1000
+iterations = 10
 
 h_val = 1
 mu_val = 5e-8
 nu_val = 1e-9
-s_val_range = np.logspace(-7, -6, iterations)
+s_val_range = np.logspace(-9, -8, iterations)
 
-outputs = bifn_diagram_init(s_val_range, h_val, mu_val, nu_val)
 
+output_data = bifn_diagram_init(s_val_range, h_val, mu_val, nu_val)

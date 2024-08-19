@@ -1,4 +1,4 @@
-mu_val = 8e-6; % constant value of forward mutation rate
+mu_val = 1e-5; % constant value of forward mutation rate
 nu_val_range = logspace(-15, -6, 100); % constant value of backward mutation rate
 
 syms s q G0 G1 G2 g0 g1 h mu nu g0p
@@ -34,25 +34,26 @@ first_der = diff(mut_g0, g0);
 second_der = diff(first_der, g0);
 
 eqn_set = [mut_g0, first_der, second_der];
-h_values = zeros(1, 100);
-mut_ratio_values = zeros(1, 100);
+
 for i = 1:length(nu_val_range)
     cusp_soln = cusp_solve(eqn_set, mu_val, nu_val_range(i));
+    h_values = zeros(1, 100); 
     for j = 1:length(cusp_soln.h)
         if imag(cusp_soln.h(j)) == 0
             h_values(i) = cusp_soln.h(j);
         end
     end
+    mut_ratio_values = zeros(1, 100);
     mut_ratio_values(i) = mu_val/nu_val_range(i);
 end
 
 figure
 
-plot(mut_ratio_values, h_values)
+plot(mut_ratio_values, h_values, color, 'k')
 
 xlabel('Mutation Ratio')
-ylabel('h_c (dominance cusp value)')
-title('Dominance vs. Mutation Ratio for Cusp Points')
+ylabel('h_cusp (dominance cusp value)')
+title()
 
 xscale log
 
