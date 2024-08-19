@@ -271,8 +271,6 @@ root_set_func = lambdify([(g0, g1)], [root_eqn_1_eval, root_eqn_2_eval], 'scipy'
 
 #options = {'xtol':1e-8, 'eps':1e-10}
 
-print(root_set_func)
-
 root_soln = optimize.fixed_point(root_set_func, [.01, .01])
 
 #root_soln_1 = optimize.root(root_set_func, [.0001, .0198], method='krylov')
