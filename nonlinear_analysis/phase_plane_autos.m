@@ -1,5 +1,5 @@
 % for autos, classification of fixed points using linear stability
-% analysis, the Jacobian matrix, and eigendirections
+% analysis, the Jacobian matrix, and eigenvectors
 
 iterations = 1000; % number of steps or number of data points to generate
 
