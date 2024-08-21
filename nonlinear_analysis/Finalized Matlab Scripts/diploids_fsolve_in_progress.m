@@ -1,7 +1,7 @@
 % for diploids, a nonlinear model and analysis
 
 % determines number of values to include in 
-iterations = 1000;
+iterations = 100;
 
 
 % single point parameter values

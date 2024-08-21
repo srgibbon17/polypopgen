@@ -13,7 +13,7 @@ h1_val = 1; % h1 dominance coefficient value, constant
 h2_val = 1; % h2 dominance coefficient value, constant
 h3_val = 1; % h3 dominance coefficient value, constant
 
-syms g00 g01 g10 g11 s h1 h2 h3 mu
+syms g00 g01 g10 g11 s h1 h2 h3 mu nu
 
 % assumptions on the parameters of the model; theoretical bounds
 assume(g00>=0 & g00<=1);
@@ -25,6 +25,7 @@ assume(h1>=0 & h1<=1);
 assume(h2>=0 & h2<=1);
 assume(h3>=0 & h3<=1);
 assume(mu>=0 & mu<=1);
+assume(nu>=0 & nu<=1);
 
 % equations to parameterize relative fitnesses
 wbar = (1-2*s*(h1*(g00*g10+g00*g01)+h2*(g00*g11+g01*g10)+h3*(g01*g11+g10*g11))-s*(h2*(g01^2+g10^2)+g11^2));
