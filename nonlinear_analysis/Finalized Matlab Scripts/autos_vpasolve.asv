@@ -8,11 +8,11 @@ s_val_range = logspace(-8, -5, iterations); % starting s value
 mu_val = 1e-8; % constant value of forward mutation rate
 nu_val = 1e-9; % constant value of backward mutation rate
 mut_ratio_val = mu_val/nu_val; % ratio of forward to backward mutation rate
-a_val = 0; % constant value of alpha (double reduction rate)
+a_val = .75; % constant value of alpha (double reduction rate)
 
-h1_val = 1; % h1 dominance coefficient value, constant
-h2_val = 1; % h2 dominance coefficient value, constant
-h3_val = 1; % h3 dominance coefficient value, constant
+h1_val = .25; % h1 dominance coefficient value, constant
+h2_val = .5; % h2 dominance coefficient value, constant
+h3_val = .75; % h3 dominance coefficient value, constant
 
 syms a s q G0 G1 G2 G3 G4 g0 g1 g2 h1 h2 h3 mu nu
 
@@ -82,7 +82,7 @@ unstable_s = [];
 for i = 1:length(s_val_range)
 
     %solves for the fixed points of the system
-    [g0_root_vals, g1_root_vals] = root_solns(mut_exp_set(1), mut_exp_set(2), mu, mu_val, nu, nu_val, s, s_val_range(i), h1, h1_val, h2, h2_val, h3, h3_val, a, a_val, g0, g1)
+    [g0_root_vals, g1_root_vals] = root_solns(mut_exp_set(1), mut_exp_set(2), mu, mu_val, nu, nu_val, s, s_val_range(i), h1, h1_val, h2, h2_val, h3, h3_val, a, a_val, g0, g1);
         
     %evaluating the jacobian and stability of each fixed point
     [fixed_pt_stabilities] = linear_stability_analysis(jac_matrix, mu, mu_val, nu, nu_val, s, s_val_range(i), h1, h1_val, h2, h2_val, h3, h3_val, a, a_val, g0, g0_root_vals, g1, g1_root_vals); 
@@ -186,12 +186,7 @@ function [fixed_pt_stabilities] = linear_stability_analysis(jacobian_matrix, mu,
 
         [eigenvectors, eigenvalues] = eig(jacobian_eval);
 
-        disp(eigenvalues)
-        disp(eigenvectors)
-
-        %eigenvals = [abs(eigenvalues(1,1)), abs(eigenvalues(2,2))];
-
-        %disp(max(eigenvals)/min(eigenvals))
+        eigenvals
 
         %classifies the fixed point according to the trace and determinant
         if det_jac < 0

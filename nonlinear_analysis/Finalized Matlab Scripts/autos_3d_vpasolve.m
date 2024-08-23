@@ -8,11 +8,11 @@ s_val_range = logspace(-8, -5, iterations); % starting s value
 mu_val = 1e-8; % constant value of forward mutation rate
 nu_val = 1e-9; % constant value of backward mutation rate
 mut_ratio_val = mu_val/nu_val; % ratio of forward to backward mutation rate
-a_val = 0; % constant value of alpha (double reduction rate)
+a_val = .75; % constant value of alpha (double reduction rate)
 
-h1_val = 1; % h1 dominance coefficient value, constant
-h2_val = 1; % h2 dominance coefficient value, constant
-h3_val = 1; % h3 dominance coefficient value, constant
+h1_val = .25; % h1 dominance coefficient value, constant
+h2_val = .5; % h2 dominance coefficient value, constant
+h3_val = .75; % h3 dominance coefficient value, constant
 
 syms a s q G0 G1 G2 G3 G4 g0 g1 g2 h1 h2 h3 mu nu
 
@@ -60,48 +60,55 @@ for i = 1:length(mut_exp_set)
     mut_exp_set(i) = subs(mut_exp_set(i), G2, (2*g0*g2 + g1^2));
     mut_exp_set(i) = subs(mut_exp_set(i), G3, 2*g1*g2);
     mut_exp_set(i) = subs(mut_exp_set(i), G4, g2^2);
-    mut_exp_set(i) = subs(mut_exp_set(i), g2, (1-g1-g0));
 end
 
 
 %creates the Jacobian of the system
-jac_matrix = [diff(mut_exp_set(1), g0), diff(mut_exp_set(1), g1); diff(mut_exp_set(2), g0), diff(mut_exp_set(2), g1)];
+jac_matrix = [diff(mut_exp_set(1), g0), diff(mut_exp_set(1), g1), diff(mut_exp_set(1), g2); 
+                diff(mut_exp_set(2), g0), diff(mut_exp_set(2), g1), diff(mut_exp_set(2), g2);
+                diff(mut_exp_set(3), g0), diff(mut_exp_set(3), g1), diff(mut_exp_set(3), g2)];
 
 neutral_stable_g0 = [];
 neutral_stable_g1 = [];
+neutral_stable_g2 = [];
 neutral_stable_s = [];
 
 selected_stable_g0 = [];
 selected_stable_g1 = [];
+selected_stable_g2 = [];
 selected_stable_s = [];
 
 unstable_g0 = [];
 unstable_g1 = [];
+unstable_g2 = [];
 unstable_s = [];
 
 for i = 1:length(s_val_range)
 
     %solves for the fixed points of the system
-    [g0_root_vals, g1_root_vals] = root_solns(mut_exp_set(1), mut_exp_set(2), mu, mu_val, nu, nu_val, s, s_val_range(i), h1, h1_val, h2, h2_val, h3, h3_val, a, a_val, g0, g1)
+    [g0_root_vals, g1_root_vals, g2_root_vals] = root_solns(mut_exp_set(1), mut_exp_set(2), mut_exp_set(3), mu, mu_val, nu, nu_val, s, s_val_range(i), h1, h1_val, h2, h2_val, h3, h3_val, a, a_val, g0, g1, g2)
         
     %evaluating the jacobian and stability of each fixed point
-    [fixed_pt_stabilities] = linear_stability_analysis(jac_matrix, mu, mu_val, nu, nu_val, s, s_val_range(i), h1, h1_val, h2, h2_val, h3, h3_val, a, a_val, g0, g0_root_vals, g1, g1_root_vals); 
+    [fixed_pt_stabilities] = linear_stability_analysis(jac_matrix, mu, mu_val, nu, nu_val, s, s_val_range(i), h1, h1_val, h2, h2_val, h3, h3_val, a, a_val, g0, g0_root_vals, g1, g1_root_vals, g2, g2_root_vals); 
 
     for j = 1:length(fixed_pt_stabilities)
 
         if fixed_pt_stabilities(j) == 0
             unstable_g0(end+1) = g0_root_vals(j);
             unstable_g1(end+1) = g1_root_vals(j);
+            unstable_g2(end+1) = g2_root_vals(j);
             unstable_s(end+1) = s_val_range(i);
 
         elseif fixed_pt_stabilities(j) == 1
             if g0_root_vals(j) > .3333
                 selected_stable_g0(end+1) = g0_root_vals(j);
                 selected_stable_g1(end+1) = g1_root_vals(j);
+                selected_stable_g2(end+1) = g2_root_vals(j);
                 selected_stable_s(end+1) = s_val_range(i);
             else
                 neutral_stable_g0(end+1) = g0_root_vals(j);
                 neutral_stable_g1(end+1) = g1_root_vals(j);
+                neutral_stable_g2(end+1) = g2_root_vals(j);
                 neutral_stable_s(end+1) = s_val_range(i);
             end
         end
@@ -120,7 +127,7 @@ end
 
 %%% FUNCTIONS %%%
 
-function [g0_root_vals, g1_root_vals] = root_solns(mut_g0_eqn, mut_g1_eqn, mu, mu_val, nu, nu_val, s, s_val, h1, h1_val, h2, h2_val, h3, h3_val, a, a_val, g0, g1)
+function [g0_root_vals, g1_root_vals, g2_root_vals] = root_solns(mut_g0_eqn, mut_g1_eqn, mut_g2_eqn, mu, mu_val, nu, nu_val, s, s_val, h1, h1_val, h2, h2_val, h3, h3_val, a, a_val, g0, g1, g2)
 
     %function which uses vpasolve to find the fixed points/roots of the system
 
@@ -140,12 +147,20 @@ function [g0_root_vals, g1_root_vals] = root_solns(mut_g0_eqn, mut_g1_eqn, mu, m
     g1_eqn = subs(g1_eqn, h3, h3_val);
     g1_eqn = subs(g1_eqn, a, a_val);
 
+    g2_eqn = subs(mut_g2_eqn, mu, mu_val);
+    g2_eqn = subs(g2_eqn, nu, nu_val);
+    g2_eqn = subs(g2_eqn, s, s_val);
+    g2_eqn = subs(g2_eqn, h1, h1_val);
+    g2_eqn = subs(g2_eqn, h2, h2_val);
+    g2_eqn = subs(g2_eqn, h3, h3_val);
+    g2_eqn = subs(g2_eqn, a, a_val);
 
-    [g0_root_vals, g1_root_vals] = vpasolve([g0_eqn, g1_eqn], [g0, g1]);
+
+    [g0_root_vals, g1_root_vals, g2_root_vals] = vpasolve([g0_eqn, g1_eqn, g2_eqn], [g0, g1, g2]);
 end
 
 
-function [pd_value] = pd_evaluation(jacobian_entry, mu, mu_val, nu, nu_val, s, s_val, h1, h1_val, h2, h2_val, h3, h3_val, a, a_val, g0, g0_root_val, g1, g1_root_val)
+function [pd_value] = pd_evaluation(jacobian_entry, mu, mu_val, nu, nu_val, s, s_val, h1, h1_val, h2, h2_val, h3, h3_val, a, a_val, g0, g0_root_val, g1, g1_root_val, g2, g2_root_val)
     
     %%%function which evaluates a partial derivative by substituting a root of
     %the system
@@ -160,50 +175,42 @@ function [pd_value] = pd_evaluation(jacobian_entry, mu, mu_val, nu, nu_val, s, s
     pd_value = subs(pd_value, a, a_val);
     pd_value = subs(pd_value, g0, g0_root_val);
     pd_value = subs(pd_value, g1, g1_root_val);
+    pd_value = subs(pd_value, g2, g2_root_val);
 end
 
-function [fixed_pt_stabilities] = linear_stability_analysis(jacobian_matrix, mu, mu_val, nu, nu_val, s, s_val, h1, h1_val, h2, h2_val, h3, h3_val, a, a_val, g0, g0_root_vals, g1, g1_root_vals)
+function [fixed_pt_stabilities] = linear_stability_analysis(jacobian_matrix, mu, mu_val, nu, nu_val, s, s_val, h1, h1_val, h2, h2_val, h3, h3_val, a, a_val, g0, g0_root_vals, g1, g1_root_vals, g2, g2_root_vals)
     
-    %%%evaluates the jacobian in full by calling pd_evaluation
+    %evaluates the jacobian in full by calling pd_evaluation
     %Then, calculates the eigenvalues and vectors of the Jacobian
     %Using the eigenvalues, det(J) and tr(J), classifies stability
     %Returns a 0 if the fixed point is unstable, a 1 if stable
 
     fixed_pt_stabilities = g0_root_vals;
 
-    jacobian_eval = [0, 0; 0, 0];
+    jacobian_eval = [0, 0, 0; 
+                     0, 0, 0; 
+                     0, 0, 0];
 
     for i = 1:length(g0_root_vals)
         for j = 1:length(jacobian_eval)
             for k = 1:length(jacobian_eval)
-                jacobian_eval(j, k) = pd_evaluation(jacobian_matrix(j, k), mu, mu_val, nu, nu_val, s, s_val, h1, h1_val, h2, h2_val, h3, h3_val, a, a_val, g0, g0_root_vals(i), g1, g1_root_vals(i)); 
+                jacobian_eval(j, k) = pd_evaluation(jacobian_matrix(j, k), mu, mu_val, nu, nu_val, s, s_val, h1, h1_val, h2, h2_val, h3, h3_val, a, a_val, g0, g0_root_vals(i), g1, g1_root_vals(i), g2, g2_root_vals(i)); 
             end
         end
-
-        %calulating the trace and determinant of the evaluated jacobian
-        trace_jac = trace(jacobian_eval);
-        det_jac = det(jacobian_eval);
 
         [eigenvectors, eigenvalues] = eig(jacobian_eval);
 
         disp(eigenvalues)
-        disp(eigenvectors)
-
-        %eigenvals = [abs(eigenvalues(1,1)), abs(eigenvalues(2,2))];
-
-        %disp(max(eigenvals)/min(eigenvals))
 
         %classifies the fixed point according to the trace and determinant
-        if det_jac < 0
-            fixed_pt_stabilities(i) = 0; %0 for unstable saddle point
-        elseif det_jac > 0
-            if trace_jac < 0 && trace_jac^2 - 4*det_jac > 0
-                fixed_pt_stabilities(i) = 1; %1 for stable node
-            else
-                disp('Error. Unexpected stability type from linear stability analysis.')
-            end
-        else
+        if eigenvalues(1,1) < 0 && eigenvalues(2,2) < 0 && eigenvalues(3,3) < 0
+            fixed_pt_stabilities(i) = 1; %0 for stable node
+        elseif eigenvalues(1,1) > 0 && eigenvalues(2,2) > 0 && eigenvalues(3,3) > 0
             disp('Error. Unexpected stability type from linear stability analysis.')
+        elseif imag(eigenvalues(1,1)) ~= 0 || imag(eigenvalues(2,2)) ~= 0 || imag(eigenvalues(3,3)) ~= 0
+            disp('Error. Unexpected stability type from linear stability analysis.')
+        else
+            fixed_pt_stabilities(i) = 0; %0 for unstable saddle point
         end
     end
 end

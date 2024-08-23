@@ -1,17 +1,17 @@
 % for allos with 2 HEs, classification of fixed points using linear stability
 % analysis, the Jacobian matrix, and eigenvectors
 
-iterations = 100; % number of steps or number of data points to generate
+iterations = 5; % number of steps or number of data points to generate
 
-s_val_range = logspace(-8, -6, iterations); % starting s value
+s_val_range = logspace(-8, -5, iterations); % starting s value
 
 mu_val = 1e-8; % constant value of forward mutation rate
 nu_val = 1e-9; % constant value of backward mutation rate
 mut_ratio_val = mu_val/nu_val; % ratio of forward to backward mutation rate
 
-h1_val = 1; % h1 dominance coefficient value, constant
-h2_val = 1; % h2 dominance coefficient value, constant
-h3_val = 1; % h3 dominance coefficient value, constant
+h1_val = .25; % h1 dominance coefficient value, constant
+h2_val = .5; % h2 dominance coefficient value, constant
+h3_val = .75; % h3 dominance coefficient value, constant
 
 syms g00 g01 g10 g11 s h1 h2 h3 mu nu
 
@@ -77,7 +77,7 @@ unstable_s = [];
 for i = 1:length(s_val_range)
 
     %solves for the fixed points of the system
-    [g00_root_vals, g01_root_vals] = root_solns(mut_exp_set(1), mut_exp_set(2), mu, mu_val, nu, nu_val, s, s_val_range(i), h1, h1_val, h2, h2_val, h3, h3_val, g00, g01)
+    [g00_root_vals, g01_root_vals] = root_solns(mut_exp_set(1), mut_exp_set(2), mu, mu_val, nu, nu_val, s, s_val_range(i), h1, h1_val, h2, h2_val, h3, h3_val, g00, g01);
         
     %evaluating the jacobian and stability of each fixed point
     [fixed_pt_stabilities] = linear_stability_analysis(jac_matrix, mu, mu_val, nu, nu_val, s, s_val_range(i), h1, h1_val, h2, h2_val, h3, h3_val, g00, g00_root_vals, g01, g01_root_vals); 
@@ -103,32 +103,32 @@ for i = 1:length(s_val_range)
     end
 end
 
-figure
-
-plot(neutral_stable_s, neutral_stable_g00+neutral_stable_g01)
-hold on
-plot(selected_stable_s, selected_stable_g00+selected_stable_g01)
-plot(unstable_s, unstable_g00+unstable_g01, 'LineStyle','--')
-
-xscale log
-
-figure
-
-plot(neutral_stable_s, neutral_stable_g00)
-hold on
-plot(selected_stable_s, selected_stable_g00)
-plot(unstable_s, unstable_g00, 'LineStyle','--')
-
-xscale log
-
-figure
-
-plot(neutral_stable_s, neutral_stable_g01)
-hold on
-plot(selected_stable_s, selected_stable_g01)
-plot(unstable_s, unstable_g01, 'LineStyle','--')
-
-xscale log
+% figure
+% 
+% plot(neutral_stable_s, neutral_stable_g00+neutral_stable_g01)
+% hold on
+% plot(selected_stable_s, selected_stable_g00+selected_stable_g01)
+% plot(unstable_s, unstable_g00+unstable_g01, 'LineStyle','--')
+% 
+% xscale log
+% 
+% figure
+% 
+% plot(neutral_stable_s, neutral_stable_g00)
+% hold on
+% plot(selected_stable_s, selected_stable_g00)
+% plot(unstable_s, unstable_g00, 'LineStyle','--')
+% 
+% xscale log
+% 
+% figure
+% 
+% plot(neutral_stable_s, neutral_stable_g01)
+% hold on
+% plot(selected_stable_s, selected_stable_g01)
+% plot(unstable_s, unstable_g01, 'LineStyle','--')
+% 
+% xscale log
 
 
 %%% FUNCTIONS %%%
@@ -193,6 +193,10 @@ function [fixed_pt_stabilities] = linear_stability_analysis(jacobian_matrix, mu,
         %calulating the trace and determinant of the evaluated jacobian
         trace_jac = trace(jacobian_eval);
         det_jac = det(jacobian_eval);
+
+        [eigenvectors, eigenvalues] = eig(jacobian_eval);
+
+        disp(eigenvalues)
 
         %classifies the fixed point according to the trace and determinant
         if det_jac < 0
