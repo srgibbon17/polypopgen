@@ -3,7 +3,7 @@
 
 figure
 
-iterations = 15; 
+iterations = 100; 
 
 grid_row = 3;
 grid_col = 3;
@@ -251,6 +251,8 @@ function bifn_eigen_stiff_plot(s_val_range, mu_val, nu_val, a_val_1, a_val_2, h_
     if grid_pos+6 == 8
         xlabel('s (selection coefficient)')
     end
+
+    disp(grid_pos)
     
     
 
