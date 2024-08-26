@@ -1,17 +1,13 @@
-% for allos with 1 HE, classification of fixed points using linear stability
-% analysis, the Jacobian matrix, and eigenvectors
-
-iterations = 100; % number of steps or number of data points to generate
-
-s_val_range = logspace(-8, -6, iterations); % starting s value
-
-mu_val = 1e-8; % constant value of forward mutation rate
-nu_val = 1e-9; % constant value of backward mutation rate
-mut_ratio_val = mu_val/nu_val; % ratio of forward to backward mutation rate
-
-h1_val = 1; % h1 dominance coefficient value, constant
-h2_val = 1; % h2 dominance coefficient value, constant
-h3_val = 1; % h3 dominance coefficient value, constant
+function [neutral_q, neutral_s, neutral_small_eigen, neutral_stiff_ratio, selected_q, selected_s, selected_small_eigen, selected_stiff_ratio, unstable_q, unstable_s] = HE2_eigen_bifn(s_val_range, mu_val, nu_val, h1_val, h2_val, h3_val)
+%Generates 2HEs bifurcation plotting data
+%   for allos with 2 HEs, classification of fixed points using linear stability
+%   analysis, the Jacobian matrix, and eigenvectors
+%   returns:
+%       HE2_data:
+%           a 6 element array of data arrays in the following order:
+%               neutral_stable (for q and s, respectively)
+%               selected_stable (for q and s, respectively)
+%               unstable (for q and s, respectively)
 
 syms g00 g01 g10 g11 s h1 h2 h3 mu nu
 
@@ -36,10 +32,10 @@ w3 = (1-s*h3)/wbar;
 w4 = (1-s)/wbar;
 
 % equations for selection
-sel_g00 = g00^2*w0+(17/16)*g00*g01*w1+(17/16)*g00*g10*w1+(3/16)*g01^2*w2+(3/16)*g10^2*w2+(7/16)*g01*g10*w2+(7/16)*g00*g11*w2+(1/16)*g01*g11*w3+(1/16)*g10*g11*w3;
-sel_g10 = (3/16)*g00*g01*w1+(11/16)*g00*g10*w1+(1/16)*g01^2*w2+(9/16)*g10^2*w2+(9/16)*g01*g10*w2+(9/16)*g00*g11*w2+(3/16)*g01*g11*w3+(11/16)*g10*g11*w3;
-sel_g01 = (11/16)*g00*g01*w1+(3/16)*g00*g10*w1+(9/16)*g01^2*w2+(1/16)*g10^2*w2+(9/16)*g01*g10*w2+(9/16)*g00*g11*w2+(11/16)*g01*g11*w3+(3/16)*g10*g11*w3;
-sel_g11 = (1/16)*g00*g01*w1+(1/16)*g00*g10*w1+(3/16)*g01^2*w2+(3/16)*g10^2*w2+(7/16)*g01*g10*w2+(7/16)*g00*g11*w2+(17/16)*g01*g11*w3+(17/16)*g10*g11*w3+g11^2*w4;
+sel_g00 = g00^2*w0+(9/8)*g00*g01*w1+(9/8)*g00*g10*w1+(1/4)*g01^2*w2+(1/4)*g10^2*w2+(1/2)*g01*g10*w2+(1/2)*g00*g11*w2+(1/8)*g01*g11*w3+(1/8)*g10*g11*w3;
+sel_g10 = (3/8)*g00*g01*w1+(3/8)*g00*g10*w1+(1/4)*g01^2*w2+(1/4)*g10^2*w2+(1/2)*g01*g10*w2+(1/2)*g00*g11*w2+(3/8)*g01*g11*w3+(3/8)*g10*g11*w3;
+sel_g01 = (3/8)*g00*g01*w1+(3/8)*g00*g10*w1+(1/4)*g01^2*w2+(1/4)*g10^2*w2+(1/2)*g01*g10*w2+(1/2)*g00*g11*w2+(3/8)*g01*g11*w3+(3/8)*g10*g11*w3;
+sel_g11 = (1/8)*g00*g01*w1+(1/8)*g00*g10*w1+(1/4)*g01^2*w2+(1/4)*g10^2*w2+(1/2)*g01*g10*w2+(1/2)*g00*g11*w2+(9/8)*g01*g11*w3+(9/8)*g10*g11*w3+g11^2*w4;
 
 % expressions for mutation
 mut_g00 = sel_g00*(1-mu)^2 + sel_g01*(1-mu)*nu + sel_g10*(1-mu)*nu + sel_g11*nu^2 - g00;
@@ -64,11 +60,15 @@ jac_matrix = [diff(mut_exp_set(1), g00), diff(mut_exp_set(1), g01); diff(mut_exp
 
 neutral_stable_g00 = [];
 neutral_stable_g01 = [];
-neutral_stable_s = [];
+neutral_small_eigen = [];
+neutral_stiff_ratio = [];
+neutral_s = [];
 
 selected_stable_g00 = [];
 selected_stable_g01 = [];
-selected_stable_s = [];
+selected_small_eigen = [];
+selected_stiff_ratio = [];
+selected_s = [];
 
 unstable_g00 = [];
 unstable_g01 = [];
@@ -77,10 +77,10 @@ unstable_s = [];
 for i = 1:length(s_val_range)
 
     %solves for the fixed points of the system
-    [g00_root_vals, g01_root_vals] = root_solns(mut_exp_set(1), mut_exp_set(2), mu, mu_val, nu, nu_val, s, s_val_range(i), h1, h1_val, h2, h2_val, h3, h3_val, g00, g01)
+    [g00_root_vals, g01_root_vals] = root_solns(mut_exp_set(1), mut_exp_set(2), mu, mu_val, nu, nu_val, s, s_val_range(i), h1, h1_val, h2, h2_val, h3, h3_val, g00, g01);
         
     %evaluating the jacobian and stability of each fixed point
-    [fixed_pt_stabilities] = linear_stability_analysis(jac_matrix, mu, mu_val, nu, nu_val, s, s_val_range(i), h1, h1_val, h2, h2_val, h3, h3_val, g00, g00_root_vals, g01, g01_root_vals); 
+    [fixed_pt_stabilities, stiff_ratios, small_eigens] = linear_stability_analysis(jac_matrix, mu, mu_val, nu, nu_val, s, s_val_range(i), h1, h1_val, h2, h2_val, h3, h3_val, g00, g00_root_vals, g01, g01_root_vals); 
 
     for j = 1:length(fixed_pt_stabilities)
 
@@ -93,42 +93,25 @@ for i = 1:length(s_val_range)
             if g00_root_vals(j) > .3333
                 selected_stable_g00(end+1) = g00_root_vals(j);
                 selected_stable_g01(end+1) = g01_root_vals(j);
-                selected_stable_s(end+1) = s_val_range(i);
+                selected_stiff_ratio(end+1) = stiff_ratios(j);
+                selected_small_eigen(end+1) = small_eigens(j);
+                selected_s(end+1) = s_val_range(i);
             else
                 neutral_stable_g00(end+1) = g00_root_vals(j);
                 neutral_stable_g01(end+1) = g01_root_vals(j);
-                neutral_stable_s(end+1) = s_val_range(i);
+                neutral_stiff_ratio(end+1) = stiff_ratios(j);
+                neutral_small_eigen(end+1) = small_eigens(j);
+                neutral_s(end+1) = s_val_range(i);
             end
         end
     end
 end
 
-figure
+neutral_q = ones(1, length(neutral_stable_g00)) - neutral_stable_g00 - neutral_stable_g01;
+selected_q = ones(1, length(selected_stable_g00)) - selected_stable_g00 - selected_stable_g01;
+unstable_q = ones(1, length(unstable_g00)) - unstable_g00 - unstable_g01;
 
-plot(neutral_stable_s, neutral_stable_g00+neutral_stable_g01)
-hold on
-plot(selected_stable_s, selected_stable_g00+selected_stable_g01)
-plot(unstable_s, unstable_g00+unstable_g01, 'LineStyle','--')
-
-xscale log
-
-figure
-
-plot(neutral_stable_s, neutral_stable_g00)
-hold on
-plot(selected_stable_s, selected_stable_g00)
-plot(unstable_s, unstable_g00, 'LineStyle','--')
-
-xscale log
-
-figure
-
-plot(neutral_stable_s, neutral_stable_g01)
-hold on
-plot(selected_stable_s, selected_stable_g01)
-plot(unstable_s, unstable_g01, 'LineStyle','--')
-
-xscale log
+end
 
 
 %%% FUNCTIONS %%%
@@ -172,7 +155,7 @@ function [pd_value] = pd_evaluation(jacobian_entry, mu, mu_val, nu, nu_val, s, s
     pd_value = subs(pd_value, g01, g01_root_val);
 end
 
-function [fixed_pt_stabilities] = linear_stability_analysis(jacobian_matrix, mu, mu_val, nu, nu_val, s, s_val, h1, h1_val, h2, h2_val, h3, h3_val, g00, g00_root_vals, g01, g01_root_vals)
+function [fixed_pt_stabilities, stiff_ratios, small_eigens] = linear_stability_analysis(jacobian_matrix, mu, mu_val, nu, nu_val, s, s_val, h1, h1_val, h2, h2_val, h3, h3_val, g00, g00_root_vals, g01, g01_root_vals)
     
     %%%evaluates the jacobian in full by calling pd_evaluation
     %Then, calculates the eigenvalues and vectors of the Jacobian
@@ -180,6 +163,8 @@ function [fixed_pt_stabilities] = linear_stability_analysis(jacobian_matrix, mu,
     %Returns a 0 if the fixed point is unstable, a 1 if stable
 
     fixed_pt_stabilities = g00_root_vals;
+    stiff_ratios = g00_root_vals;
+    small_eigens = g00_root_vals;
 
     jacobian_eval = [0, 0; 0, 0];
 
@@ -193,6 +178,14 @@ function [fixed_pt_stabilities] = linear_stability_analysis(jacobian_matrix, mu,
         %calulating the trace and determinant of the evaluated jacobian
         trace_jac = trace(jacobian_eval);
         det_jac = det(jacobian_eval);
+
+        eigenvalues = eig(jacobian_eval);
+
+        abs_eigens = abs(eigenvalues);
+
+        stiff_ratios(i) = (max(abs_eigens)/min(abs_eigens));
+
+        small_eigens(i) = min(abs_eigens);
 
         %classifies the fixed point according to the trace and determinant
         if det_jac < 0

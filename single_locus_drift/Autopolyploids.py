@@ -22,23 +22,23 @@ Additionally, if the self_rate is set to zero, selfing will still occur with pro
 """
 
 # Let's define some parameters
-p = 0.85  # allele frequency for A (ancestral allele)
+p = 0.25  # allele frequency for A (ancestral allele)
 q = 1-p  # allele frequency for a (derived allele)
 g0_init_value = .3
 g1_init_value = 0
 g2_init_value = 1 - g0_init_value - g1_init_value
-N = 250  # population size
-g = 2000  # number of generations
+N = 1000  # population size
+g = 100  # number of generations
 g_bottleneck_start = 100000  # generation at which bottleneck starts
 g_bottleneck_length = 200  # number of generations for which the bottleneck lasts
 N_bottleneck = 2000  # population size during the bottleneck
-s = -1e-2  # selection coefficient
+s = 1e-3  # selection coefficient
 h1 = 0  # dominance coefficient for G3
 h2 = 0  # dominance coefficient for G2
 h3 = 0  # dominance coefficient for G1
-mu = 1e-8  # mutation rate (from 'A' to 'a')
-nu = 1e-7  # mutation rate (from 'a' to 'A')
-self_rate = .5  # selfing rate 
+mu = 2e-5  # mutation rate (from 'A' to 'a')
+nu = 1e-6  # mutation rate (from 'a' to 'A')
+self_rate = 0  # selfing rate 
 alpha = 0  # probability of double reduction; shown to have a maximum of 1/6=.16667
 
 # Let's create some functions
