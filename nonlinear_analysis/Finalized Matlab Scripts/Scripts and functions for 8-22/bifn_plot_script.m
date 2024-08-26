@@ -3,14 +3,14 @@
 
 figure
 
-iterations = 100; 
+iterations = 5; 
 
 grid_row = 3;
 grid_col = 3;
 
 % dominant case:
 
-s_val_range = logspace(-8, -3, iterations); % set of selection coefficients
+s_val_range = logspace(-8, -5, iterations); % set of selection coefficients
 
 mu_val = 2e-8; % forward mutation rate
 nu_val = 4e-10; % backward mutation rate
@@ -197,8 +197,8 @@ function allos_comparison_plot(s_val_range, mu_val, nu_val, h_val, h1_val, h2_va
 
         plot(HE0_s_values, HE0_q_values, 'Color', [0 0.4470 0.7410])
         hold on
-        plot(HE1_s_values, HE1_q_values, 'Color', [0 0.4470 0.7410 .6])
-        plot(HE2_s_values, HE2_q_values, 'Color', [0 0.4470 0.7410 .2])
+        plot(HE1_s_values, HE1_q_values, 'Color', [0 0.4470 0.7410 .7])
+        plot(HE2_s_values, HE2_q_values, 'Color', [0 0.4470 0.7410 .4])
 
         if h_val == 0
             legend('0 HEs', '1 HE', '2 HEs')
@@ -213,13 +213,13 @@ function allos_comparison_plot(s_val_range, mu_val, nu_val, h_val, h1_val, h2_va
         plot(HE0_s2, HE0_q2, 'Color', [0 0.4470 0.7410])
         plot(HE0_s3, HE0_q3, 'Color', [0 0.4470 0.7410], 'LineStyle','--')
 
-        plot(HE1_s1, HE1_q1, 'Color', [0 0.4470 0.7410 .6])
-        plot(HE1_s2, HE1_q2, 'Color', [0 0.4470 0.7410 .6])
-        plot(HE1_s3, HE1_q3, 'Color', [0 0.4470 0.7410 .6], 'LineStyle','--')
+        plot(HE1_s1, HE1_q1, 'Color', [0 0.4470 0.7410 .7])
+        plot(HE1_s2, HE1_q2, 'Color', [0 0.4470 0.7410 .7])
+        plot(HE1_s3, HE1_q3, 'Color', [0 0.4470 0.7410 .7], 'LineStyle','--')
 
-        plot(HE2_s1, HE2_q1, 'Color', [0 0.4470 0.7410 .2])
-        plot(HE2_s2, HE2_q2, 'Color', [0 0.4470 0.7410 .2])
-        plot(HE2_s3, HE2_q3, 'Color', [0 0.4470 0.7410 .2], 'LineStyle','--')
+        plot(HE2_s1, HE2_q1, 'Color', [0 0.4470 0.7410 .4])
+        plot(HE2_s2, HE2_q2, 'Color', [0 0.4470 0.7410 .4])
+        plot(HE2_s3, HE2_q3, 'Color', [0 0.4470 0.7410 .4], 'LineStyle','--')
 
     end
     
@@ -260,8 +260,8 @@ function autos_comparison_plot(s_val_range, mu_val, nu_val, a_val_1, a_val_2, a_
 
         plot(autos_1_s_values, autos_1_q_values, 'Color', [0.8500 0.3250 0.0980])
         hold on
-        plot(autos_2_s_values, autos_2_q_values, 'Color', [0.8500 0.3250 0.0980 .6])
-        plot(autos_3_s_values, autos_3_q_values, 'Color', [0.8500 0.3250 0.0980 .2])
+        plot(autos_2_s_values, autos_2_q_values, 'Color', [0.8500 0.3250 0.0980 .7])
+        plot(autos_3_s_values, autos_3_q_values, 'Color', [0.8500 0.3250 0.0980 .4])
 
         if h_val == 0
             legend('α=0', 'α=1/12', 'α=1/6')
@@ -276,13 +276,13 @@ function autos_comparison_plot(s_val_range, mu_val, nu_val, a_val_1, a_val_2, a_
         plot(autos1_s2, autos1_q2, 'Color', [0.8500 0.3250 0.0980])
         plot(autos1_s3, autos1_q3, 'Color', [0.8500 0.3250 0.0980], 'LineStyle','--')
 
-        plot(autos2_s1, autos2_q1, 'Color', [0.8500 0.3250 0.0980 .6])
-        plot(autos2_s2, autos2_q2, 'Color', [0.8500 0.3250 0.0980 .6])
-        plot(autos2_s3, autos2_q3, 'Color', [0.8500 0.3250 0.0980 .6], 'LineStyle','--')
+        plot(autos2_s1, autos2_q1, 'Color', [0.8500 0.3250 0.0980 .7])
+        plot(autos2_s2, autos2_q2, 'Color', [0.8500 0.3250 0.0980 .7])
+        plot(autos2_s3, autos2_q3, 'Color', [0.8500 0.3250 0.0980 .7], 'LineStyle','--')
 
-        plot(autos3_s1, autos3_q1, 'Color', [0.8500 0.3250 0.0980 .2])
-        plot(autos3_s2, autos3_q2, 'Color', [0.8500 0.3250 0.0980 .2])
-        plot(autos3_s3, autos3_q3, 'Color', [0.8500 0.3250 0.0980 .2], 'LineStyle','--')
+        plot(autos3_s1, autos3_q1, 'Color', [0.8500 0.3250 0.0980 .4])
+        plot(autos3_s2, autos3_q2, 'Color', [0.8500 0.3250 0.0980 .4])
+        plot(autos3_s3, autos3_q3, 'Color', [0.8500 0.3250 0.0980 .4], 'LineStyle','--')
 
     end
     
@@ -343,13 +343,13 @@ function plot_ploidy_and_double_reduction(s_val_range, mu_val, nu_val, a_val_1, 
 
         plot(autos_1_s_values, autos_1_q_values, 'Color', [0.8500 0.3250 0.0980])
         hold on
-        plot(autos_2_s_values, autos_2_q_values, 'Color', [0.8500 0.3250 0.0980 .6])
-        plot(autos_3_s_values, autos_3_q_values, 'Color', [0.8500 0.3250 0.0980 .2])
+        plot(autos_2_s_values, autos_2_q_values, 'Color', [0.8500 0.3250 0.0980 .7])
+        plot(autos_3_s_values, autos_3_q_values, 'Color', [0.8500 0.3250 0.0980 .4])
 
         plot(HE0_s_values, HE0_q_values, 'Color', [0 0.4470 0.7410])
         hold on
-        plot(HE1_s_values, HE1_q_values, 'Color', [0 0.4470 0.7410 .6])
-        plot(HE2_s_values, HE2_q_values, 'Color', [0 0.4470 0.7410 .2])
+        plot(HE1_s_values, HE1_q_values, 'Color', [0 0.4470 0.7410 .7])
+        plot(HE2_s_values, HE2_q_values, 'Color', [0 0.4470 0.7410 .4])
 
         plot(diploids_s_values, diploids_q_values, 'Color', 'k')
 
@@ -366,26 +366,26 @@ function plot_ploidy_and_double_reduction(s_val_range, mu_val, nu_val, a_val_1, 
         plot(autos1_s2, autos1_q2, 'Color', [0.8500 0.3250 0.0980])
         plot(autos1_s3, autos1_q3, 'Color', [0.8500 0.3250 0.0980], 'LineStyle','--')
 
-        plot(autos2_s1, autos2_q1, 'Color', [0.8500 0.3250 0.0980 .6])
-        plot(autos2_s2, autos2_q2, 'Color', [0.8500 0.3250 0.0980 .6])
-        plot(autos2_s3, autos2_q3, 'Color', [0.8500 0.3250 0.0980 .6], 'LineStyle','--')
+        plot(autos2_s1, autos2_q1, 'Color', [0.8500 0.3250 0.0980 .7])
+        plot(autos2_s2, autos2_q2, 'Color', [0.8500 0.3250 0.0980 .7])
+        plot(autos2_s3, autos2_q3, 'Color', [0.8500 0.3250 0.0980 .7], 'LineStyle','--')
 
-        plot(autos3_s1, autos3_q1, 'Color', [0.8500 0.3250 0.0980 .2])
-        plot(autos3_s2, autos3_q2, 'Color', [0.8500 0.3250 0.0980 .2])
-        plot(autos3_s3, autos3_q3, 'Color', [0.8500 0.3250 0.0980 .2], 'LineStyle','--')
+        plot(autos3_s1, autos3_q1, 'Color', [0.8500 0.3250 0.0980 .4])
+        plot(autos3_s2, autos3_q2, 'Color', [0.8500 0.3250 0.0980 .4])
+        plot(autos3_s3, autos3_q3, 'Color', [0.8500 0.3250 0.0980 .4], 'LineStyle','--')
 
         plot(HE0_s1, HE0_q1, 'Color', [0 0.4470 0.7410])
         hold on
         plot(HE0_s2, HE0_q2, 'Color', [0 0.4470 0.7410])
         plot(HE0_s3, HE0_q3, 'Color', [0 0.4470 0.7410], 'LineStyle','--')
 
-        plot(HE1_s1, HE1_q1, 'Color', [0 0.4470 0.7410 .6])
-        plot(HE1_s2, HE1_q2, 'Color', [0 0.4470 0.7410 .6])
-        plot(HE1_s3, HE1_q3, 'Color', [0 0.4470 0.7410 .6], 'LineStyle','--')
+        plot(HE1_s1, HE1_q1, 'Color', [0 0.4470 0.7410 .7])
+        plot(HE1_s2, HE1_q2, 'Color', [0 0.4470 0.7410 .7])
+        plot(HE1_s3, HE1_q3, 'Color', [0 0.4470 0.7410 .7], 'LineStyle','--')
 
-        plot(HE2_s1, HE2_q1, 'Color', [0 0.4470 0.7410 .2])
-        plot(HE2_s2, HE2_q2, 'Color', [0 0.4470 0.7410 .2])
-        plot(HE2_s3, HE2_q3, 'Color', [0 0.4470 0.7410 .2], 'LineStyle','--')
+        plot(HE2_s1, HE2_q1, 'Color', [0 0.4470 0.7410 .4])
+        plot(HE2_s2, HE2_q2, 'Color', [0 0.4470 0.7410 .4])
+        plot(HE2_s3, HE2_q3, 'Color', [0 0.4470 0.7410 .4], 'LineStyle','--')
 
         plot(diploids_s1, diploids_q1, 'Color','k')
         plot(diploids_s2, diploids_q2, 'Color','k')

@@ -1,4 +1,4 @@
-% plotting script to generate a figure with 3x3 subplots which are each a
+% plotting script to generate a figure with 1x3 subplots which are each a
 % bifurcation diagram with 3 lines
 
 figure
