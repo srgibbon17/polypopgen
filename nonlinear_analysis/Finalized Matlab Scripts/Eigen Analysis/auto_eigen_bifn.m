@@ -187,7 +187,7 @@ function [fixed_pt_stabilities, stiff_ratios, small_eigens] = linear_stability_a
 
         eigenvalues = eig(jacobian_eval);
 
-        [eigenvectors, eigenvals] = eig(jacobian_eval);
+        [vectors, values] = eig(jacobian_eval)
 
         abs_eigens = abs(eigenvalues);
 

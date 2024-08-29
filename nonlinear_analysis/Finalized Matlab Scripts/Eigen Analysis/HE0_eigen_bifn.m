@@ -191,6 +191,8 @@ function [fixed_pt_stabilities, stiff_ratios, small_eigens] = linear_stability_a
         %calulating the eigenvalues of the evaluated jacobian
         eigenvalues = eig(jacobian_eval);
 
+        [vectors, values] = eig(jacobian_eval)
+
         abs_eigens = abs(eigenvalues);
 
         stiff_ratios(i) = (max(abs_eigens)/min(abs_eigens));
