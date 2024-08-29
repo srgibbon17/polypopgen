@@ -197,7 +197,7 @@ function [fixed_pt_stabilities, stiff_ratios, small_eigens] = linear_stability_a
 
         stiff_ratios(i) = (max(abs_eigens)/min(abs_eigens));
 
-        small_eigens(i) = min(abs_eigens);
+        small_eigens(i) = median(abs_eigens);
 
         %classifies the fixed point according to the trace and determinant
         if eigenvalues(1) < 0 && eigenvalues(2) < 0 && eigenvalues(3) < 0

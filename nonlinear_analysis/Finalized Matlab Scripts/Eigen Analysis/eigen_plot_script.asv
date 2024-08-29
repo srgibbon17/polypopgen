@@ -3,7 +3,7 @@
 
 figure
 
-iterations = 15; 
+iterations = 100; 
 
 grid_row = 3;
 grid_col = 3;
@@ -18,7 +18,7 @@ a_val_2 = 1/4;
 
 % recessive case:
 
-s_val_range = logspace(-5, -1, iterations); % set of selection coefficients
+s_val_range = logspace(-9, -4, iterations); % set of selection coefficients
 
 h_val = 0; % diploid dominance coefficient
 
@@ -32,7 +32,7 @@ bifn_eigen_stiff_plot(s_val_range, mu_val, nu_val, a_val_1, a_val_2, h_val, h1_v
 
 % additive case:
 
-s_val_range = logspace(-5, -1, iterations); % set of selection coefficients
+s_val_range = logspace(-9, -4, iterations); % set of selection coefficients
 
 h_val = .5; % diploid dominance coefficient
 
@@ -46,7 +46,7 @@ bifn_eigen_stiff_plot(s_val_range, mu_val, nu_val, a_val_1, a_val_2, h_val, h1_v
 
 % dominant case:
 
-s_val_range = logspace(-5, -1, iterations); % set of selection coefficients
+s_val_range = logspace(-9, -4, iterations); % set of selection coefficients
 
 h_val = 1; % diploid dominance coefficient
 
@@ -251,6 +251,8 @@ function bifn_eigen_stiff_plot(s_val_range, mu_val, nu_val, a_val_1, a_val_2, h_
     if grid_pos+6 == 8
         xlabel('s (selection coefficient)')
     end
+
+    disp(grid_pos)
     
     
 
