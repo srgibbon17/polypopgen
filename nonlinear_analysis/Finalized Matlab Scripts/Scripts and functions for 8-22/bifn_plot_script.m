@@ -3,7 +3,7 @@
 
 figure
 
-iterations = 5; 
+iterations = 50; 
 
 grid_row = 3;
 grid_col = 3;
@@ -22,9 +22,9 @@ a_val_3 = 1/6;
 
 h_val = 1; % diploid dominance coefficient
 
-h1_val = 1; % simplex dominance coefficient
-h2_val = 1; % duplex dominance coefficient
-h3_val = 1; % triplex dominance coefficient
+h1_val = 1/3; % simplex dominance coefficient
+h2_val = .6; % duplex dominance coefficient
+h3_val = 9/11; % triplex dominance coefficient
 
 grid_pos = 3;
 
@@ -52,9 +52,9 @@ a_val_3 = 1/6;
 
 h_val = 0; % diploid dominance coefficient
 
-h1_val = 0; % simplex dominance coefficient
-h2_val = 0; % duplex dominance coefficient
-h3_val = 0; % triplex dominance coefficient
+h1_val = 2/11; % simplex dominance coefficient
+h2_val = .4; % duplex dominance coefficient
+h3_val = 2/3; % triplex dominance coefficient
 
 grid_pos = 1;
 
@@ -297,6 +297,8 @@ function autos_comparison_plot(s_val_range, mu_val, nu_val, a_val_1, a_val_2, a_
     end
 
     ylim([0, 1])
+
+    disp(grid_pos)
 
 end
 
