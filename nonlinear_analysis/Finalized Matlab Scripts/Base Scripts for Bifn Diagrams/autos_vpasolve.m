@@ -1,7 +1,7 @@
 % for autos, classification of fixed points using linear stability
 % analysis, the Jacobian matrix, and eigenvectors
 
-iterations = 5; % number of steps or number of data points to generate
+iterations = 1; % number of steps or number of data points to generate
 
 s_val_range = logspace(-8, -5, iterations); % starting s value
 
@@ -65,7 +65,16 @@ end
 
 
 %creates the Jacobian of the system
-jac_matrix = [diff(mut_exp_set(1), g0), diff(mut_exp_set(1), g1); diff(mut_exp_set(2), g0), diff(mut_exp_set(2), g1)];
+jac_matrix = [diff(mut_exp_set(1), g0), diff(mut_exp_set(1), g1); 
+              diff(mut_exp_set(2), g0), diff(mut_exp_set(2), g1)];
+
+jac_latex = zeros(2, 2);
+
+for i = 1:2
+    for j = 1:2
+        jac_latex(i, j) = factor(expand(jac_matrix(i, j)));
+    end
+end
 
 neutral_stable_g0 = [];
 neutral_stable_g1 = [];
