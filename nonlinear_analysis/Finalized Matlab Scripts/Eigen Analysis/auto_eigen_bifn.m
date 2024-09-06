@@ -41,25 +41,29 @@ sel_g1 = (1/2 - a/2)*G1*w1 + (2/3 - 2*a/3)*G2*w2 + (1/2 - a/2)*G3*w3;
 sel_g2 = (a/4)*G1*w1 + (1/6 + a/3)*G2*w2 + (1/2 + a/4)*G3*w3 + G4*w4;
 
 % equations for mutation
-mut_g0 = sel_g0*((1-mu)^2) + sel_g1*(1-mu)*nu + sel_g2*(nu^2) - g0;
-mut_g1 = 2*sel_g0*(1-mu)*mu + sel_g1*(1-mu)*(1-nu)+2*sel_g2*(1-nu)*nu - g1;
-mut_g2 = sel_g0*(mu^2) + sel_g1*mu*(1-nu) + sel_g2*((1-nu)^2) - g2;
+g0_t_1 = sel_g0*((1-mu)^2) + sel_g1*(1-mu)*nu + sel_g2*(nu^2);
+g1_t_1 = 2*sel_g0*(1-mu)*mu + sel_g1*(1-mu)*(1-nu)+2*sel_g2*(1-nu)*nu;
+g2_t_1 = sel_g0*(mu^2) + sel_g1*mu*(1-nu) + sel_g2*((1-nu)^2);
 
-mut_exp_set = [mut_g0, mut_g1, mut_g2];
+delta_g0 = g0_t_1 - g0;
+delta_g1 = g1_t_1 - g1;
+delta_g2 = g2_t_1 - g2;
+
+diff_eqn_set = [delta_g0, delta_g1, delta_g2];
 
 %substituing genotypes for gametes and removing g2 using g0+g1+g2 = 1
-for i = 1:length(mut_exp_set)
-    mut_exp_set(i) = subs(mut_exp_set(i), G0, g0^2);
-    mut_exp_set(i) = subs(mut_exp_set(i), G1, 2*g0*g1);
-    mut_exp_set(i) = subs(mut_exp_set(i), G2, (2*g0*g2 + g1^2));
-    mut_exp_set(i) = subs(mut_exp_set(i), G3, 2*g1*g2);
-    mut_exp_set(i) = subs(mut_exp_set(i), G4, g2^2);
-    mut_exp_set(i) = subs(mut_exp_set(i), g2, (1-g1-g0));
+for i = 1:length(diff_eqn_set)
+    diff_eqn_set(i) = subs(diff_eqn_set(i), G0, g0^2);
+    diff_eqn_set(i) = subs(diff_eqn_set(i), G1, 2*g0*g1);
+    diff_eqn_set(i) = subs(diff_eqn_set(i), G2, (2*g0*g2 + g1^2));
+    diff_eqn_set(i) = subs(diff_eqn_set(i), G3, 2*g1*g2);
+    diff_eqn_set(i) = subs(diff_eqn_set(i), G4, g2^2);
+    diff_eqn_set(i) = subs(diff_eqn_set(i), g2, (1-g1-g0));
 end
 
 
 %creates the Jacobian of the system
-jac_matrix = [diff(mut_exp_set(1), g0), diff(mut_exp_set(1), g1); diff(mut_exp_set(2), g0), diff(mut_exp_set(2), g1)];
+jac_matrix = [diff(diff_eqn_set(1), g0), diff(diff_eqn_set(1), g1); diff(diff_eqn_set(2), g0), diff(diff_eqn_set(2), g1)];
 
 neutral_g0 = [];
 neutral_g1 = [];
@@ -80,7 +84,7 @@ unstable_s = [];
 for i = 1:length(s_val_range)
 
     %solves for the fixed points of the system
-    [g0_root_vals, g1_root_vals] = root_solns(mut_exp_set(1), mut_exp_set(2), mu, mu_val, nu, nu_val, s, s_val_range(i), h1, h1_val, h2, h2_val, h3, h3_val, a, a_val, g0, g1);
+    [g0_root_vals, g1_root_vals] = root_solns(diff_eqn_set(1), diff_eqn_set(2), mu, mu_val, nu, nu_val, s, s_val_range(i), h1, h1_val, h2, h2_val, h3, h3_val, a, a_val, g0, g1);
         
     %evaluating the jacobian and stability of each fixed point
     [fixed_pt_stabilities, stiff_ratios, small_eigens] = linear_stability_analysis(jac_matrix, mu, mu_val, nu, nu_val, s, s_val_range(i), h1, h1_val, h2, h2_val, h3, h3_val, a, a_val, g0, g0_root_vals, g1, g1_root_vals); 
