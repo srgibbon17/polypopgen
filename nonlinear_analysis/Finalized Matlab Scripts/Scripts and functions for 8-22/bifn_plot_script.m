@@ -3,47 +3,18 @@
 
 figure
 
-iterations = 5; 
+iterations = 500; 
 
 grid_row = 3;
 grid_col = 3;
 
-% dominant case:
-
-s_val_range = logspace(-8, -5, iterations); % set of selection coefficients
-
-mu_val = 2e-8; % forward mutation rate
-nu_val = 4e-10; % backward mutation rate
-a_val = 0; % double reduction rate
-
-a_val_1 = 0;
-a_val_2 = 1/12;
-a_val_3 = 1/6;
-
-h_val = 1; % diploid dominance coefficient
-
-h1_val = 1; % simplex dominance coefficient
-h2_val = 1; % duplex dominance coefficient
-h3_val = 1; % triplex dominance coefficient
-
-grid_pos = 3;
-
-ploidy_comparison_plot(s_val_range, mu_val, nu_val, a_val, h_val, h1_val, h2_val, h3_val, grid_row, grid_col, grid_pos)
-
-grid_pos = 6;
-
-allos_comparison_plot(s_val_range, mu_val, nu_val, h_val, h1_val, h2_val, h3_val, grid_row, grid_col, grid_pos)
-
-grid_pos = 9;
-
-autos_comparison_plot(s_val_range, mu_val, nu_val, a_val_1, a_val_2, a_val_3, h_val, h1_val, h2_val, h3_val, grid_row, grid_col, grid_pos)
 
 % recessive case:
 
 s_val_range = logspace(-9, -4, iterations); % set of selection coefficients
 
 mu_val = 2e-8; % forward mutation rate
-nu_val = 4e-10; % backward mutation rate
+nu_val = 1e-9; % backward mutation rate
 a_val = 0; % double reduction rate
 
 a_val_1 = 0;
@@ -74,7 +45,7 @@ autos_comparison_plot(s_val_range, mu_val, nu_val, a_val_1, a_val_2, a_val_3, h_
 s_val_range = logspace(-9, -4, iterations); % set of selection coefficients
 
 mu_val = 2e-8; % forward mutation rate
-nu_val = 4e-10; % backward mutation rate
+nu_val = 1e-9; % backward mutation rate
 a_val = 0; % double reduction rate
 
 a_val_1 = 0;
@@ -99,6 +70,35 @@ grid_pos = 8;
 
 autos_comparison_plot(s_val_range, mu_val, nu_val, a_val_1, a_val_2, a_val_3, h_val, h1_val, h2_val, h3_val, grid_row, grid_col, grid_pos)
 
+% dominant case:
+
+s_val_range = logspace(-9, -4, iterations); % set of selection coefficients
+
+mu_val = 2e-8; % forward mutation rate
+nu_val = 1e-9; % backward mutation rate
+a_val = 0; % double reduction rate
+
+a_val_1 = 0;
+a_val_2 = 1/12;
+a_val_3 = 1/6;
+
+h_val = 1; % diploid dominance coefficient
+
+h1_val = 1; % simplex dominance coefficient
+h2_val = 1; % duplex dominance coefficient
+h3_val = 1; % triplex dominance coefficient
+
+grid_pos = 3;
+
+ploidy_comparison_plot(s_val_range, mu_val, nu_val, a_val, h_val, h1_val, h2_val, h3_val, grid_row, grid_col, grid_pos)
+
+grid_pos = 6;
+
+allos_comparison_plot(s_val_range, mu_val, nu_val, h_val, h1_val, h2_val, h3_val, grid_row, grid_col, grid_pos)
+
+grid_pos = 9;
+
+autos_comparison_plot(s_val_range, mu_val, nu_val, a_val_1, a_val_2, a_val_3, h_val, h1_val, h2_val, h3_val, grid_row, grid_col, grid_pos)
 
 
 
@@ -172,6 +172,8 @@ function ploidy_comparison_plot(s_val_range, mu_val, nu_val, a_val, h_val, h1_va
     
     ylim([0, 1])
 
+    disp(grid_pos)
+
 end
 
 function allos_comparison_plot(s_val_range, mu_val, nu_val, h_val, h1_val, h2_val, h3_val, grid_row, grid_col, grid_pos)
@@ -235,6 +237,8 @@ function allos_comparison_plot(s_val_range, mu_val, nu_val, h_val, h1_val, h2_va
 
     ylim([0, 1])
 
+    disp(grid_pos)
+
 end
 
 function autos_comparison_plot(s_val_range, mu_val, nu_val, a_val_1, a_val_2, a_val_3, h_val, h1_val, h2_val, h3_val, grid_row, grid_col, grid_pos)
@@ -297,6 +301,8 @@ function autos_comparison_plot(s_val_range, mu_val, nu_val, a_val_1, a_val_2, a_
     end
 
     ylim([0, 1])
+
+    disp(grid_pos)
 
 end
 
@@ -409,5 +415,7 @@ function plot_ploidy_and_double_reduction(s_val_range, mu_val, nu_val, a_val_1, 
     end
 
     ylim([0, 1])
+
+    disp(grid_pos)
 
 end
