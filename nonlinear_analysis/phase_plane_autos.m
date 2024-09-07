@@ -1,7 +1,7 @@
 % for autos, classification of fixed points using linear stability
 % analysis, the Jacobian matrix, and eigendirections
 
-iterations = 15; % number of steps or number of data points to generate
+iterations = 10; % number of steps or number of data points to generate
 
 %s_val_range = [1e-7, 9.16e-6, 1e-5, 2e-5, 1.75e-4, 1e-3]; % starting s value
 %s_val = 2e-6;
@@ -65,9 +65,6 @@ for i = 1:length(mut_exp_set)
     mut_exp_set(i) = subs(mut_exp_set(i), g2, (1-g1-g0));
 end
 
-[g0_value, g1_value] = numeric_solver(mut_exp_set(1), mut_exp_set(2), mu, mu_val, nu, nu_val, s, s_val, h1, h1_val, h2, h2_val, h3, h3_val, a, a_val, g0, g1);
-
-
 %creates the Jacobian of the system
 jacobian_1 = [diff(mut_exp_set(1), g0), diff(mut_exp_set(1), g1); diff(mut_exp_set(2), g0), diff(mut_exp_set(2), g1)];
 
@@ -75,7 +72,6 @@ jacobian_1 = [diff(mut_exp_set(1), g0), diff(mut_exp_set(1), g1); diff(mut_exp_s
 [g0_bifn_value_1, g1_bifn_value_1, s_bifn_value_1] = bifn_numeric_solver(mut_exp_set(1), mut_exp_set(2), jacobian_1, mu, mu_val, nu, nu_val, h1, h1_val, h2, h2_val, h3, h3_val, a, a_val, g0, g1, s, [.545, .385, mu_val*10]);
 
 [g0_bifn_value_2, g1_bifn_value_2, s_bifn_value_2] = bifn_numeric_solver(mut_exp_set(1), mut_exp_set(2), jacobian_1, mu, mu_val, nu, nu_val, h1, h1_val, h2, h2_val, h3, h3_val, a, a_val, g0, g1, s, [.001, .1, mu_val*100]);
-
 
 
 figure
@@ -98,9 +94,9 @@ for h = 1:length(s_val_range)
 
     subplot(1, 3, h)
 
-    x_1 = linspace(0, 1, 1000);
-    y_1 = zeros(1, 1000);
-    y_2 = zeros(1, 1000);
+    x_1 = linspace(0, 1, 100);
+    y_1 = zeros(1, 100);
+    y_2 = zeros(1, 100);
 
 
     for i = 1:length(x_1)
@@ -118,10 +114,10 @@ for h = 1:length(s_val_range)
          end
     end
 
-    null_1 = plot(x_1, y_1, 'DisplayName', 'g0 nullcline', 'LineWidth', 1.25);
+    null_1 = plot(x_1, y_1, 'LineWidth', 1);
     null_1.Color = "#0072BD";
     hold on
-    null_2 = plot(x_1, y_2, 'DisplayName', 'g1 nullcline', 'LineWidth', 1.25);
+    null_2 = plot(x_1, y_2, 'LineWidth', 1);
     null_2.Color = "#D95319";
     
     for i = 1:length(g0_value)
@@ -136,9 +132,19 @@ for h = 1:length(s_val_range)
 
         det_jac = det(jacobian_eval);
         if det_jac < 0
-            plot(g0_value(i), g1_value(i), '+', 'MarkerFaceColor', 'k', 'MarkerEdgeColor', 'k', 'LineWidth', 1.25, 'MarkerSize', 10, 'DisplayName', 'saddle point')
+            plot(g0_value(i), g1_value(i), '^', 'MarkerFaceColor', 'k', 'MarkerEdgeColor', 'k', 'LineWidth', 1.5, 'MarkerSize', 6)
+            [eigenvectors, eigenvalues] = eig(jacobian_eval);
+            eigenvalues = sum(eigenvalues);
+            for k = 1:2
+                if eigenvalues(k) < 0
+                    x = linspace(g0_value(i)-.4, g0_value(i)+.4, 10);
+                    slope = eigenvectors(2, k)/eigenvectors(1, k);
+                    y = slope*(x - g0_value(i)) + g1_value(i);
+                    plot(x, y, "LineStyle","--", "Color", 'k', 'LineWidth', 1)
+                end
+            end
         else
-            plot(g0_value(i), g1_value(i), '.', 'Color', 'k', 'MarkerSize', 15, 'DisplayName', 'stable node')
+            plot(g0_value(i), g1_value(i), '.', 'Color', 'k', 'MarkerSize', 20)
         end     
 
         %creates a grid of values covering [0, 1] x [0, 1]
@@ -161,12 +167,21 @@ for h = 1:length(s_val_range)
             end
         end
 
-        quiver(g0_coordinates, g1_coordinates, g0_vector_values, g1_vector_values, 'Color', [.7 .7 .7], 'DisplayName', 'Vector Field')
+        quiver(g0_coordinates, g1_coordinates, g0_vector_values, g1_vector_values, 'Color', [.5 .5 .5])
 
     end
 
     xlim([0 1])
     ylim([0 1])
+
+    if h == 1
+        ylabel('g_1')
+    end
+
+    if h == 2
+        %legend('g_0 Nullcline', 'g_1 Nullcline', 'Stable Node', '', 'Saddle Point', 'Eigenvector', 'Vector Field', '', '')
+        xlabel('g_0')
+    end
 end
 
 %function which uses vpasolve to evaluate the fixed points of the system
