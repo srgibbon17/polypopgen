@@ -1,4 +1,4 @@
-function [neutral_stable_q, neutral_stable_s, selected_stable_q, selected_stable_s, unstable_q, unstable_s] = auto_cusp_cat_data(s_val_range, mu_val, nu_val, k_val_range, a_val)
+function [neutral_stable_q, selected_stable_q, unstable_q, s_coord, k_coord] = auto_cusp_cat_data(s_val_range, mu_val, nu_val, k_val_range, a_val)
 %Generates autopolyploid bifurcation plotting data
 %   for autos, classification of fixed points using linear stability
 %   analysis, the Jacobian matrix, and eigenvectors
@@ -64,53 +64,70 @@ jac_matrix = [diff(mut_exp_set(1), g0), diff(mut_exp_set(1), g1);
 
 [s_coord, k_coord] = meshgrid(s_val_range, k_val_range);
 
-neutral_stable_g0 = zeros(50);
-neutral_stable_g1 = zeros(50);
-neutral_stable_s = zeros(50);
+%k controls the row (first matrix index) and s controls the column (second
+%matrix index)
 
-selected_stable_g0 = zeros(50);
-selected_stable_g1 = zeros(50);
-selected_stable_s = zeros(50);
+neutral_stable_g0 = zeros(length(s_val_range));
+neutral_stable_g1 = zeros(length(s_val_range));
 
-unstable_g0 = zeros(50);
-unstable_g1 = zeros(50);
-unstable_s = zeros(50);
+selected_stable_g0 = zeros(length(s_val_range));
+selected_stable_g1 = zeros(length(s_val_range));
 
-for i = 1:length(s_val_range)
+unstable_g0 = zeros(length(s_val_range));
+unstable_g1 = zeros(length(s_val_range));
 
-    %solves for the fixed points of the system
-    [g0_root_vals, g1_root_vals] = root_solns(mut_exp_set(1), mut_exp_set(2), mu, mu_val, nu, nu_val, s, s_val_range(i), h1, h1_val, h2, h2_val, h3, h3_val, a, a_val, g0, g1);
+for h = 1:length(k_val_range)
+    for i = 1:length(s_val_range)
+
+        [h1_val, h2_val, h3_val] = sigmoid_dominance_relations(k_val_range(h));
+
+        %solves for the fixed points of the system
+        [g0_root_vals, g1_root_vals] = root_solns(mut_exp_set(1), mut_exp_set(2), mu, mu_val, nu, nu_val, s, s_val_range(i), h1, h1_val, h2, h2_val, h3, h3_val, a, a_val, g0, g1);
         
-    %evaluating the jacobian and stability of each fixed point
-    [fixed_pt_stabilities] = linear_stability_analysis(jac_matrix, mu, mu_val, nu, nu_val, s, s_val_range(i), h1, h1_val, h2, h2_val, h3, h3_val, a, a_val, g0, g0_root_vals, g1, g1_root_vals); 
+        %evaluating the jacobian and stability of each fixed point
+        [fixed_pt_stabilities] = linear_stability_analysis(jac_matrix, mu, mu_val, nu, nu_val, s, s_val_range(i), h1, h1_val, h2, h2_val, h3, h3_val, a, a_val, g0, g0_root_vals, g1, g1_root_vals); 
 
-    for j = 1:length(fixed_pt_stabilities)
+        for j = 1:length(fixed_pt_stabilities)
 
-        if fixed_pt_stabilities(j) == 0
-            unstable_g0(end+1) = g0_root_vals(j);
-            unstable_g1(end+1) = g1_root_vals(j);
-            unstable_s(end+1) = s_val_range(i);
+            if fixed_pt_stabilities(j) == 0
+                unstable_g0(h, i) = g0_root_vals(j);
+                unstable_g1(h, i) = g1_root_vals(j);
 
-        elseif fixed_pt_stabilities(j) == 1
-            if g0_root_vals(j) > .3333
-                selected_stable_g0(end+1) = g0_root_vals(j);
-                selected_stable_g1(end+1) = g1_root_vals(j);
-                selected_stable_s(end+1) = s_val_range(i);
-            else
-                neutral_stable_g0(end+1) = g0_root_vals(j);
-                neutral_stable_g1(end+1) = g1_root_vals(j);
-                neutral_stable_s(end+1) = s_val_range(i);
+            elseif fixed_pt_stabilities(j) == 1
+                if g0_root_vals(j) > .3333
+                    selected_stable_g0(h, i) = g0_root_vals(j);
+                    selected_stable_g1(h, i) = g1_root_vals(j);
+                    
+                else
+                    neutral_stable_g0(h, i) = g0_root_vals(j);
+                    neutral_stable_g1(h, i) = g1_root_vals(j);
+                   
+                end
             end
         end
     end
+    disp('iteration:')
+    disp(h)
 end
 
 
+neutral_stable_g2 = ones(size(neutral_stable_g0)) - neutral_stable_g0 - neutral_stable_g1;
+
+selected_stable_g2 = ones(size(selected_stable_g0)) - selected_stable_g0 - selected_stable_g1;
+
+unstable_g2 = ones(size(unstable_g0)) - unstable_g0 - unstable_g1;
+
+neutral_stable_q = neutral_stable_g2 + .5*neutral_stable_g1;
+
+selected_stable_q = selected_stable_g2 + .5*selected_stable_g1;
+
+unstable_q = unstable_g2 + .5*unstable_g1;
 
 end
 
 %%% FUNCTIONS %%%
 
+%%% for solving the system of ODEs for fixed points/equilibria
 function [g0_root_vals, g1_root_vals] = root_solns(mut_g0_eqn, mut_g1_eqn, mu, mu_val, nu, nu_val, s, s_val, h1, h1_val, h2, h2_val, h3, h3_val, a, a_val, g0, g1)
 
     %function which uses vpasolve to find the fixed points/roots of the system
@@ -135,7 +152,7 @@ function [g0_root_vals, g1_root_vals] = root_solns(mut_g0_eqn, mut_g1_eqn, mu, m
     [g0_root_vals, g1_root_vals] = vpasolve([g0_eqn, g1_eqn], [g0, g1]);
 end
 
-
+%%% evaluating the partial derivative/Jacobian entry at a point
 function [pd_value] = pd_evaluation(jacobian_entry, mu, mu_val, nu, nu_val, s, s_val, h1, h1_val, h2, h2_val, h3, h3_val, a, a_val, g0, g0_root_val, g1, g1_root_val)
     
     %%%function which evaluates a partial derivative by substituting a root of
@@ -153,6 +170,7 @@ function [pd_value] = pd_evaluation(jacobian_entry, mu, mu_val, nu, nu_val, s, s
     pd_value = subs(pd_value, g1, g1_root_val);
 end
 
+%%% for determining fixed point stability with linearization and Jacobian
 function [fixed_pt_stabilities] = linear_stability_analysis(jacobian_matrix, mu, mu_val, nu, nu_val, s, s_val, h1, h1_val, h2, h2_val, h3, h3_val, a, a_val, g0, g0_root_vals, g1, g1_root_vals)
     
     %%%evaluates the jacobian in full by calling pd_evaluation
@@ -190,11 +208,11 @@ function [fixed_pt_stabilities] = linear_stability_analysis(jacobian_matrix, mu,
     end
 end
 
-
+%%% for extracting dominance coefficients from hill eqn. parameter
 function [h1_val, h2_val, h3_val] = sigmoid_dominance_relations(k_val)
     
     % evaluates the three dominance coefficients for various values of k
-    % assuming d = 1
+    % assuming d = 1 under the Kacser and Burns model
 
     h1_val = (1/3) / (1/3 + (k_val/(1-k_val)));
 
@@ -204,3 +222,17 @@ function [h1_val, h2_val, h3_val] = sigmoid_dominance_relations(k_val)
 
 end
 
+
+%%% for heat map/color of avg fitness on cusp-cat diagram
+function [avg_fitness] = calc_avg_fitness(g0_vals, g1_vals, g2_vals, s_coord, k_coord)
+
+    avg_fitness = zeros(size(g0_vals));
+
+    for i = 1:length(k_coord)
+        for j = 1:length(s_coord)
+            [h1_val, h2_val, h3_val] = sigmoid_dominance_relations(k_coord(i, j));
+            avg_fitness(i, j) = 1 - s_coord(i, j) * ( h1_val*2*g0_vals(i, j)*g1_vals(i, j) + h2_val*(2*g0_vals(i, j)*g2_vals(i, j) + g1_vals(i, j)*g1_vals(i,j)) + h3_val*2*g1_vals(i,j)*g2_vals(i,j) + g2_vals(i,j)*g2_vals(i,j));
+        end
+    end
+
+end
