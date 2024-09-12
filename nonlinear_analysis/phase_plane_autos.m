@@ -68,11 +68,6 @@ end
 %creates the Jacobian of the system
 jacobian_1 = [diff(mut_exp_set(1), g0), diff(mut_exp_set(1), g1); diff(mut_exp_set(2), g0), diff(mut_exp_set(2), g1)];
 
-%bifurcation analysis using det(eigenvalues)
-[g0_bifn_value_1, g1_bifn_value_1, s_bifn_value_1] = bifn_numeric_solver(mut_exp_set(1), mut_exp_set(2), jacobian_1, mu, mu_val, nu, nu_val, h1, h1_val, h2, h2_val, h3, h3_val, a, a_val, g0, g1, s, [.545, .385, mu_val*10]);
-
-[g0_bifn_value_2, g1_bifn_value_2, s_bifn_value_2] = bifn_numeric_solver(mut_exp_set(1), mut_exp_set(2), jacobian_1, mu, mu_val, nu, nu_val, h1, h1_val, h2, h2_val, h3, h3_val, a, a_val, g0, g1, s, [.001, .1, mu_val*100]);
-
 
 figure
 
@@ -114,11 +109,15 @@ for h = 1:length(s_val_range)
          end
     end
 
-    null_1 = plot(x_1, y_1, 'LineWidth', 1);
+    null_1 = plot(x_1, y_1, 'LineWidth', 1.5);
     null_1.Color = "#0072BD";
     hold on
-    null_2 = plot(x_1, y_2, 'LineWidth', 1);
+    null_2 = plot(x_1, y_2, 'LineWidth', 1.5);
     null_2.Color = "#D95319";
+
+    y_3 = 1-x_1;
+
+    plot(x_1, y_3, 'LineWidth', 1.5, 'Color', 'k')
     
     for i = 1:length(g0_value)
 
@@ -132,7 +131,7 @@ for h = 1:length(s_val_range)
 
         det_jac = det(jacobian_eval);
         if det_jac < 0
-            plot(g0_value(i), g1_value(i), '^', 'MarkerFaceColor', 'k', 'MarkerEdgeColor', 'k', 'LineWidth', 1.5, 'MarkerSize', 6)
+            plot(g0_value(i), g1_value(i), '^', 'MarkerFaceColor', 'k', 'MarkerEdgeColor', 'k', 'LineWidth', 1.5, 'MarkerSize', 8)
             [eigenvectors, eigenvalues] = eig(jacobian_eval);
             eigenvalues = sum(eigenvalues);
             for k = 1:2
@@ -140,7 +139,7 @@ for h = 1:length(s_val_range)
                     x = linspace(g0_value(i)-.4, g0_value(i)+.4, 10);
                     slope = eigenvectors(2, k)/eigenvectors(1, k);
                     y = slope*(x - g0_value(i)) + g1_value(i);
-                    plot(x, y, "LineStyle","--", "Color", 'k', 'LineWidth', 1)
+                    plot(x, y, "LineStyle","--", "Color", 'k', 'LineWidth', 1.5)
                 end
             end
         else
@@ -162,8 +161,15 @@ for h = 1:length(s_val_range)
         for j = 1:iterations
             for k = 1:iterations
                 [g0_vector, g1_vector] = quiver_plot_vectors(g0_eqn, g1_eqn, g0_coordinates(j, k), g1_coordinates(j, k), g0, g1);
-                g0_vector_values(j, k) = g0_vector;
-                g1_vector_values(j, k) = g1_vector;
+                %restricting the output to contain only the space where the
+                %sum of gamete frequencies is less than 1
+                if g0_coordinates(j, k) + g1_coordinates(j, k) <= 1
+                    g0_vector_values(j, k) = g0_vector;
+                    g1_vector_values(j, k) = g1_vector;
+                else
+                    g0_vector_values(j, k) = 0;
+                    g1_vector_values(j, k) = 0;
+                end
             end
         end
 
@@ -171,18 +177,22 @@ for h = 1:length(s_val_range)
 
     end
 
+    
+
     xlim([0 1])
     ylim([0 1])
 
     if h == 1
-        ylabel('g_1')
-    end
+        ylabel('g_1', 'FontSize', 16)
+    end 
 
     if h == 2
-        %legend('g_0 Nullcline', 'g_1 Nullcline', 'Stable Node', '', 'Saddle Point', 'Eigenvector', 'Vector Field', '', '')
-        xlabel('g_0')
+        legend({'g_0 Nullcline', 'g_1 Nullcline', '', 'Stable Node', '', 'Saddle Point', 'Eigenvector', 'Vector Field', '', ''}, 'FontSize', 14)
+        xlabel('g_0', 'FontSize', 16)
     end
 end
+
+
 
 %function which uses vpasolve to evaluate the fixed points of the system
 function [g0_value, g1_value] = numeric_solver(mut_g0_eqn, mut_g1_eqn, mu, mu_value, nu, nu_value, s, sel_value, h1, h1_value, h2, h2_value, h3, h3_value, a, a_value, g0, g1)
