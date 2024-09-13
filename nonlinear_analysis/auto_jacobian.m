@@ -18,7 +18,7 @@ assume(G_3>=0 & G_3<=1);
 assume(G_4>=0 & G_4<=1);
 
 % equations to parameterize relative fitnessesbar
-%omega = 1 - s*(G_1*h_1 + G_2*h_2 + G_3*h_3 + G_4);
+omega = 1 - s*(G_1*h_1 + G_2*h_2 + G_3*h_3 + G_4);
 w0 = 1;
 w1 = (1-s*h_1);
 w2 = (1-s*h_2);
@@ -52,10 +52,10 @@ end
 jacobian_matrix = [diff(mut_exp_set(1), g_0), diff(mut_exp_set(1), g_1); 
                    diff(mut_exp_set(2), g_0), diff(mut_exp_set(2), g_1)];
 
-disp('Unsimplified Jacobian First Entry')
-disp(jacobian_matrix(1,1))
+%disp('Unsimplified Jacobian First Entry')
+%disp(jacobian_matrix(1,1))
 
-disp(latex(jacobian_matrix(1,1)))
+%disp(latex(jacobian_matrix(1,1)))
 
 jacobian_matrix_simp = jacobian_matrix;
 
@@ -64,12 +64,20 @@ for i = 1:2
         % "removes" nu from the expression by setting it equal to zero
         % this line can be copied and nu and can be replaced to remove
         % alpha or dominance coefficients as well
+        jacobian_matrix_simp(i, j) = subs(jacobian_matrix_simp(i, j), alpha, 0);
+        jacobian_matrix_simp(i, j) = subs(jacobian_matrix_simp(i, j), h_1, 0);
+        jacobian_matrix_simp(i, j) = subs(jacobian_matrix_simp(i, j), h_2, 0);
+        jacobian_matrix_simp(i, j) = subs(jacobian_matrix_simp(i, j), h_3, 0);
         jacobian_matrix_simp(i, j) = subs(jacobian_matrix_simp(i, j), nu, 0);
     end
 end
 
-disp('Simplified Jacobian First Entry (nu and other parameters set to 0)')
+%disp('Simplified Jacobian First Entry (nu and other parameters set to 0)')
 
-disp(jacobian_matrix_simp(1,1))
+%disp(jacobian_matrix_simp(1,1))
 
-disp(latex(jacobian_matrix_simp(1,1)))
+%disp(latex(jacobian_matrix_simp(1,1)))
+
+eigenvalues = eig(jacobian_matrix_simp);
+
+disp(latex(eigenvalues))
