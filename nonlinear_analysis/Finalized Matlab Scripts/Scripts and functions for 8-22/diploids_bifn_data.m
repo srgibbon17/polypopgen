@@ -54,9 +54,9 @@ unstable_s = [];
 
 for i = 1:length(s_val_range)
 
-    [g0_roots] = root_solns(mut_g0, mu, mu_val, nu, nu_val, s, s_val_range(i), h, h_val, g0);
+    [g0_roots] = dip_root_solns(mut_g0, mu, mu_val, nu, nu_val, s, s_val_range(i), h, h_val, g0);
 
-    [root_stabilities] = linear_stability_analysis(g0_deriv, mu, mu_val, nu, nu_val, s, s_val_range(i), h, h_val, g0, g0_roots);
+    [root_stabilities] = dip_linear_stability_analysis(g0_deriv, mu, mu_val, nu, nu_val, s, s_val_range(i), h, h_val, g0, g0_roots);
 
     for j = 1:length(root_stabilities)
         if root_stabilities(j) == 0
@@ -83,7 +83,7 @@ unstable_q = ones(1, length(unstable_g0)) - unstable_g0;
 
 end
 
-function [g0_root] = root_solns(mut_eqn_g0, mu, mu_val, nu, nu_val, s, s_val, h, h_val, g0)
+function [g0_root] = dip_root_solns(mut_eqn_g0, mu, mu_val, nu, nu_val, s, s_val, h, h_val, g0)
 
     mut_eqn_g0 = subs(mut_eqn_g0, mu, mu_val);
     mut_eqn_g0 = subs(mut_eqn_g0, nu, nu_val);
@@ -93,7 +93,7 @@ function [g0_root] = root_solns(mut_eqn_g0, mu, mu_val, nu, nu_val, s, s_val, h,
     g0_root = vpasolve(mut_eqn_g0, g0);
 end
 
-function [fixed_pt_stabilities] = linear_stability_analysis(g0_derivative, mu, mu_val, nu, nu_val, s, s_val, h, h_val, g0, g0_roots)
+function [fixed_pt_stabilities] = dip_linear_stability_analysis(g0_derivative, mu, mu_val, nu, nu_val, s, s_val, h, h_val, g0, g0_roots)
     
     g0_derivative = subs(g0_derivative, mu, mu_val);
     g0_derivative = subs(g0_derivative, nu, nu_val);

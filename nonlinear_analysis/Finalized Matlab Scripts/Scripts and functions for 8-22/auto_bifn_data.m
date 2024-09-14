@@ -76,10 +76,10 @@ unstable_s = [];
 for i = 1:length(s_val_range)
 
     %solves for the fixed points of the system
-    [g0_root_vals, g1_root_vals] = root_solns(mut_exp_set(1), mut_exp_set(2), mu, mu_val, nu, nu_val, s, s_val_range(i), h1, h1_val, h2, h2_val, h3, h3_val, a, a_val, g0, g1);
+    [g0_root_vals, g1_root_vals] = auto_root_solns(mut_exp_set(1), mut_exp_set(2), mu, mu_val, nu, nu_val, s, s_val_range(i), h1, h1_val, h2, h2_val, h3, h3_val, a, a_val, g0, g1);
         
     %evaluating the jacobian and stability of each fixed point
-    [fixed_pt_stabilities] = linear_stability_analysis(jac_matrix, mu, mu_val, nu, nu_val, s, s_val_range(i), h1, h1_val, h2, h2_val, h3, h3_val, a, a_val, g0, g0_root_vals, g1, g1_root_vals); 
+    [fixed_pt_stabilities] = auto_linear_stability_analysis(jac_matrix, mu, mu_val, nu, nu_val, s, s_val_range(i), h1, h1_val, h2, h2_val, h3, h3_val, a, a_val, g0, g0_root_vals, g1, g1_root_vals); 
 
     for j = 1:length(fixed_pt_stabilities)
 
@@ -111,7 +111,7 @@ end
 
 %%% FUNCTIONS %%%
 
-function [g0_root_vals, g1_root_vals] = root_solns(mut_g0_eqn, mut_g1_eqn, mu, mu_val, nu, nu_val, s, s_val, h1, h1_val, h2, h2_val, h3, h3_val, a, a_val, g0, g1)
+function [g0_root_vals, g1_root_vals] = auto_root_solns(mut_g0_eqn, mut_g1_eqn, mu, mu_val, nu, nu_val, s, s_val, h1, h1_val, h2, h2_val, h3, h3_val, a, a_val, g0, g1)
 
     %function which uses vpasolve to find the fixed points/roots of the system
 
@@ -136,7 +136,7 @@ function [g0_root_vals, g1_root_vals] = root_solns(mut_g0_eqn, mut_g1_eqn, mu, m
 end
 
 
-function [pd_value] = pd_evaluation(jacobian_entry, mu, mu_val, nu, nu_val, s, s_val, h1, h1_val, h2, h2_val, h3, h3_val, a, a_val, g0, g0_root_val, g1, g1_root_val)
+function [pd_value] = auto_pd_evaluation(jacobian_entry, mu, mu_val, nu, nu_val, s, s_val, h1, h1_val, h2, h2_val, h3, h3_val, a, a_val, g0, g0_root_val, g1, g1_root_val)
     
     %%%function which evaluates a partial derivative by substituting a root of
     %the system
@@ -153,7 +153,7 @@ function [pd_value] = pd_evaluation(jacobian_entry, mu, mu_val, nu, nu_val, s, s
     pd_value = subs(pd_value, g1, g1_root_val);
 end
 
-function [fixed_pt_stabilities] = linear_stability_analysis(jacobian_matrix, mu, mu_val, nu, nu_val, s, s_val, h1, h1_val, h2, h2_val, h3, h3_val, a, a_val, g0, g0_root_vals, g1, g1_root_vals)
+function [fixed_pt_stabilities] = auto_linear_stability_analysis(jacobian_matrix, mu, mu_val, nu, nu_val, s, s_val, h1, h1_val, h2, h2_val, h3, h3_val, a, a_val, g0, g0_root_vals, g1, g1_root_vals)
     
     %%%evaluates the jacobian in full by calling pd_evaluation
     %Then, calculates the eigenvalues and vectors of the Jacobian
@@ -167,7 +167,7 @@ function [fixed_pt_stabilities] = linear_stability_analysis(jacobian_matrix, mu,
     for i = 1:length(g0_root_vals)
         for j = 1:length(jacobian_eval)
             for k = 1:length(jacobian_eval)
-                jacobian_eval(j, k) = pd_evaluation(jacobian_matrix(j, k), mu, mu_val, nu, nu_val, s, s_val, h1, h1_val, h2, h2_val, h3, h3_val, a, a_val, g0, g0_root_vals(i), g1, g1_root_vals(i)); 
+                jacobian_eval(j, k) = auto_pd_evaluation(jacobian_matrix(j, k), mu, mu_val, nu, nu_val, s, s_val, h1, h1_val, h2, h2_val, h3, h3_val, a, a_val, g0, g0_root_vals(i), g1, g1_root_vals(i)); 
             end
         end
 
