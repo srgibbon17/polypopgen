@@ -8,7 +8,21 @@ function [neutral_stable_q, neutral_stable_s, selected_stable_q, selected_stable
 %           selected_stable (for q and s, respectively)
 %           unstable (for q and s, respectively)
 
-syms a s q G0 G1 G2 G3 G4 g0 g1 g2 h1 h2 h3 mu nu
+g0 = sym('g0');
+g1 = sym('g1');
+g2 = sym('g2');
+G0 = sym('G0');
+G1 = sym('G1');
+G2 = sym('G2');
+G3 = sym('G3');
+G4 = sym('G4');
+s = sym('s');
+h1 = sym('h1');
+h2 = sym('h2');
+h3 = sym('h3');
+mu = sym('mu');
+nu = sym('nu');
+a = sym('a');
 
 % assumptions on the parameters of the model; theoretical bounds
 assume(g0>=0 & g0<=1);

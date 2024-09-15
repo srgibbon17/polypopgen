@@ -9,7 +9,16 @@ function [neutral_stable_q, neutral_stable_s, selected_stable_q, selected_stable
 %               selected_stable (for q and s, respectively)
 %               unstable (for q and s, respectively)
 
-syms g00 g01 g10 g11 s h1 h2 h3 mu nu
+g00 = sym('g00');
+g01 = sym('g01');
+g10 = sym('g10');
+g11 = sym('g11');
+s = sym('s');
+h1 = sym('h1');
+h2 = sym('h2');
+h3 = sym('h3');
+mu = sym('mu');
+nu = sym('nu');
 
 % assumptions on the parameters of the model; theoretical bounds
 assume(g00>=0 & g00<=1);

@@ -173,7 +173,11 @@ for h = 1:length(s_val_range)
             end
         end
 
-        quiver(g0_coordinates, g1_coordinates, g0_vector_values, g1_vector_values, 'Color', [.5 .5 .5])
+        if length(g0_value) == 1  
+            quiver(g0_coordinates, g1_coordinates, g0_vector_values, g1_vector_values, 'Color', [.5 .5 .5])
+        elseif i == 3
+            quiver(g0_coordinates, g1_coordinates, g0_vector_values, g1_vector_values, 'Color', [.5 .5 .5])
+        end
 
     end
 
@@ -183,12 +187,12 @@ for h = 1:length(s_val_range)
     ylim([0 1])
 
     if h == 1
-        ylabel('g_1', 'FontSize', 16)
+        ylabel('g_1', 'FontSize', 24)
     end 
 
     if h == 2
-        legend({'g_0 Nullcline', 'g_1 Nullcline', '', 'Stable Node', '', 'Saddle Point', 'Eigenvector', 'Vector Field', '', ''}, 'FontSize', 14)
-        xlabel('g_0', 'FontSize', 16)
+        legend({'g_0 Nullcline', 'g_1 Nullcline', '', 'Stable Node', 'Saddle Point', 'Eigenvector', '', 'Vector Field'}, 'FontSize', 18)
+        xlabel('g_0', 'FontSize', 24)
     end
 end
 

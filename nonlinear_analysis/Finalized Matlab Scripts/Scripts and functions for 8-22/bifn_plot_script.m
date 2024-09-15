@@ -1,6 +1,55 @@
 % plotting script to generate a figure with 3x3 subplots which are each a
 % bifurcation diagram with 3 lines
 
+iterations = 5; 
+
+grid_row = 3;
+grid_col = 5;
+
+s_val_range = logspace(-9, -4, iterations); % set of selection coefficients
+
+mu_val = 2e-8; % forward mutation rate
+nu_val = 1e-9; % backward mutation rate
+a_val = 0; % double reduction rate
+
+a_val_1 = 0;
+a_val_2 = 1/12;
+a_val_3 = 1/6;
+
+%defining variables so HPC Matlab won't crash (fingers crossed)
+
+jacobian_entry = 0;
+jacobian_matrix = 0;
+h_val = 0;
+h1_val = 0;
+h2_val = 0;
+h3_val = 0;
+s_val = 0;
+mut_g00_eqn = 0;
+mut_g01_eqn = 0;
+mut_g11_eqn = 0;
+grid_pos = 1;
+mut_eqn_g0 = 0;
+mut_g0_eqn = 0;
+mut_g1_eqn = 0;
+mut_g00_eqn = 0;
+mut_g01_eqn = 0;
+mut_g11_eqn = 0;
+g0_roots = 0;
+g0_derivative = 0;
+g0_root_val = 0;
+g0_root_vals = 0;
+g1_root_val = 0;
+g1_root_vals = 0;
+g00_root_val = 0;
+g00_root_vals = 0;
+g01_root_val = 0;
+g01_root_vals = 0;
+g11_root_val = 0;
+g11_root_vals = 0;
+
+syms mu nu h1 h2 h3 h g0 g1 g2 g00 g01 g10 g11 a
+
 % dominance coefficients from Kacser and Burns
 function [h1_val, h2_val, h3_val] = sigmoid_dominance_relations(k_val)
     
@@ -18,6 +67,35 @@ end
 
 % Subfunctions for data generation
 %allos:
+function [g00_root_vals, g01_root_vals, g11_root_vals] = allo_root_solns(mut_g00_eqn, mut_g01_eqn, mut_g11_eqn, mu, mu_val, nu, nu_val, s, s_val, h1, h1_val, h2, h2_val, h3, h3_val, g00, g01, g11)
+
+    %function which uses vpasolve to find the fixed points/roots of the system
+
+    g00_eqn = subs(mut_g00_eqn, mu, mu_val);
+    g00_eqn = subs(g00_eqn, nu, nu_val);
+    g00_eqn = subs(g00_eqn, s, s_val);
+    g00_eqn = subs(g00_eqn, h1, h1_val);
+    g00_eqn = subs(g00_eqn, h2, h2_val);
+    g00_eqn = subs(g00_eqn, h3, h3_val);
+
+    g01_eqn = subs(mut_g01_eqn, mu, mu_val);
+    g01_eqn = subs(g01_eqn, nu, nu_val);
+    g01_eqn = subs(g01_eqn, s, s_val);
+    g01_eqn = subs(g01_eqn, h1, h1_val);
+    g01_eqn = subs(g01_eqn, h2, h2_val);
+    g01_eqn = subs(g01_eqn, h3, h3_val);
+
+    g11_eqn = subs(mut_g11_eqn, mu, mu_val);
+    g11_eqn = subs(g11_eqn, nu, nu_val);
+    g11_eqn = subs(g11_eqn, s, s_val);
+    g11_eqn = subs(g11_eqn, h1, h1_val);
+    g11_eqn = subs(g11_eqn, h2, h2_val);
+    g11_eqn = subs(g11_eqn, h3, h3_val);
+
+
+    [g00_root_vals, g01_root_vals, g11_root_vals] = vpasolve([g00_eqn, g01_eqn, g11_eqn], [g00, g01, g11]);
+end
+
 function [pd_value] = allo_pd_evaluation(jacobian_entry, mu, mu_val, nu, nu_val, s, s_val, h1, h1_val, h2, h2_val, h3, h3_val, g00, g00_root_val, g01, g01_root_val, g11, g11_root_val)
     
     %%%function which evaluates a partial derivative by substituting a root of
@@ -69,34 +147,6 @@ function [fixed_pt_stabilities] = allo_linear_stability_analysis(jacobian_matrix
     end
 end
 
-function [g00_root_vals, g01_root_vals, g11_root_vals] = allo_root_solns(mut_g00_eqn, mut_g01_eqn, mut_g11_eqn, mu, mu_val, nu, nu_val, s, s_val, h1, h1_val, h2, h2_val, h3, h3_val, g00, g01, g11)
-
-    %function which uses vpasolve to find the fixed points/roots of the system
-
-    g00_eqn = subs(mut_g00_eqn, mu, mu_val);
-    g00_eqn = subs(g00_eqn, nu, nu_val);
-    g00_eqn = subs(g00_eqn, s, s_val);
-    g00_eqn = subs(g00_eqn, h1, h1_val);
-    g00_eqn = subs(g00_eqn, h2, h2_val);
-    g00_eqn = subs(g00_eqn, h3, h3_val);
-
-    g01_eqn = subs(mut_g01_eqn, mu, mu_val);
-    g01_eqn = subs(g01_eqn, nu, nu_val);
-    g01_eqn = subs(g01_eqn, s, s_val);
-    g01_eqn = subs(g01_eqn, h1, h1_val);
-    g01_eqn = subs(g01_eqn, h2, h2_val);
-    g01_eqn = subs(g01_eqn, h3, h3_val);
-
-    g11_eqn = subs(mut_g11_eqn, mu, mu_val);
-    g11_eqn = subs(g11_eqn, nu, nu_val);
-    g11_eqn = subs(g11_eqn, s, s_val);
-    g11_eqn = subs(g11_eqn, h1, h1_val);
-    g11_eqn = subs(g11_eqn, h2, h2_val);
-    g11_eqn = subs(g11_eqn, h3, h3_val);
-
-
-    [g00_root_vals, g01_root_vals, g11_root_vals] = vpasolve([g00_eqn, g01_eqn, g11_eqn], [g00, g01, g11]);
-end
 %autos:
 function [g0_root_vals, g1_root_vals] = auto_root_solns(mut_g0_eqn, mut_g1_eqn, mu, mu_val, nu, nu_val, s, s_val, h1, h1_val, h2, h2_val, h3, h3_val, a, a_val, g0, g1)
 
@@ -939,23 +989,7 @@ end
 
 
 
-
 figure
-
-iterations = 100; 
-
-grid_row = 3;
-grid_col = 5;
-
-s_val_range = logspace(-9, -4, iterations); % set of selection coefficients
-
-mu_val = 2e-8; % forward mutation rate
-nu_val = 1e-9; % backward mutation rate
-a_val = 0; % double reduction rate
-
-a_val_1 = 0;
-a_val_2 = 1/12;
-a_val_3 = 1/6;
 
 % fully recessive case ----------------------------------------------------
 
