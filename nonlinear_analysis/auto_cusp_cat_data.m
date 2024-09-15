@@ -1,4 +1,4 @@
-function [neutral_stable_q, selected_stable_q, unstable_q, s_coord, k_coord] = auto_cusp_cat_data(s_val_range, mu_val, nu_val, k_val_range, a_val)
+function [neutral_q, selected_q, unstable_q, neutral_avg_fitness, selected_avg_fitness, unstable_avg_fitness, s_coord, k_coord] = auto_cusp_cat_data(s_val_range, mu_val, nu_val, k_val_range, a_val)
 %Generates autopolyploid bifurcation plotting data
 %   for autos, classification of fixed points using linear stability
 %   analysis, the Jacobian matrix, and eigenvectors
@@ -67,14 +67,14 @@ jac_matrix = [diff(mut_exp_set(1), g0), diff(mut_exp_set(1), g1);
 %k controls the row (first matrix index) and s controls the column (second
 %matrix index)
 
-neutral_stable_g0 = zeros(length(s_val_range));
-neutral_stable_g1 = zeros(length(s_val_range));
+neutral_g0 = zeros(size(s_coord));
+neutral_g1 = zeros(size(s_coord));
 
-selected_stable_g0 = zeros(length(s_val_range));
-selected_stable_g1 = zeros(length(s_val_range));
+selected_g0 = zeros(size(s_coord));
+selected_g1 = zeros(size(s_coord));
 
-unstable_g0 = zeros(length(s_val_range));
-unstable_g1 = zeros(length(s_val_range));
+unstable_g0 = zeros(size(s_coord));
+unstable_g1 = zeros(size(s_coord));
 
 for h = 1:length(k_val_range)
     for i = 1:length(s_val_range)
@@ -95,12 +95,12 @@ for h = 1:length(k_val_range)
 
             elseif fixed_pt_stabilities(j) == 1
                 if g0_root_vals(j) > .3333
-                    selected_stable_g0(h, i) = g0_root_vals(j);
-                    selected_stable_g1(h, i) = g1_root_vals(j);
+                    selected_g0(h, i) = g0_root_vals(j);
+                    selected_g1(h, i) = g1_root_vals(j);
                     
                 else
-                    neutral_stable_g0(h, i) = g0_root_vals(j);
-                    neutral_stable_g1(h, i) = g1_root_vals(j);
+                    neutral_g0(h, i) = g0_root_vals(j);
+                    neutral_g1(h, i) = g1_root_vals(j);
                    
                 end
             end
@@ -110,18 +110,96 @@ for h = 1:length(k_val_range)
     disp(h)
 end
 
+neutral_g2 = ones(size(neutral_g0)) - neutral_g0 - neutral_g1;
 
-neutral_stable_g2 = ones(size(neutral_stable_g0)) - neutral_stable_g0 - neutral_stable_g1;
-
-selected_stable_g2 = ones(size(selected_stable_g0)) - selected_stable_g0 - selected_stable_g1;
+selected_g2 = ones(size(selected_g0)) - selected_g0 - selected_g1;
 
 unstable_g2 = ones(size(unstable_g0)) - unstable_g0 - unstable_g1;
 
-neutral_stable_q = neutral_stable_g2 + .5*neutral_stable_g1;
+neutral_q = neutral_g2 + .5*neutral_g1;
 
-selected_stable_q = selected_stable_g2 + .5*selected_stable_g1;
+selected_q = selected_g2 + .5*selected_g1;
 
 unstable_q = unstable_g2 + .5*unstable_g1;
+
+% creating arrays of avg fitness values
+
+unstable_avg_fitness = calc_avg_fitness(unstable_g0, unstable_g1, unstable_g2, s_coord, k_coord, s_val_range, k_val_range);
+
+selected_avg_fitness = calc_avg_fitness(selected_g0, selected_g1, selected_g2, s_coord, k_coord, s_val_range, k_val_range);
+
+neutral_avg_fitness = calc_avg_fitness(neutral_g0, neutral_g1, neutral_g2, s_coord, k_coord, s_val_range, k_val_range);
+
+
+% extrapolating to the bifurcation point
+
+for h = 1:length(k_val_range)
+    avg_unstable_q = mean(unstable_q(h, :));
+
+    bifn_cutoff_1 = find(selected_q(h, :) == 1, 1, 'last');
+    bifn_cutoff_2 = find(neutral_q(h, :) == 1, 1, 'first');
+    
+    % if no bistability occurs, creates a smooth, single plot of the
+    % "neutral" and "selected" stable equilibria
+    if avg_unstable_q == 1
+        selected_q(h, bifn_cutoff_1) = neutral_q(h, bifn_cutoff_1);
+        neutral_q(h, bifn_cutoff_2) = selected_q(h, bifn_cutoff_2);
+
+        selected_avg_fitness(h, bifn_cutoff_1) = neutral_avg_fitness(h, bifn_cutoff_1);
+        neutral_avg_fitness(h, bifn_cutoff_2) = selected_avg_fitness(h, bifn_cutoff_2);
+    else
+
+        %approximating the values of q for the bifn points:
+
+        q_bifn_value_1 = (selected_q(h, 1+bifn_cutoff_1) + unstable_q(h, 1+bifn_cutoff_1))/2;
+        q_bifn_value_2 = (neutral_q(h, -1+bifn_cutoff_2) + unstable_q(h, -1+bifn_cutoff_2))/2;
+
+        %adding the bifn. points to their respective data arrays
+
+        selected_q(h, bifn_cutoff_1) = q_bifn_value_1;
+        unstable_q(h, bifn_cutoff_1) = q_bifn_value_1;
+
+        neutral_q(h, bifn_cutoff_2) = q_bifn_value_2;
+        unstable_q(h, bifn_cutoff_2) = q_bifn_value_2;
+
+        %approximating the values of avg fitness for the bifn points:
+
+        avg_fitness_bifn_1 = (selected_avg_fitness(h, 1+bifn_cutoff_1) + unstable_avg_fitness(h, 1+bifn_cutoff_1))/2;
+        avg_fitness_bifn_2 = (neutral_avg_fitness(h, -1+bifn_cutoff_2) + unstable_avg_fitness(h, -1+bifn_cutoff_2))/2;
+        
+        %adding the bifn. points to their respective data arrays
+
+        selected_avg_fitness(h, bifn_cutoff_1) = avg_fitness_bifn_1;
+        unstable_avg_fitness(h, bifn_cutoff_1) = avg_fitness_bifn_1;
+
+        neutral_avg_fitness(h, bifn_cutoff_2) = avg_fitness_bifn_2;
+        unstable_avg_fitness(h, bifn_cutoff_2) = avg_fitness_bifn_2;
+    
+    end
+end
+
+
+
+% removing "null" data (i.e. any value of 1 in the arrays of q values
+% should be ignored when plotting and is replaced with NaN)
+
+ for h = 1:length(k_val_range)
+    for i = 1:length(s_val_range)
+
+        if unstable_q(h, i) == 1
+            unstable_q(h, i) = nan;
+        end
+
+        if selected_q(h, i) == 1
+            selected_q(h, i) = nan;
+        end
+
+        if neutral_q(h, i) == 1
+            neutral_q(h, i) = nan;
+        end
+
+    end
+ end
 
 end
 
@@ -224,12 +302,12 @@ end
 
 
 %%% for heat map/color of avg fitness on cusp-cat diagram
-function [avg_fitness] = calc_avg_fitness(g0_vals, g1_vals, g2_vals, s_coord, k_coord)
+function [avg_fitness] = calc_avg_fitness(g0_vals, g1_vals, g2_vals, s_coord, k_coord, s_val_range, k_val_range)
 
     avg_fitness = zeros(size(g0_vals));
 
-    for i = 1:length(k_coord)
-        for j = 1:length(s_coord)
+    for i = 1:length(k_val_range)
+        for j = 1:length(s_val_range)
             [h1_val, h2_val, h3_val] = sigmoid_dominance_relations(k_coord(i, j));
             avg_fitness(i, j) = 1 - s_coord(i, j) * ( h1_val*2*g0_vals(i, j)*g1_vals(i, j) + h2_val*(2*g0_vals(i, j)*g2_vals(i, j) + g1_vals(i, j)*g1_vals(i,j)) + h3_val*2*g1_vals(i,j)*g2_vals(i,j) + g2_vals(i,j)*g2_vals(i,j));
         end
