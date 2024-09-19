@@ -1,8 +1,8 @@
-a_val = 0;
+a_val = 1/6;
 mu_val = 2e-8;
 nu_val = 1e-9;
-s_val_range = logspace(-9, -4, 100);
-k_val_range = linspace(0, 1, 10);
+s_val_range = logspace(-9, -4, 50);
+k_val_range = linspace(0, .25, 10);
 
 [neutral_q, selected_q, unstable_q, neutral_avg_fitness, selected_avg_fitness, unstable_avg_fitness, s_coord, k_coord] = auto_cusp_cat_data(s_val_range, mu_val, nu_val, k_val_range, a_val);
 
@@ -42,7 +42,7 @@ xscale log
 xlabel('s')
 ylabel('h_2')
 zlabel('q')
-shading interp
+%shading interp
 
 savefig('auto_cuspcat_h2.fig')
 
