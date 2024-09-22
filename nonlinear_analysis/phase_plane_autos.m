@@ -10,7 +10,7 @@ s_val_range = [1e-9, 3.7e-7, .3];
 mu_val = 2e-8; % constant value of forward mutation rate
 nu_val = 1e-9; % constant value of backward mutation rate
 mut_ratio_val = mu_val/nu_val; % ratio of forward to backward mutation rate
-a_val = 0; % constant value of alpha (double reduction rate)
+a_val = 1/6; % constant value of alpha (double reduction rate)
 
 h1_val = 1; % h1 dominance coefficient value, constant
 h2_val = 1; % h2 dominance coefficient value, constant
@@ -118,6 +118,10 @@ for h = 1:length(s_val_range)
     y_3 = 1-x_1;
 
     plot(x_1, y_3, 'LineWidth', 1.5, 'Color', 'k')
+
+    y_HWE = 2*(x_1.^.5 - x_1);
+    plot(x_1, y_HWE, 'LineWidth', 1.5, 'Color', 'k')
+
     
     for i = 1:length(g0_value)
 
@@ -191,7 +195,7 @@ for h = 1:length(s_val_range)
     end 
 
     if h == 2
-        legend({'g_0 Nullcline', 'g_1 Nullcline', '', 'Stable Node', 'Saddle Point', 'Eigenvector', '', 'Vector Field'}, 'FontSize', 18)
+        legend({'g_0 Nullcline', 'g_1 Nullcline', '', '', 'Stable Node', 'Saddle Point', 'Eigenvector', '', 'Vector Field'}, 'FontSize', 18)
         xlabel('g_0', 'FontSize', 24)
     end
 end
