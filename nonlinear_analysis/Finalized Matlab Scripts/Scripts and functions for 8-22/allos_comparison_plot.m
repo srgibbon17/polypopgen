@@ -6,7 +6,7 @@ function allos_comparison_plot(s_val_range, mu_val, nu_val, h_val, h1_val, h2_va
 
     [HE2_q1, HE2_s1, HE2_q2, HE2_s2, HE2_q3, HE2_s3] = HE2_bifn_data(s_val_range, mu_val, nu_val, h1_val, h2_val, h3_val);
 
-    if h_val <= 2/3
+    if isempty(HE0_q3) == 1 && isempty(HE1_q3) == 1 && isempty(HE2_q3) == 1 
 
         HE0_q_values = cat(2, HE0_q1, HE0_q2);
         HE0_s_values = cat(2, HE0_s1, HE0_s2);

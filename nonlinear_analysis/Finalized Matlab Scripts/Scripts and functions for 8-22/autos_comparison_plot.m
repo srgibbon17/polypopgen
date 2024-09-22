@@ -6,7 +6,7 @@ function autos_comparison_plot(s_val_range, mu_val, nu_val, a_val_1, a_val_2, a_
   
     [autos3_q1, autos3_s1, autos3_q2, autos3_s2, autos3_q3, autos3_s3] = auto_bifn_data(s_val_range, mu_val, nu_val, h1_val, h2_val, h3_val, a_val_3);
 
-    if h_val <= 2/3
+    if isempty(autos1_q3) == 1 && isempty(autos2_q3) == 1 && isempty(autos3_q3) == 1 
 
         autos_1_q_values = cat(2, autos1_q1, autos1_q2);
         autos_1_s_values = cat(2, autos1_s1, autos1_s2);
