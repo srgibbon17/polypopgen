@@ -3,7 +3,7 @@
 
 figure
 
-iterations = 100; 
+iterations = 10; 
 
 grid_row = 3;
 grid_col = 5;

@@ -6,7 +6,7 @@ figure
 iterations = 100; 
 
 grid_row = 1;
-grid_col = 5;
+grid_col = 3;
 
 s_val_range = logspace(-10, -.01, iterations); % set of selection coefficients
 
@@ -30,18 +30,6 @@ grid_pos = 1;
 
 autos_F_stat_comparison_plot(s_val_range, mu_val, nu_val, a_val_1, a_val_2, a_val_3, h_val, h1_val, h2_val, h3_val, grid_row, grid_col, grid_pos)
 
-% partially recessive case ------------------------------------------------
-
-k_val = .75; % Kacser and Burns parameter
-
-[h1_val, h2_val, h3_val] = sigmoid_dominance_relations(k_val);
-
-h_val = h2_val;
-
-grid_pos = 2;
-
-autos_F_stat_comparison_plot(s_val_range, mu_val, nu_val, a_val_1, a_val_2, a_val_3, h_val, h1_val, h2_val, h3_val, grid_row, grid_col, grid_pos)
-
 % additive case -----------------------------------------------------------
 
 k_val = .5; % Kacser and Burns parameter
@@ -50,19 +38,7 @@ k_val = .5; % Kacser and Burns parameter
 
 h_val = h2_val;
 
-grid_pos = 3;
-
-autos_F_stat_comparison_plot(s_val_range, mu_val, nu_val, a_val_1, a_val_2, a_val_3, h_val, h1_val, h2_val, h3_val, grid_row, grid_col, grid_pos)
-
-% partially dominant case -----------------------------------------------------
-
-k_val = .25; % Kacser and Burns parameter
-
-[h1_val, h2_val, h3_val] = sigmoid_dominance_relations(k_val);
-
-h_val = h2_val;
-
-grid_pos = 4;
+grid_pos = 2;
 
 autos_F_stat_comparison_plot(s_val_range, mu_val, nu_val, a_val_1, a_val_2, a_val_3, h_val, h1_val, h2_val, h3_val, grid_row, grid_col, grid_pos)
 
@@ -74,6 +50,6 @@ k_val = 0; % Kacser and Burns parameter
 
 h_val = h2_val;
 
-grid_pos = 5;
+grid_pos = 3;
 
 autos_F_stat_comparison_plot(s_val_range, mu_val, nu_val, a_val_1, a_val_2, a_val_3, h_val, h1_val, h2_val, h3_val, grid_row, grid_col, grid_pos)
