@@ -1,4 +1,4 @@
-function [neutral_q, selected_q, unstable_q, neutral_avg_fitness, selected_avg_fitness, unstable_avg_fitness, s_coord, k_coord] = auto_cusp_cat_data_sbifn(s_val_range, mu_val, nu_val, k_val_range, a_val, k_bistable_range)
+function [neutral_q, selected_q, unstable_q, neutral_avg_fitness, selected_avg_fitness, unstable_avg_fitness, s_coord, k_coord] = auto_cusp_cat_no_extrapolation(s_val_range, mu_val, nu_val, k_val_range, a_val)
 %Generates autopolyploid bifurcation plotting data
 %   for autos, classification of fixed points using linear stability
 %   analysis, the Jacobian matrix, and eigenvectors
@@ -144,6 +144,7 @@ selected_avg_fitness = calc_avg_fitness(selected_g0, selected_g1, selected_g2, s
 
 neutral_avg_fitness = calc_avg_fitness(neutral_g0, neutral_g1, neutral_g2, s_coord, k_coord, s_val_range, k_val_range);
 
+
 % extrapolating to the bifurcation point
 
 for h = 1:length(k_val_range)
@@ -160,38 +161,10 @@ for h = 1:length(k_val_range)
 
         selected_avg_fitness(h, bifn_cutoff_1) = neutral_avg_fitness(h, bifn_cutoff_1);
         neutral_avg_fitness(h, bifn_cutoff_2) = selected_avg_fitness(h, bifn_cutoff_2);
-    else
-
-        %approximating the values of q for the bifn points:
-
-        q_bifn_value_1 = (selected_q(h, 1+bifn_cutoff_1) + unstable_q(h, 1+bifn_cutoff_1))/2;
-        q_bifn_value_2 = (neutral_q(h, -1+bifn_cutoff_2) + unstable_q(h, -1+bifn_cutoff_2))/2;
-
-        %adding the bifn. points to their respective data arrays
-
-        selected_q(h, bifn_cutoff_1) = q_bifn_value_1;
-        unstable_q(h, bifn_cutoff_1) = q_bifn_value_1;
-
-        neutral_q(h, bifn_cutoff_2) = q_bifn_value_2;
-        unstable_q(h, bifn_cutoff_2) = q_bifn_value_2;
-
-        %approximating the values of avg fitness for the bifn points:
-
-        avg_fitness_bifn_1 = (selected_avg_fitness(h, 1+bifn_cutoff_1) + unstable_avg_fitness(h, 1+bifn_cutoff_1))/2;
-        avg_fitness_bifn_2 = (neutral_avg_fitness(h, -1+bifn_cutoff_2) + unstable_avg_fitness(h, -1+bifn_cutoff_2))/2;
-        
-        %adding the bifn. points to their respective data arrays
-
-        selected_avg_fitness(h, bifn_cutoff_1) = avg_fitness_bifn_1;
-        unstable_avg_fitness(h, bifn_cutoff_1) = avg_fitness_bifn_1;
-
-        neutral_avg_fitness(h, bifn_cutoff_2) = avg_fitness_bifn_2;
-        unstable_avg_fitness(h, bifn_cutoff_2) = avg_fitness_bifn_2;
     
     end
 end
 
-%bifn_numeric_solver(mut_g0_eqn, mut_g1_eqn, jacobian, mu, mu_value, nu, nu_value, h1, h1_value, h2, h2_value, h3, h3_value, a, a_value, g0, g1, s, initial_guess)
 
 
 % removing "null" data (i.e. any value of 1 in the arrays of q values
@@ -328,37 +301,3 @@ function [avg_fitness] = calc_avg_fitness(g0_vals, g1_vals, g2_vals, s_coord, k_
     end
 
 end
-
-%%% for solving for the bifn point numerically
-function [g0_bifn_value, g1_bifn_value, s_bifn_value] = bifn_numeric_solver(mut_g0_eqn, mut_g1_eqn, jacobian, mu, mu_value, nu, nu_value, h1, h1_value, h2, h2_value, h3, h3_value, a, a_value, g0, g1, s, initial_guess)
-
-    g0_eqn = subs(mut_g0_eqn, mu, mu_value);
-    g0_eqn = subs(g0_eqn, nu, nu_value);
-    g0_eqn = subs(g0_eqn, h1, h1_value);
-    g0_eqn = subs(g0_eqn, h2, h2_value);
-    g0_eqn = subs(g0_eqn, h3, h3_value);
-    g0_eqn = subs(g0_eqn, a, a_value);
-
-    g1_eqn = subs(mut_g1_eqn, mu, mu_value);
-    g1_eqn = subs(g1_eqn, nu, nu_value);
-    g1_eqn = subs(g1_eqn, h1, h1_value);
-    g1_eqn = subs(g1_eqn, h2, h2_value);
-    g1_eqn = subs(g1_eqn, h3, h3_value);
-    g1_eqn = subs(g1_eqn, a, a_value);
-
-    jacobian_eval_bifn = jacobian;
-
-    for j = 1:length(jacobian_eval_bifn)
-        for k = 1:length(jacobian_eval_bifn)
-            jacobian_eval_bifn(j, k) = bifn_pd_evaluation(jacobian(j, k), mu, mu_value, nu, nu_value, h1, h1_value, h2, h2_value, h3, h3_value, a, a_value); 
-        end
-    end
-
-    bifn_eigenvalues = eig(jacobian_eval_bifn);
-
-    bifn_eig_det = bifn_eigenvalues(1)*bifn_eigenvalues(2) == 0;
-    
-    [g0_bifn_value, g1_bifn_value, s_bifn_value] = vpasolve([g0_eqn, g1_eqn, bifn_eig_det], [g0, g1, s], initial_guess);
-
-end
-

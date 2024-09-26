@@ -1,4 +1,4 @@
-function [neutral_q, selected_q, unstable_q, neutral_avg_fitness, selected_avg_fitness, unstable_avg_fitness, s_coord, k_coord] = auto_cusp_cat_data_sbifn(s_val_range, mu_val, nu_val, k_val_range, a_val, k_bistable_range)
+function [updated_s_val_range] = updated_s_grid(s_val_range, mu_val, nu_val, k_bistable_range, a_val)
 %Generates autopolyploid bifurcation plotting data
 %   for autos, classification of fixed points using linear stability
 %   analysis, the Jacobian matrix, and eigenvectors
@@ -76,7 +76,7 @@ end
 jac_matrix = [diff(mut_exp_set(1), g0), diff(mut_exp_set(1), g1); 
               diff(mut_exp_set(2), g0), diff(mut_exp_set(2), g1)];
 
-[s_coord, k_coord] = meshgrid(s_val_range, k_val_range);
+[s_coord, k_coord] = meshgrid(s_val_range, k_bistable_range);
 
 %k controls the row (first matrix index) and s controls the column (second
 %matrix index)
@@ -90,10 +90,10 @@ selected_g1 = zeros(size(s_coord));
 unstable_g0 = zeros(size(s_coord));
 unstable_g1 = zeros(size(s_coord));
 
-for h = 1:length(k_val_range)
+for h = 1:length(k_bistable_range)
     for i = 1:length(s_val_range)
 
-        [h1_val, h2_val, h3_val] = sigmoid_dominance_relations(k_val_range(h));
+        [h1_val, h2_val, h3_val] = sigmoid_dominance_relations(k_bistable_range(h));
 
         %solves for the fixed points of the system
         [g0_root_vals, g1_root_vals] = root_solns(mut_exp_set(1), mut_exp_set(2), mu, mu_val, nu, nu_val, s, s_val_range(i), h1, h1_val, h2, h2_val, h3, h3_val, a, a_val, g0, g1);
@@ -124,96 +124,58 @@ for h = 1:length(k_val_range)
     disp(h)
 end
 
+%calculating g_2 values
 neutral_g2 = ones(size(neutral_g0)) - neutral_g0 - neutral_g1;
-
 selected_g2 = ones(size(selected_g0)) - selected_g0 - selected_g1;
-
 unstable_g2 = ones(size(unstable_g0)) - unstable_g0 - unstable_g1;
 
+%calculating q values
 neutral_q = neutral_g2 + .5*neutral_g1;
-
 selected_q = selected_g2 + .5*selected_g1;
-
 unstable_q = unstable_g2 + .5*unstable_g1;
 
-% creating arrays of avg fitness values
-
-unstable_avg_fitness = calc_avg_fitness(unstable_g0, unstable_g1, unstable_g2, s_coord, k_coord, s_val_range, k_val_range);
-
-selected_avg_fitness = calc_avg_fitness(selected_g0, selected_g1, selected_g2, s_coord, k_coord, s_val_range, k_val_range);
-
-neutral_avg_fitness = calc_avg_fitness(neutral_g0, neutral_g1, neutral_g2, s_coord, k_coord, s_val_range, k_val_range);
+updated_s_val_range = s_val_range;
 
 % extrapolating to the bifurcation point
-
-for h = 1:length(k_val_range)
+for h = 1:length(k_bistable_range)
     avg_unstable_q = mean(unstable_q(h, :));
 
     bifn_cutoff_1 = find(selected_q(h, :) == 1, 1, 'last');
     bifn_cutoff_2 = find(neutral_q(h, :) == 1, 1, 'first');
+
+    [h1_val, h2_val, h3_val] = sigmoid_dominance_relations(k_bistable_range(h));
     
     % if no bistability occurs, creates a smooth, single plot of the
     % "neutral" and "selected" stable equilibria
     if avg_unstable_q == 1
-        selected_q(h, bifn_cutoff_1) = neutral_q(h, bifn_cutoff_1);
-        neutral_q(h, bifn_cutoff_2) = selected_q(h, bifn_cutoff_2);
-
-        selected_avg_fitness(h, bifn_cutoff_1) = neutral_avg_fitness(h, bifn_cutoff_1);
-        neutral_avg_fitness(h, bifn_cutoff_2) = selected_avg_fitness(h, bifn_cutoff_2);
     else
 
         %approximating the values of q for the bifn points:
+        g0_bifn_estimate_1 = (selected_g0(h, 1+bifn_cutoff_1) + unstable_g0(h, 1+bifn_cutoff_1))/2;
+        g0_bifn_estimate_2 = (neutral_g0(h, -1+bifn_cutoff_2) + unstable_g0(h, -1+bifn_cutoff_2))/2;
 
-        q_bifn_value_1 = (selected_q(h, 1+bifn_cutoff_1) + unstable_q(h, 1+bifn_cutoff_1))/2;
-        q_bifn_value_2 = (neutral_q(h, -1+bifn_cutoff_2) + unstable_q(h, -1+bifn_cutoff_2))/2;
+        g1_bifn_estimate_1 = (selected_g1(h, 1+bifn_cutoff_1) + unstable_g1(h, 1+bifn_cutoff_1))/2;
+        g1_bifn_estimate_2 = (neutral_g1(h, -1+bifn_cutoff_2) + unstable_g1(h, -1+bifn_cutoff_2))/2;
 
-        %adding the bifn. points to their respective data arrays
+        s_bifn_estimate_1 = s_coord(h, 1+bifn_cutoff_1);
+        s_bifn_estimate_2 = s_coord(h, -1+bifn_cutoff_2);
 
-        selected_q(h, bifn_cutoff_1) = q_bifn_value_1;
-        unstable_q(h, bifn_cutoff_1) = q_bifn_value_1;
-
-        neutral_q(h, bifn_cutoff_2) = q_bifn_value_2;
-        unstable_q(h, bifn_cutoff_2) = q_bifn_value_2;
-
-        %approximating the values of avg fitness for the bifn points:
-
-        avg_fitness_bifn_1 = (selected_avg_fitness(h, 1+bifn_cutoff_1) + unstable_avg_fitness(h, 1+bifn_cutoff_1))/2;
-        avg_fitness_bifn_2 = (neutral_avg_fitness(h, -1+bifn_cutoff_2) + unstable_avg_fitness(h, -1+bifn_cutoff_2))/2;
-        
-        %adding the bifn. points to their respective data arrays
-
-        selected_avg_fitness(h, bifn_cutoff_1) = avg_fitness_bifn_1;
-        unstable_avg_fitness(h, bifn_cutoff_1) = avg_fitness_bifn_1;
-
-        neutral_avg_fitness(h, bifn_cutoff_2) = avg_fitness_bifn_2;
-        unstable_avg_fitness(h, bifn_cutoff_2) = avg_fitness_bifn_2;
+        bifn_guess_1 = [g0_bifn_estimate_1, g1_bifn_estimate_1, s_bifn_estimate_1];
+        bifn_guess_2 = [g0_bifn_estimate_2, g1_bifn_estimate_2, s_bifn_estimate_2];
     
+        [s_bifn_value_1, residuals_1] = bifn_numeric_solver(mut_exp_set(1), mut_exp_set(2), jac_matrix, mu, mu_val, nu, nu_val, h1, h1_val, h2, h2_val, h3, h3_val, a, a_val, g0, g1, s, bifn_guess_1);
+        [s_bifn_value_2, residuals_2] = bifn_numeric_solver(mut_exp_set(1), mut_exp_set(2), jac_matrix, mu, mu_val, nu, nu_val, h1, h1_val, h2, h2_val, h3, h3_val, a, a_val, g0, g1, s, bifn_guess_2);
+
+        disp(residuals_1)
+        disp(residuals_2)
+
+        updated_s_val_range(end+1) = s_bifn_value_1;
+        updated_s_val_range(end+1) = s_bifn_value_2;
+
     end
 end
 
-%bifn_numeric_solver(mut_g0_eqn, mut_g1_eqn, jacobian, mu, mu_value, nu, nu_value, h1, h1_value, h2, h2_value, h3, h3_value, a, a_value, g0, g1, s, initial_guess)
-
-
-% removing "null" data (i.e. any value of 1 in the arrays of q values
-% should be ignored when plotting and is replaced with NaN)
-
- for h = 1:length(k_val_range)
-    for i = 1:length(s_val_range)
-
-        if unstable_q(h, i) == 1
-            unstable_q(h, i) = nan;
-        end
-
-        if selected_q(h, i) == 1
-            selected_q(h, i) = nan;
-        end
-
-        if neutral_q(h, i) == 1
-            neutral_q(h, i) = nan;
-        end
-
-    end
- end
+updated_s_val_range = sort(updated_s_val_range);
 
 end
 
@@ -329,8 +291,22 @@ function [avg_fitness] = calc_avg_fitness(g0_vals, g1_vals, g2_vals, s_coord, k_
 
 end
 
+function [pd_value] = bifn_pd_evaluation(jacobian_entry, mu, mu_val, nu, nu_val, h1, h1_val, h2, h2_val, h3, h3_val, a, a_val)
+    
+    %%%function which evaluates a partial derivative by substituting a root of
+    %the system
+    %used to evaluate the jacobian at one entry%%%
+
+    pd_value = subs(jacobian_entry, mu, mu_val);
+    pd_value = subs(pd_value, nu, nu_val);
+    pd_value = subs(pd_value, h1, h1_val);
+    pd_value = subs(pd_value, h2, h2_val);
+    pd_value = subs(pd_value, h3, h3_val);
+    pd_value = subs(pd_value, a, a_val);
+end
+
 %%% for solving for the bifn point numerically
-function [g0_bifn_value, g1_bifn_value, s_bifn_value] = bifn_numeric_solver(mut_g0_eqn, mut_g1_eqn, jacobian, mu, mu_value, nu, nu_value, h1, h1_value, h2, h2_value, h3, h3_value, a, a_value, g0, g1, s, initial_guess)
+function [s_bifn_value, error_estimates] = bifn_numeric_solver(mut_g0_eqn, mut_g1_eqn, jacobian, mu, mu_value, nu, nu_value, h1, h1_value, h2, h2_value, h3, h3_value, a, a_value, g0, g1, s, initial_guess)
 
     g0_eqn = subs(mut_g0_eqn, mu, mu_value);
     g0_eqn = subs(g0_eqn, nu, nu_value);
@@ -356,9 +332,11 @@ function [g0_bifn_value, g1_bifn_value, s_bifn_value] = bifn_numeric_solver(mut_
 
     bifn_eigenvalues = eig(jacobian_eval_bifn);
 
-    bifn_eig_det = bifn_eigenvalues(1)*bifn_eigenvalues(2) == 0;
+    bifn_eig_product = bifn_eigenvalues(1)*bifn_eigenvalues(2) == 0;
     
-    [g0_bifn_value, g1_bifn_value, s_bifn_value] = vpasolve([g0_eqn, g1_eqn, bifn_eig_det], [g0, g1, s], initial_guess);
+    [g0_bifn_value, g1_bifn_value, s_bifn_value] = vpasolve([g0_eqn, g1_eqn, bifn_eig_product], [g0, g1, s], initial_guess);
+
+    error_estimates = [g0_bifn_value, g1_bifn_value, s_bifn_value] - initial_guess;
 
 end
 
