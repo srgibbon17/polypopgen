@@ -77,7 +77,7 @@ unstable_s = [];
 for i = 1:length(s_val_range)
 
     %solves for the fixed points of the system
-    [g00_root_vals, g01_root_vals] = root_solns(mut_exp_set(1), mut_exp_set(2), mu, mu_val, nu, nu_val, s, s_val_range(i), h1, h1_val, h2, h2_val, h3, h3_val, g00, g01);
+    [g00_root_vals, g01_root_vals] = root_solns(mut_exp_set(1), mut_exp_set(2), mu, mu_val, nu, nu_val, s, s_val_range(i), h1, h1_val, h2, h2_val, h3, h3_val, g00, g01)
         
     %evaluating the jacobian and stability of each fixed point
     [fixed_pt_stabilities, stiff_ratios, small_eigens] = linear_stability_analysis(jac_matrix, mu, mu_val, nu, nu_val, s, s_val_range(i), h1, h1_val, h2, h2_val, h3, h3_val, g00, g00_root_vals, g01, g01_root_vals); 

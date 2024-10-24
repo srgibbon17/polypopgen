@@ -147,7 +147,7 @@ for h = 1:length(s_val_range)
 
         det_jac = det(jacobian_eval);
         if det_jac < 0
-            %plot(g0_value(i), g1_value(i), '^', 'MarkerFaceColor', 'k', 'MarkerEdgeColor', 'k', 'LineWidth', 1.5, 'MarkerSize', 8)
+            plot(g0_value(i), g1_value(i), '^', 'MarkerFaceColor', 'k', 'MarkerEdgeColor', 'k', 'LineWidth', 1.5, 'MarkerSize', 8)
             hold on
             [eigenvectors, eigenvalues] = eig(jacobian_eval);
             eigenvalues = sum(eigenvalues);
@@ -239,18 +239,18 @@ for h = 1:length(s_val_range)
             sel = quiver(g0_coordinates, g1_coordinates, g0_sel_field-g0_rm_field, g1_sel_field-g1_rm_field, 0, 'Color', "#D95319");
             hold off
 
-            % scale = 1;
-            % rmU = get(rm, 'UData');
-            % rmV = get(rm, 'VData');
-            % set(rm, 'UData', scale*rmU, 'VData', scale*rmV, 'Color', 'k')
-            % 
-            % mutU = get(mut, 'UData');
-            % mutV = get(mut, 'VData');
-            % set(mut, 'UData', scale*mutU, 'VData', scale*mutV, 'Color', "#0072BD")
-            % 
-            % selU = get(sel, 'UData');
-            % selV = get(sel, 'VData');
-            % set(sel, 'UData', scale*selU, 'VData', scale*selV, 'Color', "#D95319")
+            scale = 1;
+            rmU = get(rm, 'UData');
+            rmV = get(rm, 'VData');
+            set(rm, 'UData', scale*rmU, 'VData', scale*rmV, 'Color', 'k')
+
+            mutU = get(mut, 'UData');
+            mutV = get(mut, 'VData');
+            set(mut, 'UData', scale*mutU, 'VData', scale*mutV, 'Color', "#0072BD")
+
+            selU = get(sel, 'UData');
+            selV = get(sel, 'VData');
+            set(sel, 'UData', scale*selU, 'VData', scale*selV, 'Color', "#D95319")
         elseif i == 3
             rm = quiver(g0_coordinates, g1_coordinates, g0_rm_field, g1_rm_field, 1, 'Color', 'k');
             hold on

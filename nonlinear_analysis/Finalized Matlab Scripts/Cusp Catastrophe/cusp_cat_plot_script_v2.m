@@ -1,8 +1,9 @@
+
 a_val = 0;
 mu_val = 2e-8;
 nu_val = 1e-9;
-s_val_range = linspace(1e-7, 3e-7, 30);
-k_val_range = linspace(.175, .2, 13);
+s_val_range = logspace(-9, -4, 30);
+k_val_range = linspace(0, .25, 10);
 
 % alternative s and k ranges with variably dense sampling:
 %s_val_range = [logspace(-9, -8, 10), logspace(-8, -5.5, 75), logspace(-5.5,-4, 15)];
@@ -46,7 +47,7 @@ xscale log
 xlabel('s')
 ylabel('h_2')
 zlabel('q')
-shading interp
+%shading interp
 
 %savefig('auto_cuspcat_h2.fig')
 

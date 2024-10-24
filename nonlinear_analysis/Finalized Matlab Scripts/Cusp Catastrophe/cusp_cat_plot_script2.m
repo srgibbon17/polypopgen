@@ -6,8 +6,8 @@ nu_val = 1e-9;
 %k_val_range = linspace(0, .1, 10);
 
 % alternative s and k ranges with variably dense sampling:
-s_val_range = logspace(-9, -4, 51);
-k_val_range = [linspace(0, .25, 76), linspace(.25, 1, 26)];
+s_val_range = [logspace(-9, -8, 11), logspace(-8, -5, 91), logspace(-5,-4, 11)];
+k_val_range = linspace(0, 1, 51);
 
 [neutral_q, selected_q, unstable_q, neutral_avg_fitness, selected_avg_fitness, unstable_avg_fitness, s_coord, k_coord] = auto_cusp_cat_data_TEST(s_val_range, mu_val, nu_val, k_val_range, a_val);
 
@@ -31,7 +31,7 @@ ylabel('k')
 zlabel('q')
 shading interp
 
-savefig('auto_cuspcat_k_dense_k.fig')
+savefig('auto_cuspcat_k_dense_s.fig')
 
 % h_2 without avg fitness coloring
 figure
@@ -49,7 +49,7 @@ ylabel('h_2')
 zlabel('q')
 shading interp
 
-savefig('auto_cuspcat_h2_dense_k.fig')
+savefig('auto_cuspcat_h2_dense_s.fig')
 
 % k param without shading
 figure
@@ -66,7 +66,7 @@ xlabel('s')
 ylabel('k')
 zlabel('q')
 
-savefig('auto_cuspcat_k_no_shading_dense_k.fig')
+savefig('auto_cuspcat_k_no_shading_dense_s.fig')
 
 % plot with avg. fitness as colorbar
 % figure

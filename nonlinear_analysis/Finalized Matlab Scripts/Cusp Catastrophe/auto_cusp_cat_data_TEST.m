@@ -1,4 +1,4 @@
-function [neutral_q, selected_q, unstable_q, neutral_avg_fitness, selected_avg_fitness, unstable_avg_fitness, s_coord, k_coord] = auto_cusp_cat_data(s_val_range, mu_val, nu_val, k_val_range, a_val)
+function [neutral_q, selected_q, unstable_q, neutral_avg_fitness, selected_avg_fitness, unstable_avg_fitness, s_coord, k_coord] = auto_cusp_cat_data_TEST(s_val_range, mu_val, nu_val, k_val_range, a_val)
 %Generates autopolyploid bifurcation plotting data
 %   for autos, classification of fixed points using linear stability
 %   analysis, the Jacobian matrix, and eigenvectors
@@ -175,7 +175,11 @@ for h = 1:length(k_val_range)
 
         neutral_q(h, bifn_cutoff_2) = q_bifn_value_2;
         unstable_q(h, bifn_cutoff_2) = q_bifn_value_2;
-
+        
+        if h > 1
+            neutral_q(h-1, bifn_cutoff_2) = q_bifn_value_2;
+            unstable_q(h-1, bifn_cutoff_2) = q_bifn_value_2;
+        end
         %approximating the values of avg fitness for the bifn points:
 
         avg_fitness_bifn_1 = (selected_avg_fitness(h, 1+bifn_cutoff_1) + unstable_avg_fitness(h, 1+bifn_cutoff_1))/2;

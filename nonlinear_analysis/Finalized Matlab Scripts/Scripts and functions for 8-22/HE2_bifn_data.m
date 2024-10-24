@@ -55,14 +55,14 @@ mut_eqn_set = [mut_g00, mut_g01, mut_g10, mut_g11];
 
 for i = 1:length(mut_eqn_set)
     % removes g10 from the equation by replacing it with 1-(g00+g01+g11)
-    mut_eqn_set(i) = subs(mut_eqn_set(i), g10, 1-(g00+g01+g11));    
+    mut_eqn_set(i) = subs(mut_eqn_set(i), g00, 1-(g10+g01+g11));    
 end
 
 
 %creates the Jacobian of the system
-jac_matrix = [diff(mut_eqn_set(1), g00), diff(mut_eqn_set(1), g01), diff(mut_eqn_set(1), g11); 
-              diff(mut_eqn_set(2), g00), diff(mut_eqn_set(2), g01), diff(mut_eqn_set(2), g11); 
-              diff(mut_eqn_set(4), g00), diff(mut_eqn_set(4), g01), diff(mut_eqn_set(4), g11)];
+jac_matrix = [diff(mut_eqn_set(2), g01), diff(mut_eqn_set(2), g10), diff(mut_eqn_set(2), g11); 
+              diff(mut_eqn_set(3), g01), diff(mut_eqn_set(3), g10), diff(mut_eqn_set(3), g11); 
+              diff(mut_eqn_set(4), g01), diff(mut_eqn_set(4), g10), diff(mut_eqn_set(4), g11)];
 
 neutral_stable_g00 = [];
 neutral_stable_g01 = [];
@@ -82,28 +82,28 @@ unstable_s = [];
 for i = 1:length(s_val_range)
 
     %solves for the fixed points of the system
-    [g00_root_vals, g01_root_vals, g11_root_vals] = allo_root_solns(mut_eqn_set(1), mut_eqn_set(2), mut_eqn_set(4), mu, mu_val, nu, nu_val, s, s_val_range(i), h1, h1_val, h2, h2_val, h3, h3_val, g00, g01, g11);
+    [g01_root_vals, g10_root_vals, g11_root_vals] = allo_root_solns(mut_eqn_set(2), mut_eqn_set(3), mut_eqn_set(4), mu, mu_val, nu, nu_val, s, s_val_range(i), h1, h1_val, h2, h2_val, h3, h3_val, g01, g10, g11)
         
     %evaluating the jacobian and stability of each fixed point
-    [fixed_pt_stabilities] = allo_linear_stability_analysis(jac_matrix, mu, mu_val, nu, nu_val, s, s_val_range(i), h1, h1_val, h2, h2_val, h3, h3_val, g00, g00_root_vals, g01, g01_root_vals, g11, g11_root_vals);
+    [fixed_pt_stabilities] = allo_linear_stability_analysis(jac_matrix, mu, mu_val, nu, nu_val, s, s_val_range(i), h1, h1_val, h2, h2_val, h3, h3_val, g01, g01_root_vals, g10, g10_root_vals, g11, g11_root_vals);
 
     for j = 1:length(fixed_pt_stabilities)
 
         if fixed_pt_stabilities(j) == 0
-            unstable_g00(end+1) = g00_root_vals(j);
-            unstable_g01(end+1) = g01_root_vals(j);
+            unstable_g00(end+1) = g01_root_vals(j);
+            unstable_g01(end+1) = g10_root_vals(j);
             unstable_g11(end+1) = g11_root_vals(j);
             unstable_s(end+1) = s_val_range(i);
 
         elseif fixed_pt_stabilities(j) == 1
-            if g00_root_vals(j) > .3333
-                selected_stable_g00(end+1) = g00_root_vals(j);
-                selected_stable_g01(end+1) = g01_root_vals(j);
+            if 1-g01_root_vals(j)-g10_root_vals(j)-g11_root_vals(j) > .3333
+                selected_stable_g00(end+1) = g01_root_vals(j);
+                selected_stable_g01(end+1) = g10_root_vals(j);
                 selected_stable_g11(end+1) = g11_root_vals(j);
                 selected_stable_s(end+1) = s_val_range(i);
             else
-                neutral_stable_g00(end+1) = g00_root_vals(j);
-                neutral_stable_g01(end+1) = g01_root_vals(j);
+                neutral_stable_g00(end+1) = g01_root_vals(j);
+                neutral_stable_g01(end+1) = g10_root_vals(j);
                 neutral_stable_g11(end+1) = g11_root_vals(j);
                 neutral_stable_s(end+1) = s_val_range(i);
             end
