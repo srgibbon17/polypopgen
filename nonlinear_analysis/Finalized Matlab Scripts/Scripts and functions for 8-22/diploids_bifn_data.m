@@ -74,7 +74,7 @@ for i = 1:length(s_val_range)
             end
 
         elseif root_stabilities(j) == 1
-            if g0_roots(j) > .3333 && real(g0_roots(j)) <= 1 && real(g0_roots(j)) >= 0
+            if g0_roots(j) > .6666 && real(g0_roots(j)) <= 1 && real(g0_roots(j)) >= 0
                 selected_stable_g0(end+1) = g0_roots(j);
                 selected_stable_s(end+1) = s_val_range(i);
             elseif real(g0_roots(j)) <= 1 && real(g0_roots(j)) >= 0
