@@ -1,7 +1,7 @@
 % for allos with 1 HE, classification of fixed points using linear stability
 % analysis, the Jacobian matrix, and eigenvectors
 
-s_val = 0;
+s_val = 2e-7;
 
 mu_val = 2e-8; % constant value of forward mutation rate
 nu_val = 1e-9; % constant value of backward mutation rate
