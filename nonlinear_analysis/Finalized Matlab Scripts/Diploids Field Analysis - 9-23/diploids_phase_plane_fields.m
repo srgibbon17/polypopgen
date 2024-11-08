@@ -1,12 +1,12 @@
 % for diploids, a nonlinear model and analysis
 
-s_init_val = 7.5e-8;
+s_init_val = 0.05;
 
 s_val = s_init_val;
-mu_val = 2e-8; % constant value of forward mutation rate
-nu_val = 0; % constant value of backward mutation rate
+mu_val = 5e-3; % constant value of forward mutation rate
+nu_val = 1e-4; % constant value of backward mutation rate
 mut_ratio_val = mu_val/nu_val; % ratio of forward to backward mutation rate
-h_val = 3/4; % h1 dominance coefficient value, constant
+h_val = 1; % h1 dominance coefficient value, constant
 
 syms s q G0 G1 G2 g0 g1 h mu nu
 

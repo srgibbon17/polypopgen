@@ -3,7 +3,7 @@
 
 iterations = 10; % number of steps or number of data points to generate
 
-s_val = 0;
+s_val = 2e-7;
 
 mu_val = 2e-8; % constant value of forward mutation rate
 nu_val = 1e-9; % constant value of backward mutation rate
@@ -158,5 +158,6 @@ function [fixed_pt_stabilities] = allo_linear_stability_analysis(jacobian_matrix
             fixed_pt_stabilities(i) = 0; %0 for unstable saddle point
         end
     end
+
 end
 

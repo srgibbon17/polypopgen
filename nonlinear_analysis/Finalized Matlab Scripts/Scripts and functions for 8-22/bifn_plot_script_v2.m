@@ -3,17 +3,17 @@
 
 figure
 
-iterations = 100; 
+iterations = 10; 
 
 grid_row = 1;
 grid_col = 3;
 
 % recessive case:
 
-s_val_range = logspace(-9, -4, iterations); % set of selection coefficients
+s_val_range = -logspace(-9, -4, iterations); % set of selection coefficients
 
-mu_val = 2e-8; % forward mutation rate
-nu_val = 1e-9; % backward mutation rate
+mu_val = 1e-9; % forward mutation rate
+nu_val = 2e-8; % backward mutation rate
 a_val = 0; % double reduction rate
 
 a_val_1 = 0;

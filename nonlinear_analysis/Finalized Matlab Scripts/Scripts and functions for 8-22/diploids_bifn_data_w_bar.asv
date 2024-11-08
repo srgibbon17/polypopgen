@@ -1,4 +1,4 @@
-function [neutral_stable_q, neutral_stable_s, selected_stable_q, selected_stable_s, unstable_q, unstable_s] = diploids_bifn_data(s_val_range, mu_val, nu_val, h_val)
+function [neutral_stable_q, neutral_stable_s, neutral_avg_fitness, selected_stable_q, selected_stable_s, selected_avg_fitness, unstable_q, unstable_s, unstable_avg_fitness, neutral_genotypes] = diploids_bifn_data_w_bar(s_val_range, mu_val, nu_val, h_val)
 %Generates diploid bifurcation plotting data
 %   for diploids, a nonlinear model and analysis
 %   returns:
@@ -19,7 +19,7 @@ mu = sym('mu');
 nu = sym('nu');
 
 % assumptions on the parameters of the model; theoretical bounds
-assume(g0>=0 & g0<=1);
+assume(g0>=0 & g0<=1 & 'Real');
 assume(g1>=0 & g1<=1);
 assume(s>=-1 & s<=1);
 assume(h>=0 & h<=1);
@@ -88,6 +88,30 @@ for i = 1:length(s_val_range)
             end
         end
     end
+end
+
+neutral_genotypes = [neutral_stable_g0.^2; 2*neutral_stable_g0.*(1-neutral_stable_g0); (1-neutral_stable_g0).^2];
+selected_genotypes = [selected_stable_g0.^2; 2*selected_stable_g0.*(1-selected_stable_g0); (1-selected_stable_g0).^2];
+unstable_genotypes = [unstable_g0.^2; 2*unstable_g0.*(1-unstable_g0); (1-unstable_g0).^2];
+
+neutral_abs_fitness = [ones(1, length(neutral_stable_s)); ones(1, length(neutral_stable_s)) - h_val*neutral_stable_s; ones(1, length(neutral_stable_s)) - neutral_stable_s];
+selected_abs_fitness = [ones(1, length(selected_stable_s)); ones(1, length(selected_stable_s)) - h_val*selected_stable_s; ones(1, length(selected_stable_s)) - selected_stable_s];
+unstable_abs_fitness = [ones(1, length(unstable_s)); ones(1, length(unstable_s)) - h_val*unstable_s; ones(1, length(unstable_s)) - unstable_s];
+
+neutral_avg_fitness = zeros(1, length(neutral_stable_s));
+selected_avg_fitness = zeros(1, length(selected_stable_s));
+unstable_avg_fitness = zeros(1, length(unstable_s));
+
+for i = 1:length(neutral_avg_fitness)
+    neutral_avg_fitness(i) = (1-dot(neutral_genotypes(:, i), neutral_abs_fitness(:, i)))/neutral_stable_s(i);
+end
+
+for i = 1:length(selected_avg_fitness)
+    selected_avg_fitness(i) = (1-dot(selected_genotypes(:, i), selected_abs_fitness(:, i)))/selected_stable_s(i);
+end
+
+for i = 1:length(unstable_avg_fitness)
+    unstable_avg_fitness(i) = (1-dot(unstable_genotypes(:, i), unstable_abs_fitness(:, i)))/unstable_s(i);
 end
 
 neutral_stable_q = ones(1, length(neutral_stable_g0)) - neutral_stable_g0;

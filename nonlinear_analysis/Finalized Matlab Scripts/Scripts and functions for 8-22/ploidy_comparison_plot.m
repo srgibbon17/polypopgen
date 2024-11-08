@@ -24,9 +24,9 @@ function ploidy_comparison_plot(s_val_range, mu_val, nu_val, a_val, h_val, h1_va
         plot(autos_s_values, autos_q_values, 'Color', [0.8500 0.3250 0.0980])
         plot(diploids_s_values, diploids_q_values, 'Color', 'k')
 
-        if h_val == 0
-            legend('0 HEs', 'α=0', 'Diploids')
-        end
+       
+        legend('0 HEs', 'α=0', 'Diploids')
+        
 
     elseif isempty(diploids_q3) == 1 && isempty(autos_q3) == 0 && isempty(HE0_q3) == 0 
 
