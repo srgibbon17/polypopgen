@@ -72,11 +72,16 @@ for i = 1:length(genotypes)
     genotypes(i) = subs(genotypes(i), G2, (1-G0-G1-G3-G4));
 end
 
-initial_guess = [0.014588449116675992046621873242267, 0.1095524452929494429669727926448, 0.38612504070035016963499313612225, 0.18122616803745835201520938256452];
+jac_matrix = [diff(genotypes(1), G0), diff(genotypes(1), G1), diff(genotypes(1), G3), diff(genotypes(1), G4);
+              diff(genotypes(2), G0), diff(genotypes(2), G1), diff(genotypes(2), G3), diff(genotypes(2), G4);
+              diff(genotypes(4), G0), diff(genotypes(4), G1), diff(genotypes(4), G3), diff(genotypes(4), G4);
+              diff(genotypes(5), G0), diff(genotypes(4), G1), diff(genotypes(4), G3), diff(genotypes(4), G4)];
 
-for i = 1:length(s_val_range)
-    [G0_root_vals, G1_root_vals, G3_root_vals, G4_root_vals] = root_solns(genotypes(1), genotypes(2), genotypes(4), genotypes(5), mu, mu_val, nu, nu_val, s, s_val_range(i), h1, h1_val, h2, h2_val, h3, h3_val, a, a_val, G0, G1, G3, G4, initial_guess)
-end
+% initial_guess = [0.014588449116675992046621873242267, 0.1095524452929494429669727926448, 0.38612504070035016963499313612225, 0.18122616803745835201520938256452];
+% 
+% for i = 1:length(s_val_range)
+%     [G0_root_vals, G1_root_vals, G3_root_vals, G4_root_vals] = root_solns(genotypes(1), genotypes(2), genotypes(4), genotypes(5), mu, mu_val, nu, nu_val, s, s_val_range(i), h1, h1_val, h2, h2_val, h3, h3_val, a, a_val, G0, G1, G3, G4, initial_guess)
+% end
 
 % for i = 1:length(s_val_range)
 % 
