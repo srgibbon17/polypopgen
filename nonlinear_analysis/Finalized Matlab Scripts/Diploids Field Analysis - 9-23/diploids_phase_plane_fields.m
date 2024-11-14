@@ -1,10 +1,10 @@
 % for diploids, a nonlinear model and analysis
 
-s_init_val = 0.05;
+s_init_val = 1e-7;
 
 s_val = s_init_val;
-mu_val = 5e-3; % constant value of forward mutation rate
-nu_val = 1e-4; % constant value of backward mutation rate
+mu_val = 2e-8; % constant value of forward mutation rate
+nu_val = 1e-9; % constant value of backward mutation rate
 mut_ratio_val = mu_val/nu_val; % ratio of forward to backward mutation rate
 h_val = 1; % h1 dominance coefficient value, constant
 
@@ -53,39 +53,42 @@ figure
 
 [fixed_pt_stabilities] = linear_stability_analysis(g1_deriv, mu, mu_val, nu, nu_val, s, s_val, h, h_val, g1, g1_roots);
 
-plot(x_index, zeros(1, length(x_index)), 'Color','k', 'LineStyle','--', 'LineWidth', 1)
-hold on
-
-for i = 1:length(g1_roots)
-    if imag(g1_roots(i)) == 0
-    if fixed_pt_stabilities(i) == 0
-        plot(g1_roots(i), 0, "Color", 'k', 'Marker', 'x', 'LineWidth', 1.25, 'MarkerSize', 12)
-    elseif fixed_pt_stabilities(i) == 1
-        plot(g1_roots(i), 0, 'Color', 'k', 'Marker', 'o', 'MarkerFaceColor', 'k', 'MarkerSize', 6)
-    end
-    end
-end
-    
 delta_g1_values = delta_g1_eval(delta_g1, mu, mu_val, nu, nu_val, s, s_val, h, h_val, x_index, g1);
 
-plot(x_index, delta_g1_values, 'Color', "#0072BD", 'LineWidth', 1)
+plot(x_index, delta_g1_values, 'Color', "k", 'LineWidth', 2, 'DisplayName', 'Combined Field')
 
-xlabel 'g_1'
-ylabel 'Δ g_1'
+hold on
 
 s_val = 0;
 delta_g1_values = delta_g1_eval(delta_g1, mu, mu_val, nu, nu_val, s, s_val, h, h_val, x_index, g1);
 
-plot(x_index, delta_g1_values, 'Color', "#D95319", 'LineWidth', 1)
+plot(x_index, delta_g1_values, 'Color', "k", 'LineStyle', '--', 'LineWidth', 2, 'DisplayName', 'Mutation Field')
 
 s_val = s_init_val;
 mu_val = 0;
 nu_val = 0;
 delta_g1_values = delta_g1_eval(delta_g1, mu, mu_val, nu, nu_val, s, s_val, h, h_val, x_index, g1);
 
-plot(x_index, delta_g1_values, 'Color', "#77AC30", 'LineWidth', 1)
+plot(x_index, delta_g1_values, 'Color', "k", 'LineStyle', '-.', 'LineWidth', 2, 'DisplayName', 'Selection Field')
+
+for i = 1:length(g1_roots)
+    if imag(g1_roots(i)) == 0
+    if fixed_pt_stabilities(i) == 0
+        plot(g1_roots(i), 0, 'Color', 'k', 'Marker', 'o', 'LineStyle', 'none', 'LineWidth', 2, 'MarkerSize', 18, 'DisplayName', 'Unstable Equilibria')
+    elseif fixed_pt_stabilities(i) == 1
+        plot(g1_roots(i), 0, 'Color', 'k', 'Marker', 'o', 'LineStyle', 'none', 'MarkerFaceColor', 'k', 'MarkerSize', 18, 'DisplayName', 'Stable Equilibria')
+    end
+    end
+end
+
+plot(x_index, zeros(1, length(x_index)), 'Color', [.5, .5, .5], 'LineWidth', .5)
+
+legend('Combined Field', 'Mutation Field', 'Selection Field', 'Stable Equilibrium', 'Unstable Equilibrium', '', '')
 
 xlim([0, 1])
+
+xlabel 'g_1'
+ylabel 'Δ g_1'
 
 
 

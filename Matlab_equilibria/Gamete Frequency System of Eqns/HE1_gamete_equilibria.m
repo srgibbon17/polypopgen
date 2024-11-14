@@ -1,6 +1,9 @@
 % for the HE2 case
 
-syms g00 g01 g10 g11 pa pb qa qb
+syms g00 g01 g10 g11 p q pa pb qa qb beta gamma
+
+assume(gamma>=0 & gamma<=1);
+assume(beta>=0 & beta<=1);
 
 eqn1 = g00^2+(17/16)*g00*g01+(17/16)*g00*g10+(3/16)*g01^2+(3/16)*g10^2+(7/16)*g01*g10+(7/16)*g00*g11+(1/16)*g01*g11+(1/16)*g10*g11 == g00;
 
@@ -11,8 +14,8 @@ eqn3 = (11/16)*g00*g01+(3/16)*g00*g10+(9/16)*g01^2+(1/16)*g10^2+(9/16)*g01*g10+(
 eqn4 = (1/16)*g00*g01+(1/16)*g00*g10+(3/16)*g01^2+(3/16)*g10^2+(7/16)*g01*g10+(7/16)*g00*g11+(17/16)*g01*g11+(17/16)*g10*g11+g11^2 == g11;
 
 eqn5 = g00+g01+g10+g11 == 1;
-eqn6 = g11+g10 == pa;
-eqn7 = g11+g01 == pb;
+eqn6 = g11+g10 == qa;
+eqn7 = g11+g01 == qb;
 eqn8 = pa == 1-qa;
 eqn9 = pb == 1-qb;
 eqn12 = qa == qb; % equivalent to g01 == g10 and also implies qa == qb (this is the key simplification)
@@ -23,7 +26,7 @@ eqn13 = g00^2 + (2*g00*g01 + 2*g00*g10) + (g10^2 + g01^2 + 2*(g00*g11 + g01*g10)
 
 %eqn_system = [eqn1 eqn2 eqn3 eqn4 eqn5];
 
-S = solve(eqn1, eqn2, eqn3, eqn4, eqn5, eqn6, eqn7, 'ReturnConditions', true);
+S = solve(eqn1, eqn2, eqn3, eqn4, eqn5, eqn6, eqn7, g00, g01, g10, g11, 'ReturnConditions', true)
 
 G00 = factor(expand(S.g00^2));
 G01 = factor(expand(2*S.g00*S.g01));

@@ -5,12 +5,12 @@ iterations = 10; % number of steps or number of data points to generate
 
 %s_val_range = [1e-7, 9.16e-6, 1e-5, 2e-5, 1.75e-4, 1e-3]; % starting s value
 %s_val = 2e-6;
-s_val_range = [1e-9, 3.7e-7, .3];
+s_val_range = [1e-9, 3e-7, .3];
 
 mu_val = 2e-8; % constant value of forward mutation rate
 nu_val = 1e-9; % constant value of backward mutation rate
 mut_ratio_val = mu_val/nu_val; % ratio of forward to backward mutation rate
-a_val = 1/6; % constant value of alpha (double reduction rate)
+a_val = 0; % constant value of alpha (double reduction rate)
 
 h1_val = 1; % h1 dominance coefficient value, constant
 h2_val = 1; % h2 dominance coefficient value, constant
@@ -109,18 +109,18 @@ for h = 1:length(s_val_range)
          end
     end
 
-    null_1 = plot(x_1, y_1, 'LineWidth', 1.5);
-    null_1.Color = "#0072BD";
+    null_1 = plot(x_1, y_1, 'LineWidth', 9);
+    null_1.Color = "#66BED6";
     hold on
-    null_2 = plot(x_1, y_2, 'LineWidth', 1.5);
-    null_2.Color = "#D95319";
+    null_2 = plot(x_1, y_2, 'LineWidth', 5);
+    null_2.Color = "#f04d13";
 
     y_3 = 1-x_1;
 
-    plot(x_1, y_3, 'LineWidth', 1.5, 'Color', 'k')
+    plot(x_1, y_3, 'LineWidth', 1, 'Color', [.5, .5, .5])
 
     y_HWE = 2*(x_1.^.5 - x_1);
-    plot(x_1, y_HWE, 'LineWidth', 1.5, 'Color', 'k')
+    plot(x_1, y_HWE, 'LineWidth', 2.5, 'Color', 'k')
 
     
     for i = 1:length(g0_value)
@@ -135,7 +135,7 @@ for h = 1:length(s_val_range)
 
         det_jac = det(jacobian_eval);
         if det_jac < 0
-            plot(g0_value(i), g1_value(i), '^', 'MarkerFaceColor', 'k', 'MarkerEdgeColor', 'k', 'LineWidth', 1.5, 'MarkerSize', 8)
+            plot(g0_value(i), g1_value(i), 'o', 'MarkerEdgeColor', 'k', 'LineWidth', 2, 'MarkerSize', 16)
             [eigenvectors, eigenvalues] = eig(jacobian_eval);
             eigenvalues = sum(eigenvalues);
             for k = 1:2
@@ -143,11 +143,11 @@ for h = 1:length(s_val_range)
                     x = linspace(g0_value(i)-.4, g0_value(i)+.4, 10);
                     slope = eigenvectors(2, k)/eigenvectors(1, k);
                     y = slope*(x - g0_value(i)) + g1_value(i);
-                    plot(x, y, "LineStyle","--", "Color", 'k', 'LineWidth', 1.5)
+                    plot(x, y, "LineStyle","--", "Color", 'k', 'LineWidth', 2)
                 end
             end
         else
-            plot(g0_value(i), g1_value(i), '.', 'Color', 'k', 'MarkerSize', 20)
+            plot(g0_value(i), g1_value(i), 'o', 'Color', 'k', 'MarkerEdgeColor', 'k', 'MarkerFaceColor', 'k', 'MarkerSize', 16)
         end     
 
         %creates a grid of values covering [0, 1] x [0, 1]
@@ -195,7 +195,7 @@ for h = 1:length(s_val_range)
     end 
 
     if h == 2
-        legend({'g_0 Nullcline', 'g_1 Nullcline', '', '', 'Stable Node', 'Saddle Point', 'Eigenvector', '', 'Vector Field'}, 'FontSize', 18)
+        legend({'g_0 Nullcline', 'g_1 Nullcline', '', 'HWE', 'Stable Node', '', 'Saddle Point', 'Eigenvector', 'Vector Field'}, 'FontSize', 18)
         xlabel('g_0', 'FontSize', 24)
     end
 end
