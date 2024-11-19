@@ -2,7 +2,7 @@
 % frequencies
 
 % note, only use without bistability (i.e. for additive or recessive
-% deleterious)
+% deleterious or additive or dominant beneficial)
 
 stable_s = [neutral_stable_s, selected_stable_s];
 stable_q = [neutral_stable_q, selected_stable_q];

@@ -9,12 +9,12 @@ mu_val = 2e-8; % constant value of forward mutation rate
 nu_val = 1e-9; % constant value of backward mutation rate
 mut_ratio_val = mu_val/nu_val; % ratio of forward to backward mutation rate
 
-h1_val = 1; % h1 dominance coefficient value, constant
-h2_val = 1; % h2 dominance coefficient value, constant
-h3_val = 1; % h3 dominance coefficient value, constant
+h1_val = 0; % h1 dominance coefficient value, constant
+h2_val = 0; % h2 dominance coefficient value, constant
+h3_val = 0; % h3 dominance coefficient value, constant
 
 beta_val = .5; % recombination rate across subgenomes
-gamma_val = .5; % HE interference coefficient
+gamma_val = 0; % HE interference coefficient
 
 syms g00 g01 g10 g11 s h1 h2 h3 mu nu beta gamma
 
@@ -41,10 +41,10 @@ w3 = (1-s*h3)/wbar;
 w4 = (1-s)/wbar;
 
 % equations for selection
-sel_g00 = g00^2*w0+(17/16)*g00*g01*w1+(17/16)*g00*g10*w1+(3/16)*g01^2*w2+(3/16)*g10^2*w2+(7/16)*g01*g10*w2+(7/16)*g00*g11*w2+(1/16)*g01*g11*w3+(1/16)*g10*g11*w3;
-sel_g10 = (3/16)*g00*g01*w1+(11/16)*g00*g10*w1+(1/16)*g01^2*w2+(9/16)*g10^2*w2+(9/16)*g01*g10*w2+(9/16)*g00*g11*w2+(3/16)*g01*g11*w3+(11/16)*g10*g11*w3;
-sel_g01 = (11/16)*g00*g01*w1+(3/16)*g00*g10*w1+(9/16)*g01^2*w2+(1/16)*g10^2*w2+(9/16)*g01*g10*w2+(9/16)*g00*g11*w2+(11/16)*g01*g11*w3+(3/16)*g10*g11*w3;
-sel_g11 = (1/16)*g00*g01*w1+(1/16)*g00*g10*w1+(3/16)*g01^2*w2+(3/16)*g10^2*w2+(7/16)*g01*g10*w2+(7/16)*g00*g11*w2+(17/16)*g01*g11*w3+(17/16)*g10*g11*w3+g11^2*w4;
+sel_g00 = g00^2*w0 + (.5+(beta+beta*gamma)/32)*2*g01*g00*w1 + (.5+(beta+beta*gamma)/32)*2*g10*g00*w1 + ((3*beta+beta*gamma)/16)*g01^2*w2 + ((3*beta+beta*gamma)/16)*g10^2*w2 + (.25-(beta-beta*gamma)/32)*(2*g00*g11+2*g01*g10)*w2 + ((beta+beta*gamma)/32)*2*g01*g11*w3 + ((beta+beta*gamma)/32)*2*g10*g11*w3;
+sel_g10 = ((3*beta+3*beta*gamma)/32)*2*g01*g00*w1 + (.5-(5*beta+5*beta*gamma)/32)*2*g10*g00*w1 + ((beta+3*beta*gamma)/16)*g01^2*w2 + (1-(7*beta+5*beta*gamma)/16)*g10^2*w2 + (.25+(beta-beta*gamma)/32)*(2*g00*g11+2*g01*g10)*w2 + ((3*beta+3*beta*gamma)/32)*2*g01*g11*w3 + (.5-(5*beta+5*beta*gamma)/32)*2*g10*g11*w3;
+sel_g01 = (.5-(5*beta+5*beta*gamma)/32)*2*g01*g00*w1 + ((3*beta+3*beta*gamma)/32)*2*g10*g00*w1 + (1-(7*beta+5*beta*gamma)/16)*g01^2*w2 + ((beta+3*beta*gamma)/16)*g10^2*w2 + (.25+(beta-beta*gamma)/32)*(2*g00*g11+2*g01*g10)*w2 + (.5-(5*beta+5*beta*gamma)/32)*2*g01*g11*w3 + ((3*beta+3*beta*gamma)/32)*2*g10*g11*w3;
+sel_g11 = ((beta+beta*gamma)/32)*2*g01*g00*w1 + ((beta+beta*gamma)/32)*2*g10*g00*w1 + ((3*beta+beta*gamma)/16)*g01^2*w2 + ((3*beta+beta*gamma)/16)*g10^2*w2 + (.25-(beta-beta*gamma)/32)*(2*g00*g11+2*g01*g10)*w2 + (.5+(beta+beta*gamma)/32)*2*g01*g11*w3 + (.5+(beta+beta*gamma)/32)*2*g10*g11*w3 + g11^2*w4;
 
 % expressions for mutation
 mut_g00 = sel_g00*(1-mu)^2 + sel_g01*(1-mu)*nu + sel_g10*(1-mu)*nu + sel_g11*nu^2 - g00;
@@ -149,7 +149,7 @@ function [fixed_pt_stabilities] = allo_linear_stability_analysis(jacobian_matrix
         end
 
         %calulating the eigenvalues of the evaluated jacobian
-        [eigenvectors, eigenvalues] = eig(jacobian_eval)
+        [eigenvectors, eigenvalues] = eig(jacobian_eval);
 
         %classifies the fixed point according to the trace and determinant
         if eigenvalues(1,1) < 0 && eigenvalues(2,2) < 0 && eigenvalues(3,3) < 0

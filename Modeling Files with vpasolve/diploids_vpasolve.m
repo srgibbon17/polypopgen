@@ -3,10 +3,10 @@
 iterations = 100;
 
 %s_val_range = logspace(-4, -1, iterations);
-s_val_range = 5e-3;
+s_val_range = 1e-6;
 
-mu_val = 5e-4; % constant value of forward mutation rate
-nu_val = 1e-5; % constant value of backward mutation rate
+mu_val = 2e-8; % constant value of forward mutation rate
+nu_val = 1e-9; % constant value of backward mutation rate
 mut_ratio_val = mu_val/nu_val; % ratio of forward to backward mutation rate
 h_val = 1; % h1 dominance coefficient value, constant
 

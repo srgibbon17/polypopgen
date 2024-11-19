@@ -103,15 +103,15 @@ selected_avg_fitness = zeros(1, length(selected_stable_s));
 unstable_avg_fitness = zeros(1, length(unstable_s));
 
 for i = 1:length(neutral_avg_fitness)
-    neutral_avg_fitness(i) = (1-dot(neutral_genotypes(:, i), neutral_abs_fitness(:, i)))/neutral_stable_s(i);
+    neutral_avg_fitness(i) = dot(neutral_genotypes(:, i), neutral_abs_fitness(:, i));
 end
 
 for i = 1:length(selected_avg_fitness)
-    selected_avg_fitness(i) = (1-dot(selected_genotypes(:, i), selected_abs_fitness(:, i)))/selected_stable_s(i);
+    selected_avg_fitness(i) = dot(selected_genotypes(:, i), selected_abs_fitness(:, i));
 end
 
 for i = 1:length(unstable_avg_fitness)
-    unstable_avg_fitness(i) = (1-dot(unstable_genotypes(:, i), unstable_abs_fitness(:, i)))/unstable_s(i);
+    unstable_avg_fitness(i) = dot(unstable_genotypes(:, i), unstable_abs_fitness(:, i));
 end
 
 neutral_stable_q = ones(1, length(neutral_stable_g0)) - neutral_stable_g0;

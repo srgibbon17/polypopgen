@@ -148,21 +148,9 @@ for i = 1:length(unstable_avg_fitness)
     unstable_avg_fitness(i) = dot(unstable_genotypes(:, i), unstable_abs_fitness(:, i));
 end
 
-neutral_pan_diseq = zeros(1, length(neutral_stable_s));
-selected_pan_diseq = zeros(1, length(selected_stable_s));
-unstable_pan_diseq = zeros(1, length(unstable_s));
-
-for i = 1:length(neutral_pan_diseq)
-    neutral_pan_diseq(i) = .5*neutral_stable_g1(i) - (1-neutral_stable_q(i))*(neutral_stable_q(i));
-end
-
-for i = 1:length(selected_avg_fitness)
-    selected_pan_diseq(i) = .5*selected_stable_g1(i) - (1-selected_stable_q(i))*(selected_stable_q(i));
-end
-
-for i = 1:length(unstable_avg_fitness)
-    unstable_pan_diseq(i) = .5*unstable_g1(i) - (1-unstable_q(i))*(unstable_q(i));
-end
+neutral_pan_diseq = neutral_stable_g0 - (1-neutral_stable_q).^2;
+selected_pan_diseq = selected_stable_g0 - (1-selected_stable_q).^2;
+unstable_pan_diseq = unstable_g0 - (1-unstable_q).^2;
 
 end
 
