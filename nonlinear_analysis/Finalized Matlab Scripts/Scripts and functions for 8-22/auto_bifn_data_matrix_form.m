@@ -1,4 +1,4 @@
-function [neutral_stable_q, neutral_stable_s, neutral_avg_fitness, selected_stable_q, selected_stable_s, selected_avg_fitness, unstable_q, unstable_s, unstable_avg_fitness] = auto_bifn_data_w_bar(s_val_range, mu_val, nu_val, h1_val, h2_val, h3_val, a_val)
+function [stable_data_matrix] = auto_bifn_data_matrix_form(s_val_range, mu_val, nu_val, h1_val, h2_val, h3_val, a_val)
 %Generates autopolyploid bifurcation plotting data
 %   for autos, classification of fixed points using linear stability
 %   analysis, the Jacobian matrix, and eigenvectors
@@ -89,85 +89,94 @@ for i = 1:length(s_val_range)
     [g0_root_vals, g1_root_vals] = auto_root_solns(mut_exp_set(1), mut_exp_set(2), mu, mu_val, nu, nu_val, s, s_val_range(i), h1, h1_val, h2, h2_val, h3, h3_val, a, a_val, g0, g1);
         
     %evaluating the jacobian and stability of each fixed point
-    [fixed_pt_stabilities] = auto_linear_stability_analysis(jac_matrix, mu, mu_val, nu, nu_val, s, s_val_range(i), h1, h1_val, h2, h2_val, h3, h3_val, a, a_val, g0, g0_root_vals, g1, g1_root_vals); 
+    %[fixed_pt_stabilities] = auto_linear_stability_analysis(jac_matrix, mu, mu_val, nu, nu_val, s, s_val_range(i), h1, h1_val, h2, h2_val, h3, h3_val, a, a_val, g0, g0_root_vals, g1, g1_root_vals); 
 
-    for j = 1:length(fixed_pt_stabilities)
+    selected_stable_g0(end+1) = g0_root_vals;
+    selected_stable_g1(end+1) = g1_root_vals;
+    selected_stable_s(end+1) = s_val_range(i);
 
-        if fixed_pt_stabilities(j) == 0
-            unstable_g0(end+1) = g0_root_vals(j);
-            unstable_g1(end+1) = g1_root_vals(j);
-            unstable_s(end+1) = s_val_range(i);
-
-        elseif fixed_pt_stabilities(j) == 1
-            if g0_root_vals(j) > .3333
-                selected_stable_g0(end+1) = g0_root_vals(j);
-                selected_stable_g1(end+1) = g1_root_vals(j);
-                selected_stable_s(end+1) = s_val_range(i);
-            else
-                neutral_stable_g0(end+1) = g0_root_vals(j);
-                neutral_stable_g1(end+1) = g1_root_vals(j);
-                neutral_stable_s(end+1) = s_val_range(i);
-            end
-        end
-    end
+    % for j = 1:length(fixed_pt_stabilities)
+    % 
+    %     if fixed_pt_stabilities(j) == 0
+    %         unstable_g0(end+1) = g0_root_vals(j);
+    %         unstable_g1(end+1) = g1_root_vals(j);
+    %         unstable_s(end+1) = s_val_range(i);
+    % 
+    %     elseif fixed_pt_stabilities(j) == 1
+    %         if g0_root_vals(j) > .3333
+    %             selected_stable_g0(end+1) = g0_root_vals(j);
+    %             selected_stable_g1(end+1) = g1_root_vals(j);
+    %             selected_stable_s(end+1) = s_val_range(i);
+    %         else
+    %             neutral_stable_g0(end+1) = g0_root_vals(j);
+    %             neutral_stable_g1(end+1) = g1_root_vals(j);
+    %             neutral_stable_s(end+1) = s_val_range(i);
+    %         end
+    %     end
+    % end
 end
 
-neutral_stable_q = ones(1, length(neutral_stable_g0)) - neutral_stable_g0 - .5*neutral_stable_g1;
+%neutral_stable_q = ones(1, length(neutral_stable_g0)) - neutral_stable_g0 - .5*neutral_stable_g1;
 selected_stable_q = ones(1, length(selected_stable_g0)) - selected_stable_g0 - .5*selected_stable_g1;
-unstable_q = ones(1, length(unstable_g0)) - unstable_g0 - .5*unstable_g1;
+%unstable_q = ones(1, length(unstable_g0)) - unstable_g0 - .5*unstable_g1;
 
-neutral_stable_g2 = 1 - neutral_stable_g0 - neutral_stable_g1;
+%neutral_stable_g2 = 1 - neutral_stable_g0 - neutral_stable_g1;
 selected_stable_g2 = 1 - selected_stable_g0 - selected_stable_g1;
-unstable_g2 = 1 - unstable_g0 - unstable_g1;
+%unstable_g2 = 1 - unstable_g0 - unstable_g1;
 
-neutral_genotypes = [neutral_stable_g0.^2; 2*neutral_stable_g0.*neutral_stable_g1; neutral_stable_g1.^2+2*neutral_stable_g0.*neutral_stable_g2; 2*neutral_stable_g1.*neutral_stable_g2; neutral_stable_g2.^2];
+%neutral_genotypes = [neutral_stable_g0.^2; 2*neutral_stable_g0.*neutral_stable_g1; neutral_stable_g1.^2+2*neutral_stable_g0.*neutral_stable_g2; 2*neutral_stable_g1.*neutral_stable_g2; neutral_stable_g2.^2];
 selected_genotypes = [selected_stable_g0.^2; 2*selected_stable_g0.*selected_stable_g1; selected_stable_g1.^2+2*selected_stable_g0.*selected_stable_g2; 2*selected_stable_g1.*selected_stable_g2; selected_stable_g2.^2];
-unstable_genotypes = [unstable_g0.^2; 2*unstable_g0.*unstable_g1; unstable_g1.^2+2*unstable_g0.*unstable_g2; 2*unstable_g1.*unstable_g2; unstable_g2.^2];
+%unstable_genotypes = [unstable_g0.^2; 2*unstable_g0.*unstable_g1; unstable_g1.^2+2*unstable_g0.*unstable_g2; 2*unstable_g1.*unstable_g2; unstable_g2.^2];
 
-neutral_abs_fitness = [ones(1, length(neutral_stable_s)); 1-h1_val*neutral_stable_s; 1-h2_val*neutral_stable_s; 1-h3_val*neutral_stable_s; 1-neutral_stable_s];
+%neutral_abs_fitness = [ones(1, length(neutral_stable_s)); 1-h1_val*neutral_stable_s; 1-h2_val*neutral_stable_s; 1-h3_val*neutral_stable_s; 1-neutral_stable_s];
 selected_abs_fitness = [ones(1, length(selected_stable_s)); 1-h1_val*selected_stable_s; 1-h2_val*selected_stable_s; 1-h3_val*selected_stable_s; 1-selected_stable_s];
-unstable_abs_fitness = [ones(1, length(unstable_s)); 1-h1_val*unstable_s; 1-h2_val*unstable_s; 1-h3_val*unstable_s; 1-unstable_s];
+%unstable_abs_fitness = [ones(1, length(unstable_s)); 1-h1_val*unstable_s; 1-h2_val*unstable_s; 1-h3_val*unstable_s; 1-unstable_s];
 
-neutral_avg_fitness = zeros(1, length(neutral_stable_s));
+%neutral_avg_fitness = zeros(1, length(neutral_stable_s));
 selected_avg_fitness = zeros(1, length(selected_stable_s));
-unstable_avg_fitness = zeros(1, length(unstable_s));
+%unstable_avg_fitness = zeros(1, length(unstable_s));
 
-for i = 1:length(neutral_avg_fitness)
-    neutral_avg_fitness(i) = dot(neutral_genotypes(:, i), neutral_abs_fitness(:, i));
-end
+% for i = 1:length(neutral_avg_fitness)
+%     neutral_avg_fitness(i) = dot(neutral_genotypes(:, i), neutral_abs_fitness(:, i));
+% end
 
 for i = 1:length(selected_avg_fitness)
     selected_avg_fitness(i) = dot(selected_genotypes(:, i), selected_abs_fitness(:, i));
 end
 
-for i = 1:length(unstable_avg_fitness)
-    unstable_avg_fitness(i) = dot(unstable_genotypes(:, i), unstable_abs_fitness(:, i));
-end
+% for i = 1:length(unstable_avg_fitness)
+%     unstable_avg_fitness(i) = dot(unstable_genotypes(:, i), unstable_abs_fitness(:, i));
+% end
+
+stable_data_matrix_transposed = vertcat(selected_stable_s, selected_stable_q, selected_stable_g0, selected_stable_g1, selected_stable_g2, selected_avg_fitness);
+
+stable_data_matrix = stable_data_matrix_transposed.';
+
 
 end
 
 %%% FUNCTIONS %%%
 
-function [diff_eqn_eval] = auto_diff_eq_eval(diff_eqn, mu, mu_val, nu, nu_val, h1, h1_val, h2, h2_val, h3, h3_val)
-
-    % substitutes all constant parameters to create simplified differential
-    % equations
-
-    diff_eqn_eval = subs(diff_eqn, mu, mu_val);
-    diff_eqn_eval = subs(diff_eqn_eval, nu, nu_val);
-    diff_eqn_eval = subs(diff_eqn_eval, h1, h1_val);
-    diff_eqn_eval = subs(diff_eqn_eval, h2, h2_val);
-    diff_eqn_eval = subs(diff_eqn_eval, h3, h3_val);
-
-end
-
-function [g0_root_vals, g1_root_vals] = auto_root_solns(g0_eqn_eval, g1_eqn_eval, s, s_val, g0, g1)
+function [g0_root_vals, g1_root_vals] = auto_root_solns(mut_g0_eqn, mut_g1_eqn, mu, mu_val, nu, nu_val, s, s_val, h1, h1_val, h2, h2_val, h3, h3_val, a, a_val, g0, g1)
 
     %function which uses vpasolve to find the fixed points/roots of the system
 
-    g0_eqn = subs(g0_eqn_eval, s, s_val);
+    g0_eqn = subs(mut_g0_eqn, mu, mu_val);
+    g0_eqn = subs(g0_eqn, nu, nu_val);
+    g0_eqn = subs(g0_eqn, s, s_val);
+    g0_eqn = subs(g0_eqn, h1, h1_val);
+    g0_eqn = subs(g0_eqn, h2, h2_val);
+    g0_eqn = subs(g0_eqn, h3, h3_val);
+    g0_eqn = subs(g0_eqn, a, a_val);
 
-    g1_eqn = subs(g1_eqn_eval, s, s_val);
+    g1_eqn = subs(mut_g1_eqn, mu, mu_val);
+    g1_eqn = subs(g1_eqn, nu, nu_val);
+    g1_eqn = subs(g1_eqn, s, s_val);
+    g1_eqn = subs(g1_eqn, h1, h1_val);
+    g1_eqn = subs(g1_eqn, h2, h2_val);
+    g1_eqn = subs(g1_eqn, h3, h3_val);
+    g1_eqn = subs(g1_eqn, a, a_val);
+
 
     [g0_root_vals, g1_root_vals] = vpasolve([g0_eqn, g1_eqn], [g0, g1]);
 end

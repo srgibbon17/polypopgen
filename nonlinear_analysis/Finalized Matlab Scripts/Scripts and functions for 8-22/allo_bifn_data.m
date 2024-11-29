@@ -2,12 +2,6 @@ function [neutral_stable_q, neutral_stable_s, selected_stable_q, selected_stable
 %Generates 0HE bifurcation plotting data
 %   for allos with 0 HEs, classification of fixed points using linear stability
 %   analysis, the Jacobian matrix, and eigenvectors
-%   returns:
-%       HE0_data:
-%           a 6 element array of data arrays in the following order:
-%               neutral_stable (for q and s, respectively)
-%               selected_stable (for q and s, respectively)
-%               unstable (for q and s, respectively)
 
 g00 = sym('g00');
 g01 = sym('g01');
@@ -64,14 +58,14 @@ jac_matrix = [diff(mut_eqn_set(1), g00), diff(mut_eqn_set(1), g01), diff(mut_eqn
                 diff(mut_eqn_set(2), g00), diff(mut_eqn_set(2), g01), diff(mut_eqn_set(2), g11); 
                 diff(mut_eqn_set(4), g00), diff(mut_eqn_set(4), g01), diff(mut_eqn_set(4), g11)];
 
-neutral_stable_g00 = [];
-neutral_stable_g01 = [];
-neutral_stable_g11 = [];
+neutral_g00 = [];
+neutral_g01 = [];
+neutral_g11 = [];
 neutral_stable_s = [];
 
-selected_stable_g00 = [];
-selected_stable_g01 = [];
-selected_stable_g11 = [];
+selected_g00 = [];
+selected_g01 = [];
+selected_g11 = [];
 selected_stable_s = [];
 
 unstable_g00 = [];
@@ -97,25 +91,26 @@ for i = 1:length(s_val_range)
 
         elseif fixed_pt_stabilities(j) == 1
             if g00_root_vals(j) > .3333
-                selected_stable_g00(end+1) = g00_root_vals(j);
-                selected_stable_g01(end+1) = g01_root_vals(j);
-                selected_stable_g11(end+1) = g11_root_vals(j);
+                selected_g00(end+1) = g00_root_vals(j);
+                selected_g01(end+1) = g01_root_vals(j);
+                selected_g11(end+1) = g11_root_vals(j);
                 selected_stable_s(end+1) = s_val_range(i);
             else
-                neutral_stable_g00(end+1) = g00_root_vals(j);
-                neutral_stable_g01(end+1) = g01_root_vals(j);
-                neutral_stable_g11(end+1) = g11_root_vals(j);
+                neutral_g00(end+1) = g00_root_vals(j);
+                neutral_g01(end+1) = g01_root_vals(j);
+                neutral_g11(end+1) = g11_root_vals(j);
                 neutral_stable_s(end+1) = s_val_range(i);
             end
         end
     end
 end
 
-neutral_stable_q = neutral_stable_g11 + neutral_stable_g01;
-selected_stable_q = selected_stable_g11 + selected_stable_g01;
+neutral_stable_q = neutral_g11 + neutral_g01;
+selected_stable_q = selected_g11 + selected_g01;
 unstable_q = unstable_g11 + unstable_g01;
 
 end
+
 
 
 %%% FUNCTIONS %%%

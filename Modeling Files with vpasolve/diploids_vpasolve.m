@@ -3,7 +3,7 @@
 iterations = 100;
 
 %s_val_range = logspace(-4, -1, iterations);
-s_val_range = 1e-6;
+s_val_range = 1e-9;
 
 mu_val = 2e-8; % constant value of forward mutation rate
 nu_val = 1e-9; % constant value of backward mutation rate
@@ -59,9 +59,9 @@ unstable_s = [];
 
 for i = 1:length(s_val_range)
 
-    [g0_roots] = root_solns(mut_g0, mu, mu_val, nu, nu_val, s, s_val_range(i), h, h_val, g0)
+    [g0_roots] = root_solns(mut_g0, mu, mu_val, nu, nu_val, s, s_val_range(i), h, h_val, g0);
 
-    [root_stabilities] = linear_stability_analysis(g0_deriv, mu, mu_val, nu, nu_val, s, s_val_range(i), h, h_val, g0, g0_roots)
+    [root_stabilities] = linear_stability_analysis(g0_deriv, mu, mu_val, nu, nu_val, s, s_val_range(i), h, h_val, g0, g0_roots);
 
 
     for j = 1:length(root_stabilities)

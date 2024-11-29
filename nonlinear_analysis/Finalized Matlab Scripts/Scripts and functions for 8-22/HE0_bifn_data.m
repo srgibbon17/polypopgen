@@ -3,11 +3,6 @@ function [neutral_stable_q, neutral_stable_s, selected_stable_q, selected_stable
 %   for allos with 0 HEs, classification of fixed points using linear stability
 %   analysis, the Jacobian matrix, and eigenvectors
 %   returns:
-%       HE0_data:
-%           a 6 element array of data arrays in the following order:
-%               neutral_stable (for q and s, respectively)
-%               selected_stable (for q and s, respectively)
-%               unstable (for q and s, respectively)
 
 g00 = sym('g00');
 g01 = sym('g01');

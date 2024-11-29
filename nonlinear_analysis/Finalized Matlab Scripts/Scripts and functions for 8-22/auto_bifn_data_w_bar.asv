@@ -151,7 +151,7 @@ end
 function [diff_eqn_eval] = auto_diff_eq_eval(diff_eqn, mu, mu_val, nu, nu_val, h1, h1_val, h2, h2_val, h3, h3_val)
 
     % substitutes all constant parameters to create simplified differential
-    % equations
+    % equa
 
     diff_eqn_eval = subs(diff_eqn, mu, mu_val);
     diff_eqn_eval = subs(diff_eqn_eval, nu, nu_val);

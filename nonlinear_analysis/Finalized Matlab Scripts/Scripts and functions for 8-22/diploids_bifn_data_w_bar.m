@@ -2,11 +2,6 @@ function [neutral_stable_q, neutral_stable_s, neutral_avg_fitness, selected_stab
 %Generates diploid bifurcation plotting data
 %   for diploids, a nonlinear model and analysis
 %   returns:
-%       diploid_data:
-%           a 6 element array of data arrays in the following order:
-%               neutral_stable (for q and s, respectively)
-%               selected_stable (for q and s, respectively)
-%               unstable (for q and s, respectively)
 
 g0 = sym('g0');
 g1 = sym('g1');

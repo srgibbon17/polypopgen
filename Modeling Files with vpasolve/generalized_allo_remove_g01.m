@@ -3,18 +3,23 @@
 
 iterations = 10; % number of steps or number of data points to generate
 
-s_val = 2e-7;
+s_val = 2e-8;
 
-mu_val = 2e-8; % constant value of forward mutation rate
+mu_val = 3e-9; % constant value of forward mutation rate
 nu_val = 1e-9; % constant value of backward mutation rate
 mut_ratio_val = mu_val/nu_val; % ratio of forward to backward mutation rate
 
-h1_val = 1; % h1 dominance coefficient value, constant
-h2_val = 1; % h2 dominance coefficient value, constant
-h3_val = 1; % h3 dominance coefficient value, constant
+h1_val = .25; % h1 dominance coefficient value, constant
+h2_val = .5; % h2 dominance coefficient value, constant
+h3_val = .75; % h3 dominance coefficient value, constant
 
-beta_val = 1; % recombination rate across subgenomes
-gamma_val = 1; % HE interference coefficient
+%beta_val = 0; % recombination rate across subgenomes
+%gamma_val = 0; % HE interference coefficient
+
+beta_val_range = linspace(0, 1, 101);
+gamma_val_range = linspace(0, 1, 101);
+
+[beta_coord, gamma_coord] = meshgrid(beta_val_range, gamma_val_range);
 
 syms g00 g01 g10 g11 s h1 h2 h3 mu nu beta gamma
 
@@ -52,8 +57,7 @@ mut_g11 = sel_g00*mu^2 + sel_g01*mu*(1-nu) + sel_g10*mu*(1-nu) + sel_g11*(1-nu)^
 
 mut_eqn_set = [mut_g01, mut_g00, mut_g10, mut_g11];
 
-for i = 1:length(mut_eqn_set)
-    
+for i = 1:length(mut_eqn_set) 
     % removes g11 from the equation by replacing it with 1-(g00+g01+g10)
     mut_eqn_set(i) = subs(mut_eqn_set(i), g01, 1-(g10+g00+g11));
 end
@@ -64,11 +68,33 @@ jac_matrix = [diff(mut_eqn_set(2), g00), diff(mut_eqn_set(2), g10), diff(mut_eqn
                 diff(mut_eqn_set(3), g00), diff(mut_eqn_set(3), g10), diff(mut_eqn_set(3), g11); 
                 diff(mut_eqn_set(4), g00), diff(mut_eqn_set(4), g10), diff(mut_eqn_set(4), g11)];
 
-[g00_root_vals, g10_root_vals, g11_root_vals] = allo_root_solns(mut_eqn_set(2), mut_eqn_set(3), mut_eqn_set(4), mu, mu_val, nu, nu_val, s, s_val, h1, h1_val, h2, h2_val, h3, h3_val, beta, beta_val, gamma, gamma_val, g00, g10, g11)
+g00_coord = zeros(101);
+g10_coord = zeros(101);
+g11_coord = zeros(101);
+q_coord = zeros(101);
 
-[fixed_pt_stabilities] = allo_linear_stability_analysis(jac_matrix, mu, mu_val, nu, nu_val, s, s_val, h1, h1_val, h2, h2_val, h3, h3_val, beta, beta_val, gamma, gamma_val, g00, g00_root_vals, g10, g10_root_vals, g11, g11_root_vals);
+
+for i = 1:length(beta_val_range)
+    for j = 1:length(gamma_val_range)
+
+        [g00_root_vals, g10_root_vals, g11_root_vals] = allo_root_solns(mut_eqn_set(2), mut_eqn_set(3), mut_eqn_set(4), mu, mu_val, nu, nu_val, s, s_val, h1, h1_val, h2, h2_val, h3, h3_val, beta, beta_val_range(i), gamma, gamma_val_range(j), g00, g10, g11);
+
+        [fixed_pt_stabilities] = allo_linear_stability_analysis(jac_matrix, mu, mu_val, nu, nu_val, s, s_val, h1, h1_val, h2, h2_val, h3, h3_val, beta, beta_val, gamma, gamma_val, g00, g00_root_vals, g10, g10_root_vals, g11, g11_root_vals);
     
+        g00_coord(i, j) = g00_root_vals;
+        g10_coord(i, j) = g10_root_vals;
+        g11_coord(i, j) = g11_root_vals;
+        q_coord(i, j) = g11_root_vals + g10_root_vals;
 
+    end
+end
+
+writematrix(beta_coord, 'beta_coordinates.csv')
+writematrix(gamma_coord, 'gamma_coordinates.csv')
+writematrix(g00_coord, 'g00_additive.csv')
+writematrix(g10_coord, 'g10_additive.csv')
+writematrix(g11_coord, 'g11_additive.csv')
+writematrix(q_coord, 'q_additive.csv')
 
 %%% FUNCTIONS %%%
 
@@ -147,7 +173,7 @@ function [fixed_pt_stabilities] = allo_linear_stability_analysis(jacobian_matrix
         end
 
         %calulating the eigenvalues of the evaluated jacobian
-        [eigenvectors, eigenvalues] = eig(jacobian_eval)
+        [eigenvectors, eigenvalues] = eig(jacobian_eval);
 
         %classifies the fixed point according to the trace and determinant
         if eigenvalues(1,1) < 0 && eigenvalues(2,2) < 0 && eigenvalues(3,3) < 0
