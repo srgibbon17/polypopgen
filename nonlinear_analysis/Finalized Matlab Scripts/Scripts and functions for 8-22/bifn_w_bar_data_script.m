@@ -1,6 +1,6 @@
-s_val_range = logspace(-9, -3, 1000);
-mu_val = 2e-8;
-nu_val = 1e-9;
+s_val_range = sort(-logspace(-9, -3, 1000));
+mu_val = 1e-9;
+nu_val = 2e-8;
 
 
 % recessive case
