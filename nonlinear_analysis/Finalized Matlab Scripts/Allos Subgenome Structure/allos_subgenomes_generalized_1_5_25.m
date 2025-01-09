@@ -5,13 +5,22 @@ mu_val = 1e-8; % constant value of forward mutation rate
 nu_val = 1e-9; % constant value of backward mutation rate
 mut_ratio_val = mu_val/nu_val; % ratio of forward to backward mutation rate
 
-sa_val = 1e-7;
-sb_val = 1e-5;
+syms g00 g01 g10 g11 s00 s01 s02 s10 s11 s12 s20 s21 s22 mu nu G00 G01 G02 G10 G11 G12 G20 G21 G22
 
-ha_val = .75; % h1 dominance coefficient value, constant
-hb_val = .25; % h2 dominance coefficient value, constant
+a = 1e-3;
+d = 0;
+b = 1e-6;
+c = 9.99e-4;
 
-syms g00 g01 g10 g11 sa sb ha hb mu nu G00 G01 G02 G10 G11 G12 G20 G21 G22 
+s00_val = a;
+s01_val = b;
+s02_val = a;
+s10_val = c;
+s11_val = d;
+s12_val = c;
+s20_val = a;
+s21_val = b;
+s22_val = a;
 
 % assumptions on the parameters of the model; theoretical bounds
 assume(g00>=0 & g00<=1);
@@ -20,21 +29,21 @@ assume(g01>=0 & g01<=1);
 assume(g11>=0 & g11<=1);
 assume(mu>=0 & mu<=1);
 
-sel_matrix = [1, 1-hb_val*sb_val, 1-sb_val;
-              1-ha_val*sa_val, 1-ha_val*sa_val-hb_val*sb_val, 1-ha_val*sa_val-sb_val;
-              1-sa_val, 1-sa_val-hb_val*sb_val, 1-sa_val-sb_val]
+sel_matrix = [1-s00_val, 1-s01_val, 1-s02_val;
+              1-s10_val, 1-s11_val, 1-s12_val;
+              1-s20_val, 1-s21_val, 1-s22_val]
 
 % equations to parameterize relative fitnesses
-wbar = (1 - (ha*sa*(G10 + G11 + G12) + sa*(G20 + G21 + G22) + hb*sb*(G01 + G11 + G21) * sb*(G02 + G12 + G22)));
-w00 = 1/wbar;
-w01 = (1-hb*sb)/wbar;
-w02 = (1-sb)/wbar;
-w10 = (1-ha*sa)/wbar;
-w11 = (1-(ha*sa+hb*sb))/wbar;
-w12 = (1-(ha*sa+sb))/wbar;
-w20 = (1-sa)/wbar;
-w21 = (1-(sa+hb*sb))/wbar;
-w22 = (1-(sa+sb))/wbar;
+wbar = (1 - (s00*G00 + s01*G01 + s02*G02 + s10*G10 + s11*G11 + s12*G12 + s20*G20 + s21*G21 + s22*G22));
+w00 = (1-s00)/wbar;
+w01 = (1-s01)/wbar;
+w02 = (1-s02)/wbar;
+w10 = (1-s10)/wbar;
+w11 = (1-s11)/wbar;
+w12 = (1-s12)/wbar;
+w20 = (1-s20)/wbar;
+w21 = (1-s21)/wbar;
+w22 = (1-s22)/wbar;
 
 % equations for selection
 sel_g00 = G00*w00 + (1/2)*G01*w01 + (1/2)*G10*w10 + (1/4)*G11*w11;
