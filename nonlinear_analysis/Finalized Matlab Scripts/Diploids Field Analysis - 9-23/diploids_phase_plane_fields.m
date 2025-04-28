@@ -1,12 +1,12 @@
 % for diploids, a nonlinear model and analysis
 
-s_init_val = 1e-7;
+s_init_val = .05;
 
 s_val = s_init_val;
-mu_val = 2e-8; % constant value of forward mutation rate
-nu_val = 1e-9; % constant value of backward mutation rate
+mu_val = 1e-8; % constant value of forward mutation rate
+nu_val = 1e-8; % constant value of backward mutation rate
 mut_ratio_val = mu_val/nu_val; % ratio of forward to backward mutation rate
-h_val = 1; % h1 dominance coefficient value, constant
+h_val = 0; % h1 dominance coefficient value, constant
 
 syms s q G0 G1 G2 g0 g1 h mu nu
 
@@ -138,4 +138,17 @@ function [fixed_pt_stabilities] = linear_stability_analysis(g0_derivative, mu, m
             disp('Error. Linear stabilitiy analysis failed. Derivative is 0.')
         end
     end
+end
+
+function [fitness_variance] = calc_fitness_variance(s_val, h_val, q_vector)
+
+G0_freq = (1-q_vector).^2;
+G1_freq = 2*(1-q_vector).*q_vector;
+G2_freq = q_vector.^2;
+
+avg_fitness = 1 - (G1_freq*s_val*h_val + G2_freq*s_val);
+load = 1- avg_fitness;
+
+fitness_variance = G0_freq.*((-load).^2) + G1_freq.*((G1_freq*h_val*s_val-load).^2) + G2_freq.*((G2_freq*s_val-load).^2);
+
 end

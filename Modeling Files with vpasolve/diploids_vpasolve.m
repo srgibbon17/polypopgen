@@ -8,7 +8,7 @@ s_val_range = 1e-9;
 mu_val = 2e-8; % constant value of forward mutation rate
 nu_val = 1e-9; % constant value of backward mutation rate
 mut_ratio_val = mu_val/nu_val; % ratio of forward to backward mutation rate
-h_val = 1; % h1 dominance coefficient value, constant
+h_val = .5; % h1 dominance coefficient value, constant
 
 syms s q G0 G1 G2 g0 g1 h mu nu
 
@@ -59,9 +59,9 @@ unstable_s = [];
 
 for i = 1:length(s_val_range)
 
-    [g0_roots] = root_solns(mut_g0, mu, mu_val, nu, nu_val, s, s_val_range(i), h, h_val, g0);
+    [g0_roots] = root_solns(mut_g0, mu, mu_val, nu, nu_val, s, s_val_range(i), h, h_val, g0)
 
-    [root_stabilities] = linear_stability_analysis(g0_deriv, mu, mu_val, nu, nu_val, s, s_val_range(i), h, h_val, g0, g0_roots);
+    [root_stabilities] = linear_stability_analysis(g0_deriv, mu, mu_val, nu, nu_val, s, s_val_range(i), h, h_val, g0, g0_roots)
 
 
     for j = 1:length(root_stabilities)

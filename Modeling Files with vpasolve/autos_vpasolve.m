@@ -4,16 +4,16 @@
 iterations = 1; % number of steps or number of data points to generate
 
 %s_val_range = logspace(-8, -5, iterations); % starting s value
-s_val_range = 1e-6;
+s_val_range = .05;
 
-mu_val = 2e-8; % constant value of forward mutation rate
-nu_val = 1e-9; % constant value of backward mutation rate
-mut_ratio_val = mu_val/nu_val; % ratio of forward to backward mutation rate
+mu_val = 5e-3; % constant value of forward mutation rate
+nu_val = 1e-4; % constant value of backward mutation rate
+%mut_ratio_val = mu_val/nu_val; % ratio of forward to backward mutation rate
 a_val = 0; % constant value of alpha (double reduction rate)
 
-h1_val = 0; % h1 dominance coefficient value, constant
-h2_val = 0; % h2 dominance coefficient value, constant
-h3_val = 0; % h3 dominance coefficient value, constant
+h1_val = .25; % h1 dominance coefficient value, constant
+h2_val = .5; % h2 dominance coefficient value, constant
+h3_val = .75; % h3 dominance coefficient value, constant
 
 syms a s q G0 G1 G2 G3 G4 g0 g1 g2 h1 h2 h3 mu nu
 
