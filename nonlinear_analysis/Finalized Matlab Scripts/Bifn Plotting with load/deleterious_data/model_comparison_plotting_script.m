@@ -57,11 +57,12 @@ allo_color = '#7DAB5B';
 
 figure
 
-subplot(2, 3, 1)
+subplot(1, 3, 1)
 % recessive allele frequency
 plot(dip_rec(:, 1), dip_rec(:, 2), 'Color', dip_color, 'LineWidth', 3, 'DisplayName', 'Diploids')
 hold on
-plot(auto_rec(:, 1), auto_rec(:, 2), 'Color', auto_color, 'LineWidth', 3, 'DisplayName', 'Autotetraploids')
+plot(auto_rec(:, 1), auto_rec(:, 2), 'Color', auto_color, 'LineWidth', 3, 'DisplayName', ['Auto- and ' ...
+    'Allotetraploids'])
 %plot(allo_rec(:, 1), allo_rec(:, 2), 'Color', allo_color, 'LineWidth', 3, 'DisplayName', 'Allotetraploids')
 
 xscale log
@@ -70,10 +71,10 @@ ylim([0, 1])
 
 title('Fully Recessive')
 
-ylabel('q (Derived Allele Frequency)')
+ylabel('q (Allele Frequency)')
 legend
 
-subplot(2, 3, 2)
+subplot(1, 3, 2)
 % additive allele frequency
 plot(dip_add(:, 1), dip_add(:, 2), 'Color', dip_color, 'LineWidth', 3)
 hold on
@@ -85,8 +86,9 @@ xlim([1e-9, 1e-3])
 ylim([0, 1])
 
 title('Additive')
+xlabel('s (Selection Coefficient)')
 
-subplot(2, 3, 3)
+subplot(1, 3, 3)
 % dominant allele frequency
 plot(dip_dom_neutral(:, 1), dip_dom_neutral(:, 2), 'Color', dip_color, 'LineWidth', 3)
 hold on
@@ -107,51 +109,51 @@ ylim([0, 1])
 
 title('Fully Dominant')
 
-subplot(2, 3, 4)
-% recessive average fitness
-plot(dip_rec(:, 1), 1-dip_rec(:, 5), 'Color', dip_color, 'LineWidth', 3, 'DisplayName', 'Diploids')
-hold on
-plot(auto_rec(:, 1), 1-auto_rec(:, 6), 'Color', auto_color, 'LineWidth', 3, 'DisplayName', 'Autotetraploids')
-%plot(allo_rec(:, 1), 1-allo_rec(:, 7), 'Color', allo_color, 'LineWidth', 3, 'DisplayName', 'Allotetraploids')
-xscale log
-xlim([1e-9, 1e-3])
-ylim([0, 2e-8])
+% subplot(2, 3, 4)
+% % recessive average fitness
+% plot(dip_rec(:, 1), 1-dip_rec(:, 5), 'Color', dip_color, 'LineWidth', 3, 'DisplayName', 'Diploids')
+% hold on
+% plot(auto_rec(:, 1), 1-auto_rec(:, 6), 'Color', auto_color, 'LineWidth', 3, 'DisplayName', 'Autotetraploids')
+% %plot(allo_rec(:, 1), 1-allo_rec(:, 7), 'Color', allo_color, 'LineWidth', 3, 'DisplayName', 'Allotetraploids')
+% xscale log
+% xlim([1e-9, 1e-3])
+% ylim([0, 2e-8])
 
 
 
-ylabel('Mutation Load')
+% ylabel('Mutation Load')
 
-subplot(2, 3, 5)
-% additive average fitness
-plot(dip_add(:, 1), 1-dip_add(:, 5), 'Color', dip_color, 'LineWidth', 3)
-hold on
-plot(auto_add(:, 1), 1-auto_add(:, 6), 'Color', auto_color, 'LineWidth', 3)
-%plot(allo_add(:, 1), 1-allo_add(:, 7), 'Color', allo_color, 'LineWidth', 3)
-
-xscale log
-xlim([1e-9, 1e-3])
-xlabel('s (Selection Coefficient)')
-ylim([0, 12e-8])
-
-
-
-subplot(2, 3, 6)
-% dominant average fitness
-
-%plot(auto_dom_neutral(:, 1), 1-auto_dom_neutral(:, 6), 'Color', auto_color, 'LineWidth', 3)
-%hold on
-plot(auto_dom_selected(:, 1), 1-auto_dom_selected(:, 6), 'Color', auto_color, 'LineWidth', 3)
-hold on
-
-%plot(allo_dom_neutral(:, 1), 1-allo_dom_neutral(:, 7), 'Color', allo_color, 'LineWidth', 3)
-%plot(allo_dom_selected(:, 1), 1-allo_dom_selected(:, 7), 'Color', allo_color, 'LineWidth', 3)
-
-%plot(dip_dom_neutral(:, 1), 1-dip_dom_neutral(:, 5), 'Color', dip_color, 'LineWidth', 3)
-plot(dip_dom_selected(:, 1), 1-dip_dom_selected(:, 5), 'Color', dip_color, 'LineWidth', 3)
-
-xscale log
-xlim([1e-9, 1e-3])
-ylim([0, 12e-8])
+% subplot(2, 3, 5)
+% % additive average fitness
+% plot(dip_add(:, 1), 1-dip_add(:, 5), 'Color', dip_color, 'LineWidth', 3)
+% hold on
+% plot(auto_add(:, 1), 1-auto_add(:, 6), 'Color', auto_color, 'LineWidth', 3)
+% %plot(allo_add(:, 1), 1-allo_add(:, 7), 'Color', allo_color, 'LineWidth', 3)
+% 
+% xscale log
+% xlim([1e-9, 1e-3])
+% xlabel('s (Selection Coefficient)')
+% ylim([0, 12e-8])
+% 
+% 
+% 
+% subplot(2, 3, 6)
+% % dominant average fitness
+% 
+% %plot(auto_dom_neutral(:, 1), 1-auto_dom_neutral(:, 6), 'Color', auto_color, 'LineWidth', 3)
+% %hold on
+% plot(auto_dom_selected(:, 1), 1-auto_dom_selected(:, 6), 'Color', auto_color, 'LineWidth', 3)
+% hold on
+% 
+% %plot(allo_dom_neutral(:, 1), 1-allo_dom_neutral(:, 7), 'Color', allo_color, 'LineWidth', 3)
+% %plot(allo_dom_selected(:, 1), 1-allo_dom_selected(:, 7), 'Color', allo_color, 'LineWidth', 3)
+% 
+% %plot(dip_dom_neutral(:, 1), 1-dip_dom_neutral(:, 5), 'Color', dip_color, 'LineWidth', 3)
+% plot(dip_dom_selected(:, 1), 1-dip_dom_selected(:, 5), 'Color', dip_color, 'LineWidth', 3)
+% 
+% xscale log
+% xlim([1e-9, 1e-3])
+% ylim([0, 12e-8])
 
 
 

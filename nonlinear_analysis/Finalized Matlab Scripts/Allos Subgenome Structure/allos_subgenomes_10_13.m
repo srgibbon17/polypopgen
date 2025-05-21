@@ -8,8 +8,8 @@ mut_ratio_val = mu_val/nu_val; % ratio of forward to backward mutation rate
 sa_val = 1e-7;
 sb_val = 1e-5;
 
-ha_val = .5; % h1 dominance coefficient value, constant
-hb_val = .5; % h2 dominance coefficient value, constant
+ha_val = .75; % h1 dominance coefficient value, constant
+hb_val = .25; % h2 dominance coefficient value, constant
 
 syms g00 g01 g10 g11 sa sb ha hb mu nu G00 G01 G02 G10 G11 G12 G20 G21 G22 
 
@@ -68,10 +68,14 @@ end
 [g01_root_vals, g10_root_vals, g11_root_vals] = root_solns(mut_eqn_set(2), mut_eqn_set(3), mut_eqn_set(4), mu, mu_val, nu, nu_val, sa, sa_val, ha, ha_val, sb, sb_val, hb, hb_val, g01, g10, g11)
 
 
-% %creates the Jacobian of the system
-% jac_matrix = [diff(mut_eqn_set(2), g01), diff(mut_eqn_set(2), g10), diff(mut_eqn_set(2), g11); 
-%                 diff(mut_eqn_set(3), g01), diff(mut_eqn_set(3), g10), diff(mut_eqn_set(3), g11); 
-%                 diff(mut_eqn_set(4), g01), diff(mut_eqn_set(4), g10), diff(mut_eqn_set(4), g11)];
+%creates the Jacobian of the system
+jac_matrix = [diff(mut_eqn_set(2), g01), diff(mut_eqn_set(2), g10), diff(mut_eqn_set(2), g11); 
+                 diff(mut_eqn_set(3), g01), diff(mut_eqn_set(3), g10), diff(mut_eqn_set(3), g11); 
+                 diff(mut_eqn_set(4), g01), diff(mut_eqn_set(4), g10), diff(mut_eqn_set(4), g11)];
+
+%evaluating the jacobian and stability of each fixed point
+[fixed_pt_stabilities] = linear_stability_analysis(jac_matrix, mu, mu_val, nu, nu_val, sa, sa_val, ha, ha_val, sb, sb_val, hb, hb_val, g01, g01_root_vals, g10, g10_root_vals, g11, g11_root_vals); 
+
 % 
 % neutral_stable_g00 = [];
 % neutral_stable_g01 = [];
@@ -233,7 +237,6 @@ function [fixed_pt_stabilities] = linear_stability_analysis(jacobian_matrix, mu,
         [eigenvectors, eigenvalues] = eig(jacobian_eval);
 
         disp(eigenvalues)
-        disp(eigenvectors)
 
         %classifies the fixed point according to the trace and determinant
         if eigenvalues(1,1) < 0 && eigenvalues(2,2) < 0 && eigenvalues(3,3) < 0

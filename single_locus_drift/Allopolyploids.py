@@ -25,22 +25,22 @@ For an allopolyploid with strict bivalent formation, set he0 = 1 and he1 = he2 =
 """
  
 # Let's define some parameters
-pa = .75  # allele frequency for a (derived, deleterious allele) in subgenome a (0<x<1)  
+pa = .04  # allele frequency for a (derived, deleterious allele) in subgenome a (0<x<1)  
 qa = 1-pa  # allele frequency for A in subgenome a
-pb = .4  # allele frequency for a in subgenome b (0<x<1) 
+pb = .02  # allele frequency for a in subgenome b (0<x<1) 
 qb = 1-pb  # allele frequency for A in subgenome b
-N = 100  # population size
-g = 100  # number of generations
-g_bottleneck_start = 450  # generation at which bottleneck starts
-g_bottleneck_length = 100  # number of generations for which the bottleneck lasts
-N_bottleneck = 200  # population size during the bottleneck
-s = .1  # selection coefficient (0<x<1) 
+N = 5000  # population size
+g = 1000  # number of generations
+g_bottleneck_start = 495  # generation at which bottleneck starts
+g_bottleneck_length = 10  # number of generations for which the bottleneck lasts
+N_bottleneck = 500  # population size during the bottleneck
+s = .002  # selection coefficient (0<x<1) 
 h1 = .25  # dominance coefficient for G3 (0<x<1) 
 h2 = .5  # dominance coefficient for G2 (0<x<1) 
 h3 = .75  # dominance coefficient for G1 (0<x<1) 
-mu = .001  # forward mutation rate (from 'A' to 'a') (0<x<1) 
-nu = .001  # backward mutation rate (from 'a' to 'A') (0<x<1) 
-self_rate = .25  # selfing probability (0<x<1) 
+mu = .0002  # forward mutation rate (from 'A' to 'a') (0<x<1) 
+nu = .00001  # backward mutation rate (from 'a' to 'A') (0<x<1) 
+self_rate = .3  # selfing probability (0<x<1) 
 # note: he0, he1, and he2 can either be inputted as probabilities or relative frequencies
 # e.g. probabilities [.5, .3, .2] are equivalent to relative frequencies [5, 3, 2]
 he0 = .7  # probability of no HEs 
@@ -654,12 +654,15 @@ def plot_gamete_and_genotype_freq():
     x_index = range(g)  # creates a discrete time variable to plot against
     fig, axs = plt.subplots(2, 1, sharex = 'col', sharey = 'row')  
 
-    fig.set_size_inches(14, 8) 
+    p_freq = np.array(g11_freq_pre_mut) + 0.5*np.array(g01_freq_pre_mut) + 0.5*np.array(g10_freq_pre_mut)
+
+    fig.set_size_inches(14, 8)
+    axs[0].plot(x_index, p_freq, color = '0')
     axs[0].plot(x_index, g00_freq_pre_mut, color = '#008aff')
     axs[0].plot(x_index, g10_freq_pre_mut, color = '#8800da')
     axs[0].plot(x_index, g01_freq_pre_mut, color = '#00a50e')
     axs[0].plot(x_index, g11_freq_pre_mut, color = '#da1b00')
-    axs[0].legend(['g00', 'g10', 'g01', 'g11'])
+    axs[0].legend(['p', 'g00', 'g10', 'g01', 'g11'])
     #axs[0].add_artist(gamete_legend)
     axs[0].set_ylabel('Gamete Frequencies')
 
