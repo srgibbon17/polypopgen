@@ -3,15 +3,14 @@
 
 iterations = 5; % number of steps or number of data points to generate
 
-s_val_range = 1e-9; % starting s value
+s_val_range = 4e-6; % starting s value
 
-mu_val = .8; % constant value of forward mutation rate
-nu_val = .2; % constant value of backward mutation rate
-mut_ratio_val = mu_val/nu_val; % ratio of forward to backward mutation rate
+mu_val = 2e-7; % constant value of forward mutation rate
+nu_val = 1e-8; % constant value of backward mutation rate
 
-h1_val = 0; % h1 dominance coefficient value, constant
-h2_val = 0; % h2 dominance coefficient value, constant
-h3_val = 0; % h3 dominance coefficient value, constant
+h1_val = 1.2; % h1 dominance coefficient value, constant
+h2_val = 1; % h2 dominance coefficient value, constant
+h3_val = 1.3; % h3 dominance coefficient value, constant
 
 syms g00 g01 g10 g11 s h1 h2 h3 mu nu
 
@@ -214,7 +213,7 @@ function [fixed_pt_stabilities] = linear_stability_analysis(jacobian_matrix, mu,
         end
 
         %calulating the eigenvalues of the evaluated jacobian
-        [eigenvectors, eigenvalues] = eig(jacobian_eval)
+        [eigenvectors, eigenvalues] = eig(jacobian_eval);
 
         %classifies the fixed point according to the trace and determinant
         if eigenvalues(1,1) < 0 && eigenvalues(2,2) < 0 && eigenvalues(3,3) < 0
