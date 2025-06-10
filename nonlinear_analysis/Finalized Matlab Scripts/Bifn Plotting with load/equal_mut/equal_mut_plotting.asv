@@ -32,6 +32,8 @@ hold on
 plot(auto_rec(:, 1), auto_rec(:, 2), 'Color', auto_color, 'LineWidth', 3, 'DisplayName', ['Auto- and ' ...
     'Allotetraploids'])
 %plot(allo_rec(:, 1), allo_rec(:, 2), 'Color', allo_color, 'LineWidth', 3, 'DisplayName', 'Allotetraploids')
+plot(sel_range, (mu_val./sel_range).^(1/4), 'Color', 'black', 'LineStyle', '-.', 'LineWidth', 2)
+plot(sel_range, (mu_val./sel_range).^(1/2), 'Color', 'black', 'LineStyle', ':', 'LineWidth', 2)
 xscale log
 xlim([1e-9, 1e-3])
 ylim([0, 1])
@@ -50,6 +52,8 @@ plot(dip_add(:, 1), dip_add(:, 2), 'Color', dip_color, 'LineWidth', 3)
 hold on
 plot(auto_add(:, 1), auto_add(:, 2), 'Color', auto_color, 'LineWidth', 3)
 %plot(allo_add(:, 1), allo_add(:, 2), 'Color', allo_color, 'LineWidth', 3)
+plot(sel_range, (mu_val./(sel_range.*.5)), 'Color', 'black', 'LineStyle', ':', 'LineWidth', 2)
+plot(sel_range, (mu_val./(sel_range.*.25)), 'Color', 'black', 'LineStyle', '-.', 'LineWidth', 2)
 xscale log
 xlim([1e-9, 1e-3])
 ylim([0, 1])
@@ -67,6 +71,8 @@ plot(dip_dom(:, 1), dip_dom(:, 2), 'Color', dip_color, 'LineWidth', 3)
 hold on
 plot(auto_dom(:, 1), auto_dom(:, 2), 'Color', auto_color, 'LineWidth', 3)
 %plot(allo_dom(:, 1), allo_dom(:, 2), 'Color', allo_color, 'LineWidth', 3)
+plot(sel_range, (mu_val./(sel_range)), 'Color', 'black', 'LineStyle', ':', 'LineWidth', 2)
+plot(sel_range, (mu_val./(sel_range)), 'Color', 'black', 'LineStyle', '-.', 'LineWidth', 2)
 xscale log
 xlim([1e-9, 1e-3])
 ylim([0, 1])
