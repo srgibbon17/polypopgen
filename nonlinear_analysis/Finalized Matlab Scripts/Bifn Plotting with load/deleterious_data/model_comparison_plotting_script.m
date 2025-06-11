@@ -60,114 +60,118 @@ mu_val = 2e-8;
 
 figure
 
-subplot(1, 3, 1)
+subplot(2, 3, 1)
 % recessive allele frequency
 plot(dip_rec(:, 1), dip_rec(:, 2), 'Color', dip_color, 'LineWidth', 3, 'DisplayName', 'Diploids')
 hold on
 plot(auto_rec(:, 1), auto_rec(:, 2), 'Color', auto_color, 'LineWidth', 3, 'DisplayName', ['Auto- and ' ...
     'Allotetraploids'])
 %plot(allo_rec(:, 1), allo_rec(:, 2), 'Color', allo_color, 'LineWidth', 3, 'DisplayName', 'Allotetraploids')
-
-plot(sel_range, (mu_val./sel_range).^(1/4), 'Color', 'black', 'LineStyle', '-.', 'LineWidth', 2)
-plot(sel_range, ((mu_val./sel_range) + (nu_val./(1-sel_range))).^(1/2), 'Color', 'black', 'LineStyle', '-', 'LineWidth', 2)
-
 xscale log
 xlim([1e-9, 1e-3])
 ylim([0, 1])
-
 title('Fully Recessive')
-
 ylabel('q (Allele Frequency)')
-legend
+ax = gca;
+ax.FontSize = 24;
+xticks([1e-9, 1e-7, 1e-5, 1e-3])
+yticks([0, 0.25, 0.5, 0.75, 1])
+grid on
+set(ax, 'xminorgrid', 'off', 'yminorgrid', 'off')
 
-subplot(1, 3, 2)
+subplot(2, 3, 2)
 % additive allele frequency
 plot(dip_add(:, 1), dip_add(:, 2), 'Color', dip_color, 'LineWidth', 3)
 hold on
 plot(auto_add(:, 1), auto_add(:, 2), 'Color', auto_color, 'LineWidth', 3)
 %plot(allo_add(:, 1), allo_add(:, 2), 'Color', allo_color, 'LineWidth', 3)
-
-plot(sel_range, (mu_val./(sel_range.*.5)), 'Color', 'black', 'LineStyle', ':', 'LineWidth', 2)
-plot(sel_range, (mu_val./(sel_range.*.25)), 'Color', 'black', 'LineStyle', '-.', 'LineWidth', 2)
-
 xscale log
 xlim([1e-9, 1e-3])
 ylim([0, 1])
-
 title('Additive')
-xlabel('s (Selection Coefficient)')
+ax = gca;
+ax.FontSize = 24;
+xticks([1e-9, 1e-7, 1e-5, 1e-3])
+yticks([0, 0.25, 0.5, 0.75, 1])
+grid on
+set(ax, 'xminorgrid', 'off', 'yminorgrid', 'off')
 
-subplot(1, 3, 3)
+subplot(2, 3, 3)
 % dominant allele frequency
 plot(dip_dom_neutral(:, 1), dip_dom_neutral(:, 2), 'Color', dip_color, 'LineWidth', 3)
 hold on
 plot(dip_dom_selected(:, 1), dip_dom_selected(:, 2), 'Color', dip_color, 'LineWidth', 3)
 plot(dip_dom_unstable(:, 1), dip_dom_unstable(:, 2), 'Color', dip_color, 'LineWidth', 3, 'LineStyle', '--')
-
 plot(auto_dom_neutral(:, 1), auto_dom_neutral(:, 2), 'Color', auto_color, 'LineWidth', 3)
 plot(auto_dom_selected(:, 1), auto_dom_selected(:, 2), 'Color', auto_color, 'LineWidth', 3)
 plot(auto_dom_unstable(:, 1), auto_dom_unstable(:, 2), 'Color', auto_color, 'LineWidth', 3, 'LineStyle', '--')
-
 %plot(allo_dom_neutral(:, 1), allo_dom_neutral(:, 2), 'Color', allo_color, 'LineWidth', 3)
 %plot(allo_dom_selected(:, 1), allo_dom_selected(:, 2), 'Color', allo_color, 'LineWidth', 3)
 %plot(allo_dom_unstable(:, 1), allo_dom_unstable(:, 2), 'Color', allo_color, 'LineWidth', 3, 'LineStyle', '--')
-
-plot(sel_range, (mu_val./(sel_range)), 'Color', 'black', 'LineStyle', ':', 'LineWidth', 2)
-plot(sel_range, (mu_val./(sel_range)), 'Color', 'black', 'LineStyle', '-.', 'LineWidth', 2)
-
 xscale log
 xlim([1e-9, 1e-3])
 ylim([0, 1])
-
 title('Fully Dominant')
+ax = gca;
+ax.FontSize = 24;
+xticks([1e-9, 1e-7, 1e-5, 1e-3])
+yticks([0, 0.25, 0.5, 0.75, 1])
+grid on
+set(ax, 'xminorgrid', 'off', 'yminorgrid', 'off')
 
-% subplot(2, 3, 4)
-% % recessive average fitness
-% plot(dip_rec(:, 1), 1-dip_rec(:, 5), 'Color', dip_color, 'LineWidth', 3, 'DisplayName', 'Diploids')
-% hold on
-% plot(auto_rec(:, 1), 1-auto_rec(:, 6), 'Color', auto_color, 'LineWidth', 3, 'DisplayName', 'Autotetraploids')
-% %plot(allo_rec(:, 1), 1-allo_rec(:, 7), 'Color', allo_color, 'LineWidth', 3, 'DisplayName', 'Allotetraploids')
-% xscale log
-% xlim([1e-9, 1e-3])
-% ylim([0, 2e-8])
+subplot(2, 3, 4)
+% recessive average fitness
+plot(dip_rec(:, 1), 1-dip_rec(:, 5), 'Color', dip_color, 'LineWidth', 3, 'DisplayName', 'Diploids')
+hold on
+plot(auto_rec(:, 1), 1-auto_rec(:, 6), 'Color', auto_color, 'LineWidth', 3, 'DisplayName', 'Autotetraploids')
+%plot(allo_rec(:, 1), 1-allo_rec(:, 7), 'Color', allo_color, 'LineWidth', 3, 'DisplayName', 'Allotetraploids')
+xscale log
+xlim([1e-9, 1e-3])
+ylim([0, 3e-8])
+ylabel('Mutation Load')
+ax = gca;
+ax.FontSize = 24;
+xticks([1e-9, 1e-7, 1e-5, 1e-3])
+yticks([1e-8, 2e-8, 3e-8])
+grid on
+set(ax, 'xminorgrid', 'off', 'yminorgrid', 'off')
 
+subplot(2, 3, 5)
+% additive average fitness
+plot(dip_add(:, 1), 1-dip_add(:, 5), 'Color', dip_color, 'LineWidth', 3)
+hold on
+plot(auto_add(:, 1), 1-auto_add(:, 6), 'Color', auto_color, 'LineWidth', 3)
+%plot(allo_add(:, 1), 1-allo_add(:, 7), 'Color', allo_color, 'LineWidth', 3)
+xscale log
+xlim([1e-9, 1e-3])
+xlabel('s (Selection Coefficient)')
+ylim([0, 12e-8])
+ax = gca;
+ax.FontSize = 24;
+xticks([1e-9, 1e-7, 1e-5, 1e-3])
+yticks([3e-8, 6e-8, 9e-8, 12e-8])
+grid on
+set(ax, 'xminorgrid', 'off', 'yminorgrid', 'off')
 
-
-% ylabel('Mutation Load')
-
-% subplot(2, 3, 5)
-% % additive average fitness
-% plot(dip_add(:, 1), 1-dip_add(:, 5), 'Color', dip_color, 'LineWidth', 3)
-% hold on
-% plot(auto_add(:, 1), 1-auto_add(:, 6), 'Color', auto_color, 'LineWidth', 3)
-% %plot(allo_add(:, 1), 1-allo_add(:, 7), 'Color', allo_color, 'LineWidth', 3)
-% 
-% xscale log
-% xlim([1e-9, 1e-3])
-% xlabel('s (Selection Coefficient)')
-% ylim([0, 12e-8])
-% 
-% 
-% 
-% subplot(2, 3, 6)
-% % dominant average fitness
-% 
-% %plot(auto_dom_neutral(:, 1), 1-auto_dom_neutral(:, 6), 'Color', auto_color, 'LineWidth', 3)
-% %hold on
-% plot(auto_dom_selected(:, 1), 1-auto_dom_selected(:, 6), 'Color', auto_color, 'LineWidth', 3)
-% hold on
-% 
-% %plot(allo_dom_neutral(:, 1), 1-allo_dom_neutral(:, 7), 'Color', allo_color, 'LineWidth', 3)
-% %plot(allo_dom_selected(:, 1), 1-allo_dom_selected(:, 7), 'Color', allo_color, 'LineWidth', 3)
-% 
-% %plot(dip_dom_neutral(:, 1), 1-dip_dom_neutral(:, 5), 'Color', dip_color, 'LineWidth', 3)
-% plot(dip_dom_selected(:, 1), 1-dip_dom_selected(:, 5), 'Color', dip_color, 'LineWidth', 3)
-% 
-% xscale log
-% xlim([1e-9, 1e-3])
-% ylim([0, 12e-8])
-
-
+subplot(2, 3, 6)
+% dominant average fitness
+plot(dip_dom_selected(:, 1), 1-dip_dom_selected(:, 5), 'Color', dip_color, 'LineWidth', 3)
+hold on
+plot(auto_dom_selected(:, 1), 1-auto_dom_selected(:, 6), 'Color', auto_color, 'LineWidth', 3)
+plot(dip_dom_neutral(:, 1), 1-dip_dom_neutral(:, 5), 'Color', dip_color, 'LineWidth', 3)
+plot(auto_dom_neutral(:, 1), 1-auto_dom_neutral(:, 6), 'Color', auto_color, 'LineWidth', 3)
+%plot(allo_dom_selected(:, 1), 1-allo_dom_selected(:, 7), 'Color', allo_color, 'LineWidth', 3)
+%plot(allo_dom_neutral(:, 1), 1-allo_dom_neutral(:, 7), 'Color', allo_color, 'LineWidth', 3)
+xscale log
+yscale log
+xlim([1e-9, 1e-3])
+ylim([0, 2.5e-5])
+ax = gca;
+ax.FontSize = 24;
+xticks([1e-9, 1e-7, 1e-5, 1e-3])
+%yticks([3e-8, 6e-8, 9e-8, 12e-8])
+grid on
+set(ax, 'xminorgrid', 'off', 'yminorgrid', 'off')
 
 
 
